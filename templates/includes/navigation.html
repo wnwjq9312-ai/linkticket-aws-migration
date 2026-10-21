@@ -1,0 +1,7 @@
+<nav class="site-nav" aria-label="주 메뉴">
+<a href="{% url 'ui:home' %}" {% if active == 'home' %}aria-current="page"{% endif %}>홈</a>
+<a href="{% url 'ui:performances' %}" {% if active == 'performances' %}aria-current="page"{% endif %}>공연</a>
+<a href="{% url 'payment:booking' %}" {% if request.resolver_match.app_name == 'payment' %}aria-current="page"{% endif %}>티켓예매</a>
+<a href="{% url 'ui:events' %}" {% if active == 'events' %}aria-current="page"{% endif %}>이벤트</a>
+<a href="{% url 'ui:nft' %}" {% if active == 'nft' %}aria-current="page"{% endif %}>NFT</a>
+<a href="{% url 'ui:notices' %}" {% if active == 'notices' %}aria-current="page"{% endif %}>공지사항</a></nav>

@@ -1,0 +1,11 @@
+{% load static %}{% if checkout %}<div class="lt-summary-heading">
+<h2>주문/결제 정보</h2>
+<span class="lt-timer">◴ 09:43 · 예시</span>
+</div>{% else %}<h2>▦ 예매 정보</h2>{% endif %}<div class="lt-order-show">
+{% include 'payment/includes/poster.html' %}
+<div>
+<strong>{{ performance.title }}</strong>
+<p data-date-summary>{{ dates.0.day }} {{ dates.0.time }}</p>
+<p>{{ performance.venue }}</p>
+</div>
+</div>

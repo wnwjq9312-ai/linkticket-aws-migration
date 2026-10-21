@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LINKTICKET - NFT 결제</title>
+<style>
+  :root{
+    --navy:#1a2144;--blue:#2563eb;--pink:#ec4899;--purple:#7c3aed;
+    --text-dark:#1f2333;--text-gray:#6b7280;--border:#e5e7eb;--bg-light:#f7f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--text-dark);background:#fff;}
+  a{text-decoration:none;color:inherit;}
+  .wrap{max-width:1536px;margin:0 auto;padding:0 32px;}
+
+  /* ===== Header (다른 페이지와 동일 구조) ===== */
+  header{border-bottom:1px solid var(--border);}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  header .wrap{padding-left:12px;}
+  .header-left{display:flex;align-items:center;gap:36px;}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+  .logo span{color:var(--blue);}
+  nav.main-nav{display:flex;gap:32px;}
+  nav.main-nav a{font-size:15px;font-weight:600;color:#333;padding:4px 0;}
+  nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .search-box{display:flex;align-items:center;gap:8px;background:var(--bg-light);border-radius:20px;padding:8px 16px;width:280px;}
+  .search-box input{border:none;background:transparent;outline:none;font-size:13px;width:100%;}
+  #auth-area{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  #auth-area .sep{color:var(--border);}
+
+  /* ===== Progress Steps (고정 영역, 3단계: NFT 선택 -> 결제하기 -> 결제 완료) ===== */
+  .steps{padding:28px 0;border-bottom:1px solid var(--border);}
+  .steps-track{
+    display:flex;align-items:center;justify-content:center;gap:0;max-width:640px;margin:0 auto;
+  }
+  .step{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;}
+  .step__num{
+    width:34px;height:34px;border-radius:50%;background:var(--bg-light);color:var(--text-gray);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;
+  }
+  .step.done .step__num{background:linear-gradient(120deg,#2563eb,#7c3aed);color:#fff;}
+  .step.active .step__num{background:linear-gradient(120deg,#ec4899,#a855f7);color:#fff;}
+  .step__label{font-size:12px;color:var(--text-gray);font-weight:600;white-space:nowrap;}
+  .step.active .step__label{color:var(--text-dark);font-weight:800;}
+  .step-line{flex:1;height:2px;background:var(--border);margin:0 10px;min-width:80px;}
+  .step-line.done{background:linear-gradient(90deg,#2563eb,#7c3aed);}
+
+  /* ===== Layout: 상품카드 / 결제폼 / 결제정보 3단 ===== */
+  .content{display:flex;gap:24px;padding:32px 0 64px;align-items:flex-start;}
+  .product-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;}
+  .main-col{flex:1;min-width:0;}
+  .side-col{width:340px;flex-shrink:0;}
+
+  /* ----- 상품 카드 (좌측) ----- */
+  .product-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+  .product-card__media{
+    position:relative;height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#fff;text-align:center;padding:20px;overflow:hidden;
+  }
+  .product-card__media .glow{
+    position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,0.18),transparent 60%);
+  }
+  .product-card__badge{
+    position:absolute;top:14px;left:14px;background:rgba(124,58,237,0.9);color:#fff;
+    font-size:11px;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:20px;z-index:2;
+  }
+  .product-card__like{
+    position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;
+    background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;
+    font-size:15px;z-index:2;color:var(--pink);
+  }
+  .product-card__ticket{
+    position:relative;z-index:2;font-size:13px;font-weight:700;letter-spacing:2px;opacity:.85;margin-bottom:10px;
+  }
+  .product-card__name{position:relative;z-index:2;font-size:22px;font-weight:800;line-height:1.3;}
+  .product-card__body{padding:20px;}
+  .product-card__title{font-size:19px;font-weight:800;margin-bottom:2px;}
+  .product-card__subtitle{font-size:13px;color:var(--text-gray);margin-bottom:16px;}
+
+  .pinfo-row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-gray);margin-bottom:11px;}
+  .pinfo-row .ic{width:16px;text-align:center;flex-shrink:0;}
+  .pinfo-row b{color:var(--text-dark);font-weight:600;}
+
+  .guide-box{
+    border:1px solid var(--border);border-radius:16px;padding:18px;font-size:12px;color:#555;line-height:1.6;
+    display:flex;gap:10px;
+  }
+  .guide-box .ic{font-size:18px;flex-shrink:0;}
+  .guide-box b{display:block;font-size:14px;font-weight:800;color:var(--text-dark);margin-bottom:4px;}
+  .guide-box a{color:var(--blue);font-weight:700;display:inline-block;margin-top:8px;}
+
+  /* ----- 결제 폼 (중앙) ----- */
+  .pay-card{border:1px solid var(--border);border-radius:16px;padding:28px;}
+  .pay-card__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:8px;}
+  .pay-card__head h2{font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .pay-card__head .kg{font-size:12px;color:var(--text-gray);}
+
+  .pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:26px;}
+  .pay-method{
+    border:1.5px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;
+    font-size:13px;font-weight:700;cursor:pointer;color:#555;
+  }
+  .pay-method .ic{margin-right:6px;}
+  .pay-method.active{border-color:transparent;background:linear-gradient(120deg,#7c3aed,#a855f7);color:#fff;}
+
+  .section-label{font-size:14px;font-weight:800;margin-bottom:12px;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:22px;}
+  .card-opt{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    border:1.5px solid var(--border);border-radius:12px;padding:14px 6px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;
+  }
+  .card-opt input{display:none;}
+  .card-opt.active{border-color:var(--purple);background:#faf5ff;color:var(--purple);}
+
+  /* ----- 결제수단별 패널 전환 (카드결제 / 간편결제 / 가상자산결제) ----- */
+  .method-panel{display:none;}
+  .method-panel.active{display:block;}
+
+  .easypay-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+  .easypay-opt{
+    display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);border-radius:12px;
+    padding:14px 16px;cursor:pointer;font-weight:700;font-size:13px;
+  }
+  .easypay-opt input{display:none;}
+  .easypay-opt.active{border-color:var(--purple);background:#faf5ff;}
+  .easypay-opt .logo{
+    width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:11px;font-weight:800;flex-shrink:0;
+  }
+  .logo-kakao{background:#FEE500;color:#3A1D1D;}
+  .logo-naver{background:#03C75A;}
+  .logo-toss{background:#1B64DA;}
+  .logo-payco{background:#FA3D3D;}
+  .easypay-sub{font-size:11px;color:var(--text-gray);font-weight:500;margin-top:2px;}
+
+  .bank-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:22px;}
+  .bank-opt{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    border:1.5px solid var(--border);border-radius:12px;padding:14px 6px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .bank-opt input{display:none;}
+  .bank-opt.active{border-color:var(--purple);background:#faf5ff;color:var(--purple);}
+
+  .vaccount-note{
+    background:var(--bg-light);border-radius:12px;padding:16px;font-size:12px;color:#555;line-height:1.8;
+  }
+  .vaccount-note b{color:var(--text-dark);font-size:13px;}
+
+  .form-row{margin-bottom:20px;}
+  .form-row label{display:block;font-size:13px;font-weight:800;margin-bottom:8px;}
+  .text-input{
+    width:100%;border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;outline:none;
+  }
+  .text-input:focus{border-color:var(--purple);}
+  select.text-input{background:#fff;}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+  .input-icon-wrap{position:relative;}
+  .input-icon-wrap .ic{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-gray);}
+
+  .agree-list{margin-bottom:24px;}
+  .agree-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:11px 0;font-size:13px;border-bottom:1px solid #f2f2f2;
+  }
+  .agree-item label{display:flex;align-items:center;gap:8px;cursor:pointer;}
+  .agree-item.all{
+    font-weight:800;font-size:14px;background:#faf5ff;border-radius:10px;
+    padding:14px;margin-bottom:8px;border-bottom:none;
+  }
+  .agree-item .view{color:var(--text-gray);font-size:12px;cursor:pointer;}
+
+  .btn-row{display:flex;gap:12px;}
+  .btn-back{
+    flex:1;border:1px solid var(--border);border-radius:12px;background:#fff;
+    font-size:14px;font-weight:700;padding:15px;cursor:pointer;
+  }
+  .btn-pay{
+    flex:2;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;padding:15px;
+    background:linear-gradient(120deg,#7c3aed,#a855f7);cursor:pointer;
+  }
+  .btn-pay:disabled{background:#d1d5db;cursor:not-allowed;}
+  .secure-note{text-align:center;font-size:11px;color:var(--text-gray);margin-top:14px;}
+
+  /* ----- 사이드바: 결제 정보 (우측) ----- */
+  .side-box{border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;}
+  .side-box__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .side-box__head h3{font-size:16px;font-weight:800;}
+  .timer{
+    display:inline-flex;align-items:center;gap:6px;background:#fdf2f8;color:var(--pink);
+    font-size:12px;font-weight:800;padding:5px 10px;border-radius:20px;
+  }
+  .order-item{display:flex;gap:12px;margin-bottom:18px;}
+  .order-item__media{
+    width:72px;height:72px;border-radius:10px;flex-shrink:0;position:relative;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:10px;text-align:center;
+  }
+  .order-item__badge{display:inline-block;font-size:10px;font-weight:800;background:var(--purple);color:#fff;padding:3px 8px;border-radius:5px;margin-bottom:4px;}
+  .order-item__title{font-size:14px;font-weight:800;line-height:1.35;}
+  .order-item__sub{font-size:12px;color:var(--text-gray);margin-top:3px;}
+
+  .info-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--text-gray);margin-bottom:10px;}
+  .info-row b{color:var(--text-dark);font-weight:700;}
+  .divider-line{border-top:1px dashed var(--border);margin:16px 0;}
+  .price-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin-bottom:10px;color:#444;}
+  .final-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+  .final-row .label{font-size:15px;font-weight:800;}
+  .final-row .amount{font-size:22px;font-weight:800;color:var(--pink);}
+
+  .checklist{list-style:none;margin-top:12px;}
+  .checklist li{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#444;line-height:1.5;margin-bottom:8px;}
+  .checklist .box{
+    width:16px;height:16px;border-radius:4px;flex-shrink:0;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;
+  }
+  .checklist .box.on{background:var(--navy);color:#fff;}
+  .checklist .box.note{background:#fef3c7;color:#b45309;}
+  .guide-note-title{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;}
+
+  .cta-banner{
+    background:linear-gradient(120deg,#e9d8fd,#c9a8ff);border-radius:16px;padding:20px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--navy);
+  }
+  .cta-banner__text{font-size:14px;font-weight:800;line-height:1.5;}
+  .cta-banner__ic{font-size:26px;flex-shrink:0;}
+
+  .media-1{background:linear-gradient(150deg,#3a2a5c,#1c1236);}
+  .media-2{background:linear-gradient(150deg,#1f1f1f,#3a3a3a);}
+  .media-3{background:linear-gradient(150deg,#3d1f4a,#6b2f7a);}
+  .media-4{background:linear-gradient(150deg,#161a33,#2b3166);}
+  .media-5{background:linear-gradient(150deg,#0e3d24,#155c34);}
+  .media-6{background:linear-gradient(150deg,#4a1620,#7a2233);}
+  .media-7{background:linear-gradient(150deg,#161a33,#1a2144);}
+  .media-8{background:linear-gradient(150deg,#241033,#3d1a52);}
+
+  footer{background:var(--bg-light);border-top:1px solid var(--border);padding:40px 0;}
+  .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+  .footer-logo{font-size:18px;font-weight:800;margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--text-gray);letter-spacing:1px;margin-bottom:10px;}
+  .footer-desc{font-size:12px;color:var(--text-gray);max-width:260px;line-height:1.5;}
+  .footer-features{display:flex;gap:36px;}
+  .footer-feature{font-size:12px;}
+  .footer-feature__icon{font-size:18px;margin-bottom:6px;}
+  .footer-feature__title{font-weight:700;margin-bottom:2px;}
+  .footer-feature__desc{color:var(--text-gray);font-size:11px;}
+  .footer-quote{font-size:13px;font-weight:700;text-align:right;color:var(--text-dark);line-height:1.6;}
+
+  @media (max-width:1200px){
+    .content{flex-direction:column;}
+    .product-col,.side-col{width:100%;}
+    .card-grid{grid-template-columns:repeat(3,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="header-left">
+      <a href="https://www.linkticket.com" class="logo">LINK<span>TICKET</span></a>
+      <nav class="main-nav">
+        <a href="https://www.linkticket.com">홈</a>
+        <a href="https://www.linkticket.com/performance">공연</a>
+        <a href="#">티켓예매</a>
+        <a href="event_list.html">이벤트</a>
+        <a href="nft_list.html" class="active">NFT</a>
+        <a href="#">공지사항</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div class="search-box">
+        <span onclick="doSearch()" style="cursor:pointer;">🔍</span>
+        <input type="text" id="searchInput" placeholder="공연, 아티스트를 검색하세요..." onkeydown="if(event.key==='Enter') doSearch();">
+      </div>
+      <span>👤</span>
+      <div id="auth-area">
+        <a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ Progress Steps (고정 영역, DB 담당자 결제 화면 시안 기준 3단계) ============ -->
+<div class="steps">
+  <div class="steps-track">
+    <div class="step done"><div class="step__num">1</div><div class="step__label">NFT 선택</div></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step__num">2</div><div class="step__label">결제하기</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step__num">3</div><div class="step__label">결제 완료</div></div>
+  </div>
+</div>
+
+<div class="wrap content">
+
+  <!-- ============ 좌측: 상품 카드 ============ -->
+  <div class="product-col">
+    <div class="product-card">
+      <div class="product-card__media" id="productMedia">
+        <div class="glow"></div>
+        <span class="product-card__badge" id="productBadge">LIMITED</span>
+        <span class="product-card__like">♡</span>
+        <div class="product-card__ticket">LINKTICKET NFT</div>
+        <div class="product-card__name" id="productMediaName">NCT DREAM</div>
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__title" id="productTitle">NCT DREAM</div>
+        <div class="product-card__subtitle" id="productSubtitle">THE DREAM SHOW 3</div>
+
+        <div class="pinfo-row"><span class="ic">📅</span>공연일시&nbsp;<b id="productDate">2026.10.15 (목) 19:00</b></div>
+        <div class="pinfo-row"><span class="ic">📍</span>공연장&nbsp;<b id="productVenue">서울 월드컵 경기장</b></div>
+        <div class="pinfo-row"><span class="ic">🎫</span>NFT 티켓&nbsp;<b id="productType">일반석 NFT</b></div>
+        <div class="pinfo-row"><span class="ic">👤</span>좌석정보&nbsp;<b id="productSeat">스탠딩 A구역</b></div>
+        <div class="pinfo-row"><span class="ic">🏢</span>발행사&nbsp;<b>LINKTICKET</b></div>
+        <div class="pinfo-row"><span class="ic">💳</span>발행 수량&nbsp;<b id="productSupply">1,000개 (한정판)</b></div>
+      </div>
+    </div>
+
+    <div class="guide-box">
+      <span class="ic">🎟️</span>
+      <div>
+        <b>LINKTICKET NFT란?</b>
+        공연의 추억을 블록체인 기반으로 소장할 수 있는 디지털 티켓입니다. 단순한 티켓을 넘어 특별한 가치를 경험하세요.
+        <br><a href="nft_guide.html">NFT 가이드 보기 →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 중앙: 결제 폼 (지금은 화면만 - 실제 결제 처리는 DB/PG 연동 후) ============ -->
+  <div class="main-col">
+    <div class="pay-card">
+      <div class="pay-card__head">
+        <h2>🔒 NFT 결제하기</h2>
+        <span class="kg">ⓘ 안전한 결제 시스템으로 보호됩니다.</span>
+      </div>
+
+      <div class="pay-methods">
+        <div class="pay-method active" data-method="card"><span class="ic">💳</span>카드 결제</div>
+        <div class="pay-method" data-method="easy"><span class="ic">📱</span>간편결제</div>
+        <div class="pay-method" data-method="vaccount"><span class="ic">🏦</span>가상계좌 결제</div>
+      </div>
+
+      <!-- 카드결제 패널 -->
+      <div class="method-panel active" id="panel-card">
+        <div class="section-label">카드 정보 입력</div>
+        <div class="card-grid">
+          <label class="card-opt active"><input type="radio" name="card" checked>신한카드</label>
+          <label class="card-opt"><input type="radio" name="card">현대카드</label>
+          <label class="card-opt"><input type="radio" name="card">삼성카드</label>
+          <label class="card-opt"><input type="radio" name="card">KB국민카드</label>
+          <label class="card-opt"><input type="radio" name="card">LOTTE CARD</label>
+          <label class="card-opt"><input type="radio" name="card">하나카드</label>
+        </div>
+
+        <div class="form-row">
+          <label>카드번호</label>
+          <div class="input-icon-wrap">
+            <input type="text" class="text-input" id="cardNumberInput" placeholder="0000 - 0000 - 0000 - 0000" inputmode="numeric" maxlength="25" oninput="formatCardNumber(this)">
+            <span class="ic">▭</span>
+          </div>
+          <div class="field-grid">
+            <div>
+              <label style="font-size:12px;font-weight:700;margin:10px 0 6px;">유효기간</label>
+              <input type="text" class="text-input" id="cardExpiryInput" placeholder="MM / YY" inputmode="numeric" maxlength="7" oninput="formatExpiry(this)">
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:700;margin:10px 0 6px;">CVC ⓘ</label>
+              <input type="text" class="text-input" id="cardCvcInput" placeholder="123" inputmode="numeric" maxlength="3" oninput="this.value=this.value.replace(/\D/g,'').slice(0,3);">
+            </div>
+          </div>
+          <label style="font-size:12px;font-weight:700;margin:14px 0 6px;display:block;">카드 소유자명</label>
+          <input type="text" class="text-input" placeholder="이름을 입력하세요.">
+        </div>
+      </div>
+
+      <!-- 간편결제 패널: 가장 대중적인 국내 간편결제 4종 -->
+      <div class="method-panel" id="panel-easy">
+        <div class="section-label">간편결제 수단 선택</div>
+        <div class="easypay-list">
+          <label class="easypay-opt active">
+            <input type="radio" name="easypay" checked>
+            <span class="logo logo-kakao">Kakao</span>
+            <span><div>카카오페이</div><div class="easypay-sub">카카오톡으로 간편하게 결제</div></span>
+          </label>
+          <label class="easypay-opt">
+            <input type="radio" name="easypay">
+            <span class="logo logo-naver">N</span>
+            <span><div>네이버페이</div><div class="easypay-sub">네이버 포인트 적립 및 결제</div></span>
+          </label>
+          <label class="easypay-opt">
+            <input type="radio" name="easypay">
+            <span class="logo logo-toss">Toss</span>
+            <span><div>토스페이</div><div class="easypay-sub">토스 앱에서 간편 인증 결제</div></span>
+          </label>
+          <label class="easypay-opt">
+            <input type="radio" name="easypay">
+            <span class="logo logo-payco">PAYCO</span>
+            <span><div>페이코</div><div class="easypay-sub">페이포인트 적립 및 결제</div></span>
+          </label>
+        </div>
+        <div class="secure-note" style="text-align:left;margin-top:0;">선택한 간편결제 앱으로 이동해 인증 후 결제가 진행됩니다.</div>
+      </div>
+
+      <!-- 가상계좌결제 패널: 대중적인 은행 위주 -->
+      <div class="method-panel" id="panel-vaccount">
+        <div class="section-label">입금 은행 선택</div>
+        <div class="bank-grid">
+          <label class="bank-opt active"><input type="radio" name="bank" checked>국민은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">신한은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">우리은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">하나은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">농협은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">기업은행</label>
+        </div>
+
+        <div class="form-row">
+          <label>입금자명</label>
+          <input type="text" class="text-input" placeholder="입금자명을 입력하세요. (카드 소유자명과 동일하지 않아도 됩니다)">
+        </div>
+
+        <div class="vaccount-note">
+          <div><b>가상계좌 안내</b></div>
+          <div>· 결제하기를 누르면 입금 전용 가상계좌가 발급됩니다.</div>
+          <div>· 입금기한 <span id="vaccountDeadline">발급 후 24시간 이내</span>까지 입금해야 예매가 확정됩니다.</div>
+          <div>· 입금 확인 후 NFT가 자동으로 발행되며, 별도 승인 절차는 없습니다.</div>
+        </div>
+      </div>
+
+      <div class="section-label">결제 동의</div>
+      <div class="agree-list">
+        <div class="agree-item all">
+          <label><input type="checkbox" id="agreeAll" onclick="toggleAll(this)">전체 동의하기</label>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox" class="agree-req">(필수) NFT 티켓 구매 및 발행에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox" class="agree-req">(필수) 개인정보 수집 및 이용에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox" class="agree-req">(필수) 결제대행 서비스 이용약관에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox">(선택) LINKTICKET 이벤트 및 마케팅 정보 수신에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-back" onclick="history.back()">이전 단계</button>
+        <button type="button" class="btn-pay" id="payBtn" onclick="submitPayment()">결제하기&nbsp; <span id="payBtnPrice">₩110,000</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 우측: 결제 정보 요약 ============ -->
+  <aside class="side-col">
+    <div class="side-box">
+      <div class="side-box__head">
+        <h3>결제 정보</h3>
+        <span class="timer">⏱ <span id="timer">09:52</span></span>
+      </div>
+
+      <div class="order-item">
+        <div class="order-item__media" id="orderMedia">NFT</div>
+        <div>
+          <div class="order-item__title" id="orderTitle">NCT DREAM</div>
+          <div class="order-item__sub" id="orderSub">THE DREAM SHOW 3</div>
+          <div class="order-item__badge" id="orderBadge" style="margin-top:6px;">LIMITED</div>
+        </div>
+      </div>
+
+      <div class="info-row"><span>공연일시</span><b id="sumDate">2026.10.15 (목) 19:00</b></div>
+      <div class="info-row"><span>공연장</span><b id="sumVenue">서울 월드컵 경기장</b></div>
+      <div class="info-row"><span>좌석정보</span><b id="sumSeat">스탠딩 A구역</b></div>
+      <div class="info-row"><span>NFT 유형</span><b id="sumType">일반석 NFT</b></div>
+
+      <div class="divider-line"></div>
+
+      <div class="price-row"><span>NFT 티켓 가격</span><span id="priceBase">₩100,000</span></div>
+      <div class="price-row"><span>수수료</span><span id="priceFee">₩5,000</span></div>
+      <div class="price-row"><span>부가세 (10%)</span><span id="priceVat">₩5,000</span></div>
+
+      <div class="final-row">
+        <span class="label">최종 결제 금액</span>
+        <span class="amount" id="priceFinal">₩110,000</span>
+      </div>
+    </div>
+
+    <div class="side-box">
+      <div class="guide-note-title">🎁 구매 후 안내</div>
+      <ul class="checklist">
+        <li><span class="box on">✓</span>결제 완료 후 즉시 NFT가 발행됩니다.</li>
+        <li><span class="box on">✓</span>마이페이지 &gt; 보유 NFT에서 확인할 수 있습니다.</li>
+        <li><span class="box on">✓</span>공연 당일 QR코드로 입장 가능합니다.</li>
+        <li><span class="box note">!</span>NFT는 양도/판매가 가능할 수 있으며, 정책에 따라 제한될 수 있습니다.</li>
+      </ul>
+    </div>
+
+    <div class="cta-banner" onclick="window.location.href='nft_list.html'" style="cursor:pointer;">
+      <div class="cta-banner__text">특별한 순간을<br>영원한 NFT로 소장하세요.</div>
+      <span class="cta-banner__ic">🎫</span>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-logo">LINKTICKET</div>
+      <div class="footer-sub">MUSIC CONNECTS US</div>
+      <div class="footer-desc">공연을 더 특별하게, 모두의 순간을 연결하는 티켓팅 플랫폼</div>
+    </div>
+    <div class="footer-features">
+      <div class="footer-feature"><div class="footer-feature__icon">🎧</div><div class="footer-feature__title">다양한 공연</div><div class="footer-feature__desc">콘서트, 뮤지컬, 페스티벌까지</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">⚡</div><div class="footer-feature__title">빠른 예매</div><div class="footer-feature__desc">안정적이고 빠른 예매 시스템</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">🛡️</div><div class="footer-feature__title">안전한 결제</div><div class="footer-feature__desc">안심하고 이용하세요</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">👥</div><div class="footer-feature__title">특별한 경험</div><div class="footer-feature__desc">LINK TICKET만의 이벤트</div></div>
+    </div>
+    <div class="footer-quote">"좋은 공연은 끝나도,<br>특별한 기억은 계속됩니다."</div>
+  </div>
+</footer>
+
+<script>
+  function doSearch(){
+    var keyword = document.getElementById('searchInput').value.trim();
+    if(!keyword){ alert('검색어를 입력해주세요.'); return; }
+    window.location.href = 'https://www.linkticket.com/performances/?q=' + encodeURIComponent(keyword);
+  }
+
+  // 카드번호 입력: 숫자만 받아서 4자리씩 " - "로 자동 구분 (최대 16자리)
+  function formatCardNumber(el){
+    var digits = el.value.replace(/\D/g,'').slice(0,16);
+    var groups = digits.match(/.{1,4}/g) || [];
+    el.value = groups.join(' - ');
+  }
+
+  // 유효기간 입력: 숫자만 받아서 MM / YY 형식으로 자동 구분, 월은 01~12로 보정
+  function formatExpiry(el){
+    var digits = el.value.replace(/\D/g,'').slice(0,4);
+    var mm = digits.slice(0,2);
+    var yy = digits.slice(2,4);
+    if(mm.length === 2){
+      var mmNum = parseInt(mm,10);
+      if(mmNum === 0) mm = '01';
+      else if(mmNum > 12) mm = '12';
+    }
+    el.value = yy.length > 0 ? (mm + ' / ' + yy) : mm;
+  }
+
+  // 결제 동의 전체선택
+  function toggleAll(el){
+    document.querySelectorAll('.agree-list input[type=checkbox]').forEach(function(cb){ cb.checked = el.checked; });
+  }
+  document.querySelectorAll('.agree-list input[type=checkbox]:not(#agreeAll)').forEach(function(cb){
+    cb.addEventListener('change', function(){
+      var all = document.querySelectorAll('.agree-list input[type=checkbox]:not(#agreeAll)');
+      var checked = document.querySelectorAll('.agree-list input[type=checkbox]:not(#agreeAll):checked');
+      document.getElementById('agreeAll').checked = (all.length === checked.length);
+    });
+  });
+
+  // 카드사 / 결제수단 선택 시 active 스타일 전환
+  document.querySelectorAll('.card-opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('.card-opt').forEach(function(o){ o.classList.remove('active'); });
+      opt.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.pay-method').forEach(function(m){
+    m.addEventListener('click', function(){
+      document.querySelectorAll('.pay-method').forEach(function(o){ o.classList.remove('active'); });
+      m.classList.add('active');
+
+      // 결제수단 탭에 맞는 패널로 전환 (카드결제 / 간편결제 / 가상자산결제)
+      var method = m.getAttribute('data-method');
+      document.querySelectorAll('.method-panel').forEach(function(p){ p.classList.remove('active'); });
+      document.getElementById('panel-' + method).classList.add('active');
+    });
+  });
+  document.querySelectorAll('.easypay-opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('.easypay-opt').forEach(function(o){ o.classList.remove('active'); });
+      opt.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.bank-opt').forEach(function(opt){
+    opt.addEventListener('click', function(){
+      document.querySelectorAll('.bank-opt').forEach(function(o){ o.classList.remove('active'); });
+      opt.classList.add('active');
+    });
+  });
+
+  // nft_list.html 카드 8개와 1:1 매칭되는 더미 데이터 (실제로는 DB에서 조회)
+  var nftData = {
+    "1": { badge:"LIMITED", title:"IU", subtitle:"THE WINNING NFT", date:"2026.11.02 (월) 19:00", venue:"고척스카이돔", type:"일반석 NFT", seat:"스탠딩 A구역", supply:"1,000개 (한정판)", price:150000, media:"media-1" },
+    "2": { badge:"LIMITED", title:"SEVENTEEN", subtitle:"RIGHT HERE WORLD TOUR", date:"2026.09.20 (일) 18:00", venue:"잠실종합운동장", type:"VIP NFT", seat:"VIP석", supply:"2,000개 (한정판)", price:120000, media:"media-2" },
+    "3": { badge:"LIMITED", title:"aespa", subtitle:"SYNK : PARALLEL LINE", date:"2026.10.05 (월) 19:30", venue:"KSPO DOME", type:"일반석 NFT", seat:"지정석", supply:"1,500개 (한정판)", price:130000, media:"media-3" },
+    "4": { badge:"LIMITED", title:"임영웅", subtitle:"IM HERO TOUR 2026", date:"2026.12.12 (토) 18:00", venue:"고척스카이돔", type:"일반석 NFT", seat:"스탠딩", supply:"1,000개 (한정판)", price:200000, media:"media-4" },
+    "5": { badge:"LIMITED", title:"뮤지컬 위키드", subtitle:"ORIGINAL NFT", date:"2026.08.15 (토) 14:00", venue:"블루스퀘어", type:"관람석 NFT", seat:"R석", supply:"800개 (한정판)", price:180000, media:"media-5" },
+    "6": { badge:"LIMITED", title:"서울 뮤직 페스티벌", subtitle:"SEOUL 2026", date:"2026.07.25 (토) ~ 26 (일)", venue:"서울월드컵경기장", type:"종합이용권 NFT", seat:"스탠딩", supply:"2,500개 (한정판)", price:90000, media:"media-6" },
+    "7": { badge:"LIMITED", title:"NCT DREAM", subtitle:"THE DREAM SHOW 3", date:"2026.10.15 (목) 19:00", venue:"서울 월드컵 경기장", type:"일반석 NFT", seat:"스탠딩 A구역", supply:"1,000개 (한정판)", price:100000, media:"media-7" },
+    "8": { badge:"COMING SOON", title:"스페셜 컬렉션", subtitle:"COMING SOON", date:"미정", venue:"미정", type:"미정", seat:"미정", supply:"수량 미정", price:0, media:"media-8" }
+  };
+
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id') || "7";
+  var data = nftData[id] || nftData["7"];
+
+  // 좌측 상품 카드
+  document.getElementById('productMedia').classList.add(data.media);
+  document.getElementById('productBadge').textContent = data.badge;
+  document.getElementById('productMediaName').textContent = data.title;
+  document.getElementById('productTitle').textContent = data.title;
+  document.getElementById('productSubtitle').textContent = data.subtitle;
+  document.getElementById('productDate').textContent = data.date;
+  document.getElementById('productVenue').textContent = data.venue;
+  document.getElementById('productType').textContent = data.type;
+  document.getElementById('productSeat').textContent = data.seat;
+  document.getElementById('productSupply').textContent = data.supply;
+
+  // 우측 결제 정보 요약
+  document.getElementById('orderMedia').classList.add(data.media);
+  document.getElementById('orderTitle').textContent = data.title;
+  document.getElementById('orderSub').textContent = data.subtitle;
+  document.getElementById('orderBadge').textContent = data.badge;
+  document.getElementById('sumDate').textContent = data.date;
+  document.getElementById('sumVenue').textContent = data.venue;
+  document.getElementById('sumSeat').textContent = data.seat;
+  document.getElementById('sumType').textContent = data.type;
+  document.title = "LINKTICKET - " + data.title + " NFT 결제";
+
+  // 가격 계산: 수수료/부가세 각각 티켓가의 5%로 계산 (실제 정책은 DB/결제 담당과 협의 필요)
+  var fee = data.price > 0 ? Math.round(data.price * 0.05) : 0;
+  var vat = data.price > 0 ? Math.round(data.price * 0.05) : 0;
+  var final = data.price + fee + vat;
+
+  document.getElementById('priceBase').textContent = data.price > 0 ? ('₩' + data.price.toLocaleString()) : '준비중';
+  document.getElementById('priceFee').textContent = '₩' + fee.toLocaleString();
+  document.getElementById('priceVat').textContent = '₩' + vat.toLocaleString();
+  document.getElementById('priceFinal').textContent = data.price > 0 ? ('₩' + final.toLocaleString()) : '-';
+  document.getElementById('payBtnPrice').textContent = data.price > 0 ? ('₩' + final.toLocaleString()) : '준비중';
+
+  // "COMING SOON" 항목은 아직 구매 불가 처리
+  if(data.price === 0){
+    document.getElementById('payBtn').disabled = true;
+    document.getElementById('payBtnPrice').textContent = '준비중인 컬렉션입니다';
+  }
+
+  // 09:52부터 카운트다운 (실제로는 서버에서 내려준 만료시각 기준으로 계산해야 함)
+  var totalSeconds = 9*60 + 52;
+  setInterval(function(){
+    if(totalSeconds <= 0) return;
+    totalSeconds--;
+    var m = Math.floor(totalSeconds/60);
+    var s = totalSeconds%60;
+    document.getElementById('timer').textContent = (m<10?'0':'')+m + ':' + (s<10?'0':'')+s;
+  }, 1000);
+
+  // 결제하기: 실제 PG/DB 연동이 없는 프로젝트라, 결제 성공/실패 판정 자체를 프론트에서
+  // "그럴듯하게" 흉내만 내는 시뮬레이션. 실제 서비스에서는 이 판정을 백엔드(PG 응답)가 내려주고
+  // 프론트는 그 결과를 보여주기만 하면 된다.
+  function submitPayment(){
+    var requiredChecked = document.querySelectorAll('.agree-req:checked').length;
+    if(requiredChecked < document.querySelectorAll('.agree-req').length){
+      alert('필수 약관에 모두 동의해주세요.');
+      return;
+    }
+
+    // 현재 선택된 결제수단 확인
+    var activeMethodEl = document.querySelector('.pay-method.active');
+    var method = activeMethodEl ? activeMethodEl.getAttribute('data-method') : 'card';
+    var methodLabel = '';
+    var cardNumberEmpty = false;
+
+    if(method === 'card'){
+      var cardOpt = document.querySelector('#panel-card .card-opt.active');
+      methodLabel = (cardOpt ? cardOpt.textContent.trim() : '카드') + ' (일반결제)';
+      var cardNumberInput = document.getElementById('cardNumberInput');
+      var cardExpiryInput = document.getElementById('cardExpiryInput');
+      var cardDigits = cardNumberInput ? cardNumberInput.value.replace(/\D/g,'') : '';
+      var expiryDigits = cardExpiryInput ? cardExpiryInput.value.replace(/\D/g,'') : '';
+      cardNumberEmpty = cardDigits.length < 16 || expiryDigits.length < 4;
+    } else if(method === 'easy'){
+      var easyOpt = document.querySelector('#panel-easy .easypay-opt.active div');
+      methodLabel = (easyOpt ? easyOpt.textContent.trim() : '간편결제');
+    } else if(method === 'vaccount'){
+      var bankOpt = document.querySelector('#panel-vaccount .bank-opt.active');
+      var bankName = bankOpt ? bankOpt.textContent.trim() : '가상계좌';
+      methodLabel = bankName + ' (가상계좌)';
+
+      // 가상계좌 발급: 은행별로 그럴듯한 계좌번호를 생성해서 입금 안내 알림으로 보여줌
+      // (실제로는 이 번호를 PG/은행 API가 발급해서 백엔드가 내려주는 값)
+      var seg1 = String(Math.floor(Math.random()*900)+100);
+      var seg2 = String(Math.floor(Math.random()*900)+100);
+      var seg3 = String(Math.floor(Math.random()*900000)+100000);
+      var vAccountNo = seg1 + '-' + seg2 + '-' + seg3;
+      var vAccountHolder = '(주)링크티켓';
+
+      alert(
+        '가상계좌가 발급되었습니다.\n\n' +
+        '입금은행: ' + bankName + '\n' +
+        '계좌번호: ' + vAccountNo + '\n' +
+        '예금주: ' + vAccountHolder + '\n' +
+        '입금기한: 발급 후 24시간 이내\n\n' +
+        '위 계좌로 결제금액을 입금하시면 자동으로 결제가 완료됩니다.'
+      );
+    }
+
+    // "결제 처리 중" 알림 -> 확인을 누르면 성공/실패 판정으로 이어지는 흐름
+    // (가상계좌는 위에서 이미 계좌 발급 안내를 보여줬으므로 별도 처리중 알림은 생략)
+    if(method !== 'vaccount'){
+      alert('결제를 처리하고 있습니다. 잠시만 기다려주세요.');
+    }
+
+    // 결제 실패 시나리오 데모: 카드결제인데 카드번호를 안 넣은 경우는 실패로 처리.
+    // 그 외(카드/간편결제)에는 약 10% 확률로 랜덤 실패시켜 실패 화면도 확인할 수 있게 해둠 (테스트용).
+    // 가상계좌는 "입금 대기" 개념이라 이 데모에서는 발급 즉시 성공으로 처리.
+    var isFail = (method === 'card' && cardNumberEmpty) || (method !== 'vaccount' && Math.random() < 0.1);
+
+    if(isFail){
+      alert('결제에 실패했습니다. 카드 정보/한도 또는 네트워크 상태를 확인한 뒤 다시 시도해주세요.');
+      location.reload();
+      return;
+    }
+
+    var currentParams = new URLSearchParams(window.location.search);
+    var idParam = currentParams.get('id') || '7';
+    window.location.href = 'nft_payment_complete.html?id=' + idParam + '&method=' + encodeURIComponent(methodLabel);
+  }
+</script>
+
+</body>
+</html>

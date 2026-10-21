@@ -1,0 +1,33 @@
+# REVIEW ONLY. Merge into the existing TLS vhost, preserving certificates/WAF.
+# Define this upstream once in the http context on each WEB server.
+upstream linkticket_was {
+    server 10.10.2.2:8000 max_fails=3 fail_timeout=10s;
+    server 10.10.2.4:8080 backup;
+}
+# The following locations belong INSIDE the existing HTTPS server block.
+# Do not install this fragment as a standalone conf.d file.
+location /static/ {
+    alias /var/www/linkticket/;
+    autoindex off;
+}
+location /media/ {
+    # Replace with the confirmed general media directory on the WEB NFS mount.
+    alias /CONFIRM_WEB_NFS_MEDIA_DIRECTORY/;
+    autoindex off;
+    add_header X-Content-Type-Options nosniff always;
+}
+# NFT read-serving topology is deliberately unresolved until mounts are inspected.
+# Never expose the full /nfs/db_backup export. Fail closed meanwhile.
+location /nft-media/ { return 503; }
+location / {
+    client_max_body_size 6m;
+    proxy_pass http://linkticket_was;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_connect_timeout 5s;
+    proxy_read_timeout 60s;
+    # Do not enable non_idempotent retries: payment writes must not be replayed.
+    proxy_next_upstream error timeout;
+}

@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LINKTICKET - 특별한 순간, 언제나 당신과</title>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --white: #ffffff;
+    --ink: #14161f;
+    --muted: #6b7280;
+    --line: #e6e8ee;
+    --blue: #2563eb;
+    --blue-dark: #1d4ed8;
+    --blue-light: #eef4ff;
+    --red: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  ul { margin: 0; padding: 0; list-style: none; }
+
+  /* ── 헤더 ───────────────────────────────────────────── */
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 72px; background: var(--white);
+    border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 40;
+  }
+  .left-group { display: flex; align-items: center; height: 100%; }
+  .left-group > * + * { margin-left: 40px; }
+  .logo { font-size: 21px; font-weight: 900; letter-spacing: .3px; color: var(--ink); }
+  .logo span { color: var(--blue); }
+  .main-nav { display: flex; align-items: center; height: 100%; font-size: 15px; font-weight: 600; }
+  .main-nav > * + * { margin-left: 34px; }
+  .main-nav a { color: #4b5163; position: relative; display: flex; align-items: center; height: 100%; }
+  .main-nav a:hover { color: var(--ink); }
+  .main-nav .active { color: var(--ink); }
+  .main-nav .active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--blue);
+  }
+  .right-group { display: flex; align-items: center; }
+  .right-group > * + * { margin-left: 20px; }
+  .search-bar {
+    width: 280px; display: flex; align-items: center;
+    background: #f1f3f8; border: 1px solid var(--line); border-radius: 999px; padding: 10px 18px; color: var(--muted);
+  }
+  .search-bar > * + * { margin-left: 10px; }
+  .search-bar svg { flex: none; opacity: .6; }
+  .search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--ink); font-size: 13px; font-family: inherit; }
+  .search-bar input::placeholder { color: #9aa0b0; }
+  #auth-area { display: flex; align-items: center; font-size: 14px; font-weight: 600; color: #4b5163; }
+  #auth-area > * + * { margin-left: 8px; }
+  #auth-area a:hover { color: var(--ink); }
+  #auth-area .sep { color: var(--line); }
+  @media (max-width: 1080px) { .main-nav, header .search-bar { display: none; } }
+
+  /* ── 전체 레이아웃: 좌측 본문(히어로~인기공연) + 우측 sticky 사이드바 ── */
+  .page-layout {
+    display: flex; align-items: flex-start; max-width: 1480px; margin: 24px auto 0; padding: 0 40px;
+  }
+  .page-layout > * + * { margin-left: 22px; }
+  .main-col { flex: 1; min-width: 0; }
+
+  .hero {
+    position: relative; flex: 1; min-width: 0; overflow: hidden; border-radius: 18px;
+    background: linear-gradient(180deg, rgba(6,8,20,.35), rgba(6,8,20,.75)), url('assets/hero-bg.jpg') center 35% / cover no-repeat;
+    padding: 32px 36px; min-height: 300px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+  }
+  .hero-tag { font-size: 12px; letter-spacing: 3px; color: #cfe0ff; font-weight: 700; margin-bottom: 14px; }
+  .hero h1 { font-size: 32px; line-height: 1.28; color: #fff; margin: 0 0 10px; font-weight: 800; }
+  .hero-inner > p { color: #e6e9f3; font-size: 13px; margin: 0 0 18px; max-width: 380px; }
+  .hero-cta {
+    display: inline-flex; align-items: center; border: none; border-radius: 10px;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 14px; padding: 13px 22px;
+  }
+  .hero-cta > * + * { margin-left: 8px; }
+  .hero-cta:hover { background: var(--blue-dark); }
+  .hero-side {
+    position: absolute; right: 40px; top: 40px; text-align: right;
+    font-style: italic; font-size: 24px; line-height: 1.35; color: #fff;
+  }
+  .hero-side .sub {
+    font-style: normal; font-size: 11px; letter-spacing: 2px; color: #d8dcea; margin-top: 14px;
+  }
+  .hero-dots { display: flex; align-items: center; margin-top: 26px; }
+  .hero-dots > * + * { margin-left: 10px; }
+  .hero-dots .dot { font-size: 12px; color: #c7cbe0; font-weight: 700; background: none; border: none; padding: 0 0 4px; border-bottom: 2px solid transparent; }
+  .hero-dots .dot.active { color: #fff; border-color: #fff; }
+  .hero-arrows { display: flex; margin-left: 18px; }
+  .hero-arrows > * + * { margin-left: 8px; }
+  .hero-arrows button {
+    width: 30px; height: 30px; border-radius: 50%; border: 1px solid rgba(255,255,255,.4);
+    background: rgba(255,255,255,.08); color: #fff; font-size: 13px;
+  }
+  .hero-arrows button:hover { background: rgba(255,255,255,.2); }
+  @media (max-width: 900px) { .hero-side { display: none; } }
+
+  /* 사이드바 */
+  .hero-sidebar {
+    flex: none; width: 300px; display: flex; flex-direction: column;
+    align-self: flex-start;
+  }
+  .hero-sidebar > * + * { margin-top: 16px; }
+  .sb-card { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+  .sb-card h4 { display: flex; align-items: center; font-size: 14px; margin: 0 0 14px; }
+  .sb-card h4 > * + * { margin-left: 8px; }
+
+  .qb-tabs { display: flex; margin-bottom: 12px; background: #f1f3f8; border-radius: 10px; padding: 4px; }
+  .qb-tabs button {
+    flex: 1; border: none; background: none; padding: 9px; font-size: 12px; font-weight: 700; color: var(--muted); border-radius: 8px;
+  }
+  .qb-tabs button.active { background: var(--blue); color: #fff; }
+  .qb-field {
+    display: flex; align-items: center; border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 10px; font-size: 13px; color: var(--ink);
+  }
+  .qb-field > * + * { margin-left: 8px; }
+  .qb-field input, .qb-field select { flex: 1; border: none; outline: none; font-size: 13px; font-family: inherit; background: none; color: var(--ink); }
+  #qb-date { cursor: pointer; }
+
+  /* ── 커스텀 달력 위젯 ── */
+  .date-picker {
+    display: none; position: absolute; left: 0; top: calc(100% + 8px); z-index: 60;
+    width: 340px; background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 20px; box-shadow: 0 16px 40px rgba(20,22,40,.16);
+  }
+  .date-picker.open { display: block; }
+  .dp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .dp-header button {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: #fff; font-size: 16px; color: var(--ink);
+  }
+  .dp-header button:hover { background: var(--blue-light); border-color: var(--blue); }
+  .dp-title { display: flex; align-items: baseline; }
+  .dp-title > * + * { margin-left: 10px; }
+  .dp-year, .dp-month {
+    font-size: 19px; font-weight: 800; color: var(--ink); cursor: pointer; padding: 5px 9px; border-radius: 8px;
+  }
+  .dp-year:hover, .dp-month:hover { background: var(--blue-light); color: var(--blue); }
+  .dp-title input[type="number"] {
+    font-size: 19px; font-weight: 800; border: 1.5px solid var(--blue); border-radius: 8px; padding: 4px 8px;
+    font-family: inherit; color: var(--ink); outline: none;
+  }
+  #dp-year-input { width: 82px; }
+  #dp-month-input { width: 56px; }
+  .dp-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+    font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 8px;
+  }
+  .dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .dp-grid button {
+    width: 100%; aspect-ratio: 1; border: none; background: none; border-radius: 10px;
+    font-size: 15px; color: var(--ink); font-family: inherit;
+  }
+  .dp-grid button:hover:not(:disabled) { background: var(--blue-light); }
+  .dp-grid button.other-month { color: #d5d8e5; }
+  .dp-grid button.today { border: 1.5px solid var(--blue); font-weight: 700; }
+  .dp-grid button.selected { background: var(--blue); color: #fff; font-weight: 800; }
+
+  .qb-btn {
+    display: flex; align-items: center; justify-content: center; width: 100%; border: none; border-radius: 10px;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 13px; padding: 12px;
+  }
+  .qb-btn > * + * { margin-left: 6px; }
+  .qb-btn:hover { background: var(--blue-dark); }
+
+  .login-card .greet { display: flex; align-items: center; margin-bottom: 16px; }
+  .login-card .greet > * + * { margin-left: 12px; }
+  .login-card .greet .avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--blue-light); color: var(--blue);
+    display: flex; align-items: center; justify-content: center; font-size: 18px; flex: none;
+  }
+  .login-card .greet p { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.4; }
+  .login-card input[type="text"], .login-card input[type="password"] {
+    width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 11px 12px;
+    font-size: 13px; font-family: inherit; margin-bottom: 9px; outline: none;
+  }
+  .login-card input:focus { border-color: var(--blue); }
+  .login-card .row-between { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .login-card .row-between label { display: flex; align-items: center; }
+  .login-card .row-between label > * + * { margin-left: 6px; }
+  .login-card .row-between a:hover { color: var(--ink); }
+  .login-card .submit-btn {
+    display: block; width: 100%; border: none; border-radius: 9px; background: var(--blue); color: #fff;
+    font-weight: 700; font-size: 13px; padding: 12px; margin-bottom: 14px;
+  }
+  .login-card .submit-btn:hover { background: var(--blue-dark); }
+  .login-card .or { text-align: center; font-size: 11px; color: #b0b5c4; margin-bottom: 12px; position: relative; }
+  .login-card .or::before, .login-card .or::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--line); }
+  .login-card .or::before { left: 0; } .login-card .or::after { right: 0; }
+  .social-row { display: flex; margin-bottom: 12px; }
+  .social-row > * + * { margin-left: 8px; }
+  .social-row button {
+    flex: 1; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 9px;
+    background: #fff; padding: 10px; font-size: 12px; font-weight: 600; color: var(--ink);
+  }
+  .social-row button > * + * { margin-left: 6px; }
+  .social-row .kakao { background: #FEE500; border-color: #FEE500; }
+  .login-card .bottom-line { text-align: center; font-size: 12px; color: var(--muted); }
+  .login-card .bottom-line a { color: var(--blue); font-weight: 700; }
+
+  .notice-list li { display: flex; align-items: flex-start; padding: 9px 0; border-top: 1px solid var(--line); }
+  .notice-list li:first-child { border-top: none; }
+  .notice-list .ntag {
+    flex: none; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 5px; margin-right: 9px; margin-top: 1px;
+    background: var(--blue-light); color: var(--blue);
+  }
+  .notice-list .ntag.event { background: #fff1e6; color: #d9730d; }
+  .notice-list .ntag.warn { background: #fdecec; color: #d92d20; }
+  .notice-list .ninfo { flex: 1; min-width: 0; }
+  .notice-list .ninfo .ntitle { font-size: 12.5px; color: var(--ink); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .notice-list .ninfo .ntitle:hover { color: var(--blue); text-decoration: underline; }
+  .notice-list .ninfo .ndate { font-size: 11px; color: var(--muted); }
+  .sb-more { font-size: 12px; color: var(--muted); }
+  .sb-more:hover { color: var(--ink); }
+
+  /* ── 카테고리 스트립 ────────────────────────────────── */
+  .strip { display: flex; margin-top: 22px; align-items: stretch; }
+  .strip > * + * { margin-left: 18px; }
+  .cat-icons { flex: 1; display: flex; overflow-x: auto; background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 14px 10px; }
+  .cat-icons > * + * { margin-left: 6px; }
+  .cat-btn {
+    background: none; border: none; display: flex; flex-direction: column; align-items: center;
+    padding: 8px 16px; color: #6b7280; font-size: 12px; font-weight: 600; border-radius: 12px; flex: none;
+  }
+  .cat-btn > * + * { margin-top: 8px; }
+  .cat-btn .ico {
+    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--blue-light); border: 1px solid var(--line);
+  }
+  .cat-btn:hover { color: var(--ink); }
+  .cat-btn.active { color: var(--ink); }
+  .cat-btn.active .ico { background: var(--blue); color: #fff; border-color: transparent; }
+
+  /* ── 인기 공연 ─────────────────────────────────────── */
+  .section-wrap { margin-top: 30px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+  .section-head .ttl { display: flex; align-items: baseline; font-size: 19px; font-weight: 800; }
+  .section-head .ttl > * + * { margin-left: 8px; }
+  .section-head .ttl .sub { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .section-head .more { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .section-head .more:hover { color: var(--ink); }
+
+  #performance-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+  @media (max-width: 1300px) { #performance-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px) { #performance-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .perf-card {
+    position: relative; display: block; border-radius: 14px; overflow: hidden;
+    background: var(--white); border: 1px solid var(--line);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .perf-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(20,22,40,.09); }
+  .perf-card .thumb {
+    position: relative; aspect-ratio: 3/4;
+    background: linear-gradient(150deg, #dfe6f7, #c7d3ef);
+    background-size: cover; background-position: center;
+    display: flex; align-items: center; justify-content: center;
+    color: #6b7280; font-size: 12px; text-align: center; padding: 10px;
+  }
+  .perf-card .badge {
+    position: absolute; top: 10px; left: 10px; font-size: 10px; font-weight: 800; color: #fff;
+    padding: 3px 9px; border-radius: 6px; letter-spacing: .5px;
+  }
+  .perf-card .badge.hot { background: var(--red); }
+  .perf-card .badge.new { background: var(--blue); }
+  .perf-card .fav {
+    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(255,255,255,.9); border: none; color: #9aa0b0; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .perf-card .fav.on { color: var(--red); }
+  .perf-card .meta { padding: 12px 13px 14px; }
+  .perf-card h3 { margin: 0 0 6px; font-size: 13.5px; font-weight: 700; }
+  .perf-card .date, .perf-card .venue { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; }
+  .perf-card .date > * + *, .perf-card .venue > * + * { margin-left: 5px; }
+  .perf-card .date { margin-bottom: 3px; }
+
+  /* ── 프로모 3박스 ──────────────────────────────────── */
+  .promo-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+  @media (max-width: 900px) { .promo-row { grid-template-columns: 1fr; } }
+  .promo-box {
+    border-radius: 16px; padding: 26px; display: flex; flex-direction: column; justify-content: center; min-height: 130px;
+    cursor: pointer; transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .promo-box:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(20,22,40,.08); }
+  .promo-box .ico { font-size: 26px; margin-bottom: 10px; }
+  .promo-box h4 { margin: 0 0 6px; font-size: 15px; }
+  .promo-box p { margin: 0 0 14px; font-size: 12.5px; color: var(--muted); }
+  .promo-box .promo-link { font-size: 13px; font-weight: 700; color: var(--blue); }
+  .promo-box.p1 { background: linear-gradient(120deg, #ffece9, #fff5f0); }
+  .promo-box.p2 { background: linear-gradient(120deg, #e8edff, #eef4ff); }
+  .promo-box.p3 { background: linear-gradient(120deg, #e6f0ff, #eaf6ff); }
+
+  /* ── 푸터 ───────────────────────────────────────────── */
+  footer {
+    margin-top: 50px; border-top: 1px solid var(--line); background: var(--white);
+    padding: 34px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  }
+  footer .logo { font-size: 17px; color: var(--ink); }
+  footer .logo span { color: var(--blue); }
+  footer .tagline { font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-top: 4px; }
+  .feat-row { display: flex; flex-wrap: wrap; margin: 6px 0; }
+  .feat-row > * { margin: 0 17px; }
+  .feat { display: flex; align-items: center; }
+  .feat > * + * { margin-left: 10px; }
+  .feat .ico { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-light); display: flex; align-items: center; justify-content: center; color: var(--blue); flex: none; }
+  .feat h5 { margin: 0; font-size: 13px; color: var(--ink); }
+  .feat p { margin: 0; font-size: 11px; color: var(--muted); }
+  .footer-quote { font-size: 14px; font-weight: 700; color: var(--ink); text-align: right; line-height: 1.5; }
+
+  /* ── 토스트 / 모달 ──────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #fff; padding: 12px 24px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    box-shadow: 0 14px 34px rgba(0,0,0,.25); z-index: 100; opacity: 0; transition: opacity .2s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10,12,20,.5); display: none; align-items: center; justify-content: center; z-index: 50; }
+  .modal-overlay.open { display: flex; }
+  .modal { width: min(420px, 90vw); padding: 30px; border-radius: 16px; background: #fff; border: 1px solid var(--line); position: relative; }
+  .modal h2 { font-size: 18px; margin: 0 0 12px; }
+  .modal p { font-size: 14px; color: var(--muted); margin: 0 0 20px; }
+  .modal .close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 18px; color: var(--muted); }
+  .modal .close:hover { color: var(--ink); }
+  .modal .modal-login-btn {
+    display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 13px; border-radius: 8px;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none;
+  }
+
+  @media (max-width: 1080px) { .page-layout { flex-direction: column; } .page-layout > * + * { margin-left: 0; margin-top: 16px; } .hero-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; } .hero-sidebar > * { flex: 1; min-width: 260px; } .hero-sidebar > * + * { margin-top: 0; margin-left: 16px; } }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="left-group">
+      <a href="/" class="logo">LINK<span>TICKET</span></a>
+      <nav class="main-nav">
+        <a href="/" class="active">홈</a>
+        <a href="/performances/">공연</a>
+        <a href="/tickets/">티켓예매</a>
+        <a href="/events">이벤트</a>
+        <a href="/nft">NFT</a>
+      </nav>
+    </div>
+    <div class="right-group">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" placeholder="공연, 아티스트를 검색하세요...">
+      </div>
+      <div id="auth-area">
+        <a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-layout">
+   <div class="main-col">
+    <section class="hero">
+      <div class="hero-side">
+        Your Stage<br>Your Ticket
+        <div class="sub">LIVE MUSIC<br>BETTER TOGETHER</div>
+      </div>
+      <div class="hero-inner">
+        <div class="hero-tag">MUSIC CONNECTS US</div>
+        <h1>특별한 순간,<br><span class="hl">언제나 당신과</span></h1>
+        <p>좋은 공연이 더 특별한 일상이 되는 곳, LINK TICKET</p>
+        <button class="hero-cta" id="hero-cta"><span>지금 예매하기</span><span>→</span></button>
+      </div>
+      <div style="display:flex; align-items:center; margin-top:26px;">
+        <div class="hero-dots">
+          <button class="dot active" data-i="0">01</button>
+          <button class="dot" data-i="1">02</button>
+          <button class="dot" data-i="2">03</button>
+        </div>
+        <div class="hero-arrows">
+          <button id="hero-prev">‹</button>
+          <button id="hero-next">›</button>
+        </div>
+      </div>
+    </section>
+
+  <div class="strip">
+    <div class="cat-icons" id="cat-icons">
+      <button class="cat-btn active" data-genre="all"><span class="ico">★</span>전체</button>
+      <button class="cat-btn" data-genre="콘서트"><span class="ico">🎤</span>콘서트</button>
+      <button class="cat-btn" data-genre="뮤지컬"><span class="ico">🎵</span>뮤지컬</button>
+      <button class="cat-btn" data-genre="페스티벌"><span class="ico">🎉</span>페스티벌</button>
+      <button class="cat-btn" data-genre="연극"><span class="ico">🎭</span>연극</button>
+      <button class="cat-btn" data-genre="클래식"><span class="ico">🎻</span>클래식</button>
+      <button class="cat-btn" data-genre="팬미팅"><span class="ico">💎</span>팬미팅</button>
+      <button class="cat-btn" data-genre="전시/기타"><span class="ico">✨</span>전시/기타</button>
+    </div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="section-head">
+      <div class="ttl"><span>🔥</span><span>인기 공연</span><span class="sub">지금 가장 주목받는 공연</span></div>
+      <a href="/performances/" class="more">더보기 ›</a>
+    </div>
+    <div id="performance-grid">
+      <div class="skeleton" style="grid-column:1/-1; text-align:center; color:var(--muted); padding:40px 0;">공연 목록을 불러오는 중…</div>
+    </div>
+
+    <div class="promo-row">
+      <a class="promo-box p1" href="/events">
+        <div class="ico">🎁</div>
+        <h4>이벤트</h4>
+        <p>지금 진행중인 특별한 이벤트!</p>
+        <span class="promo-link">바로가기 →</span>
+      </a>
+      <a class="promo-box p2" href="/nft">
+        <div class="ico">🎫</div>
+        <h4>디지털 티켓 (NFT)</h4>
+        <p>소장하는 또 하나의 감동, 나만의 디지털 컬렉션</p>
+        <span class="promo-link">바로가기 →</span>
+      </a>
+      <a class="promo-box p3" href="/venues">
+        <div class="ico">📍</div>
+        <h4>공연장 안내</h4>
+        <p>전국 주요 공연장 정보를 한눈에 확인하세요.</p>
+        <span class="promo-link">바로가기 →</span>
+      </a>
+    </div>
+   </div>
+  </div>
+
+   <aside class="hero-sidebar">
+      <div class="sb-card">
+        <h4>📅 빠른 예매</h4>
+        <div class="qb-tabs">
+          <button class="active" data-qb="date">날짜로 찾기</button>
+          <button data-qb="name">공연명으로 찾기</button>
+        </div>
+        <div class="qb-field" id="qb-date-field" style="position:relative;">
+          <span>📅</span><input type="text" id="qb-date" placeholder="날짜를 선택하세요" readonly>
+          <div class="date-picker" id="date-picker">
+            <div class="dp-header">
+              <button type="button" id="dp-prev">‹</button>
+              <div class="dp-title">
+                <span class="dp-year" id="dp-year-label"></span>
+                <span class="dp-month" id="dp-month-label"></span>
+              </div>
+              <button type="button" id="dp-next">›</button>
+            </div>
+            <div class="dp-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+            <div class="dp-grid" id="dp-grid"></div>
+          </div>
+        </div>
+        <div class="qb-field" id="qb-name-field" style="display:none;">
+          <span>🔍</span><input type="text" id="qb-name" placeholder="공연명을 입력하세요">
+        </div>
+        <div class="qb-field">
+          <span>📍</span>
+          <select id="qb-region">
+            <option value="">지역 전체</option>
+            <option value="서울">서울</option>
+            <option value="부산">부산</option>
+            <option value="대구">대구</option>
+            <option value="인천">인천</option>
+          </select>
+        </div>
+        <button class="qb-btn" id="qb-submit"><span>공연 검색하기</span><span>→</span></button>
+      </div>
+
+      <div class="sb-card login-card" id="sidebar-login-card">
+        <!-- 로그인/로그아웃 상태에 따라 JS가 이 안을 채웁니다 -->
+      </div>
+
+      <div class="sb-card">
+        <h4>📋 공지사항 <a href="#" class="sb-more" style="margin-left:auto;">더보기</a></h4>
+        <ul class="notice-list" id="notice-list">
+          <li><div class="ntag">공지</div><div class="ninfo"><span class="ntitle">불러오는 중…</span></div></li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    <div class="brand-col">
+      <div class="logo">LINK<span>TICKET</span></div>
+      <div class="tagline">MUSIC CONNECTS US</div>
+    </div>
+    <div class="feat-row">
+      <div class="feat"><span class="ico">🎧</span><div><h5>다양한 공연</h5><p>콘서트, 뮤지컬, 페스티벌까지</p></div></div>
+      <div class="feat"><span class="ico">⚡</span><div><h5>빠른 예매</h5><p>안정적이고 빠른 예매 시스템</p></div></div>
+      <div class="feat"><span class="ico">🛡️</span><div><h5>안전한 결제</h5><p>안심하고 이용하세요</p></div></div>
+      <div class="feat"><span class="ico">🤝</span><div><h5>특별한 경험</h5><p>LINK TICKET만의 이벤트</p></div></div>
+    </div>
+    <div class="footer-quote">"좋은 공연은 끝나도,<br>특별한 기억은 계속됩니다."</div>
+  </footer>
+
+  <div class="modal-overlay" id="session-modal">
+    <div class="modal">
+      <button class="close" id="session-modal-close">&times;</button>
+      <h2>로그인이 필요합니다</h2>
+      <p>세션이 만료되어 로그인이 해제되었습니다. 계속 이용하시려면 다시 로그인해주세요.</p>
+      <a href="/login/" class="modal-login-btn">로그인하기</a>
+    </div>
+  </div>
+
+<script>
+/*
+ * 이전 버전(어두운 테마) 대비 달라진 점:
+ * - 상단 "공지사항" 탭/팝업 모달 제거 → 우측 사이드바의 공지사항 목록으로 대체
+ *   (GET /api/notices 처럼 "여러 건"을 반환하는 엔드포인트가 필요합니다.
+ *    아직 /api/notices/latest 하나만 있다면, 이 위젯은 더미 목록으로 대체됩니다.)
+ * - 메인 페이지 자체는 더 이상 검색/카테고리로 직접 필터링하지 않고,
+ *   전부 /performances/ 로 쿼리스트링과 함께 이동합니다(목업 상 "인기 공연"은 고정 노출 영역이라).
+ * - 로그인 폼이 사이드바에 내장 → /api/login/ 을 그대로 재사용합니다.
+ */
+
+const FALLBACK_PERFORMANCES = [
+  { id: 1, title: "더 드림 콘서트", category: "콘서트", venue: "KSPO DOME", date: "2024.10.25(금)", badge: "hot" },
+  { id: 2, title: "아이유 콘서트", category: "콘서트", venue: "올림픽공원", date: "2024.11.10(일)", badge: "new" },
+  { id: 3, title: "SEVENTEEN", category: "콘서트", venue: "고척스카이돔", date: "2024.12.06(금)" },
+  { id: 4, title: "aespa", category: "콘서트", venue: "인천 인스파이어 아레나", date: "2025.01.15(수)" },
+  { id: 5, title: "임영웅 IM HERO TOUR", category: "콘서트", venue: "서울월드컵경기장", date: "2025.02.22(토)" },
+  { id: 6, title: "플레이 나이트", category: "페스티벌", venue: "서울 체조경기장", date: "2025.03.14(금)" },
+  { id: 7, title: "뮤지컬 위키드", category: "뮤지컬", venue: "블루스퀘어", date: "2025.04.01(화)" },
+  { id: 8, title: "클래식 갈라 콘서트", category: "클래식", venue: "예술의전당", date: "2025.04.18(금)" },
+];
+const FALLBACK_NOTICES = [
+  { id: 1, tag: "공지", title: "더 드림 콘서트 티켓 오픈 안내", date: "2026.10.01" },
+  { id: 2, tag: "이벤트", title: "신규 가입 이벤트 진행!", date: "2026.09.28" },
+  { id: 3, tag: "안내", title: "모바일 티켓 사용 방법", date: "2026.09.20" },
+  { id: 4, tag: "점검", title: "시스템 점검 안내 (10/15)", date: "2026.09.15" },
+];
+
+let currentGenre = "all";
+let ALL_PERFORMANCES = [];
+const POPULAR_COUNT = 6; // 카테고리 클릭 시 그 테마 안에서 노출할 공연 개수
+let sessionKnownLoggedIn = null;
+const SESSION_CHECK_INTERVAL_MS = 5 * 60 * 1000;
+let sessionCheckTimer = null;
+
+async function fetchJSON(path, fallback) {
+  try {
+    const res = await fetch(path, { headers: { Accept: "application/json" }, credentials: "include" });
+    if (!res.ok) throw new Error(res.status);
+    return await res.json();
+  } catch (err) {
+    console.warn(`[stub] ${path} 응답 실패, 더미 데이터 사용:`, err.message);
+    return fallback;
+  }
+}
+
+async function fetchAuthMe() {
+  // /api/auth/me/ 는 새 컨벤션(DRF)에서 200+{success,data:{회원정보}} 또는 401로 응답합니다.
+  // fetchJSON의 "실패하면 그냥 fallback" 방식과 달리, 401은 "확실히 로그아웃 상태"로
+  // 구분해서 처리해야 해서 별도 함수로 뺐습니다.
+  try {
+    const res = await fetch("/api/auth/me/", { headers: { Accept: "application/json" }, credentials: "include" });
+    if (!res.ok) return { logged_in: false };
+    const body = await res.json();
+    return { logged_in: true, ...(body.data || {}) };
+  } catch (err) {
+    console.warn("[stub] /api/auth/me/ 응답 실패, 더미 데이터 사용:", err.message);
+    return { logged_in: false };
+  }
+}
+
+function showToast(text) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = text;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+  setTimeout(() => { toast.classList.remove("show"); setTimeout(() => toast.remove(), 300); }, 2200);
+  return toast;
+}
+
+/* ── 헤더 로그인 상태 ── */
+function renderAuth(user) {
+  const area = document.getElementById("auth-area");
+  if (user && user.logged_in) {
+    area.innerHTML = `<a href="/mypage/">${user.name}님</a><span class="sep">|</span><a href="#" id="logout-link">로그아웃</a>`;
+    document.getElementById("logout-link").addEventListener("click", async (e) => {
+      e.preventDefault();
+      let message = "로그아웃 되었습니다.";
+      try {
+        const res = await fetch("/api/auth/logout/", { method: "POST", credentials: "include" });
+        const data = await res.json();
+        message = data.message || message;
+      } catch (err) { message = "로그아웃 요청에 실패했습니다."; }
+      showToast(message);
+      setTimeout(() => { location.href = "/"; }, 600);
+    });
+  } else {
+    area.innerHTML = `<a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>`;
+  }
+}
+
+/* ── 사이드바 로그인 카드 ── */
+function renderSidebarLoginCard(user) {
+  const card = document.getElementById("sidebar-login-card");
+  if (user && user.logged_in) {
+    card.innerHTML = `
+      <div class="greet">
+        <div class="avatar">👤</div>
+        <p>${user.name}님,<br>오늘도 좋은 공연 즐기세요!</p>
+      </div>
+      <a href="/mypage/" class="submit-btn" style="display:block; box-sizing:border-box; text-align:center; text-decoration:none;">마이페이지</a>
+    `;
+    return;
+  }
+  card.innerHTML = `
+    <div class="greet">
+      <div class="avatar">👤</div>
+      <p>로그인하고<br>더 많은 혜택을 만나보세요!</p>
+    </div>
+    <input type="text" id="sb-login-id" placeholder="아이디를 입력하세요">
+    <input type="password" id="sb-login-pw" placeholder="비밀번호를 입력하세요">
+    <div class="row-between">
+      <label><input type="checkbox" id="sb-remember">아이디 저장</label>
+      <a href="/login/">아이디/비밀번호 찾기</a>
+    </div>
+    <button class="submit-btn" id="sb-login-submit">로그인</button>
+    <div class="or">또는</div>
+    <div class="social-row">
+      <button class="kakao">💬 카카오로 로그인</button>
+      <button>🇬 구글로 로그인</button>
+    </div>
+    <div class="bottom-line">계정이 없으신가요? <a href="/login/?tab=signup">회원가입</a></div>
+  `;
+
+  const savedId = localStorage.getItem("saved_login_id");
+  if (savedId) { document.getElementById("sb-login-id").value = savedId; document.getElementById("sb-remember").checked = true; }
+
+  document.getElementById("sb-login-submit").addEventListener("click", async () => {
+    const loginId = document.getElementById("sb-login-id").value.trim();
+    const password = document.getElementById("sb-login-pw").value;
+    const remember = document.getElementById("sb-remember").checked;
+    if (!loginId || !password) { showToast("아이디와 비밀번호를 입력해주세요."); return; }
+    try {
+      const res = await fetch("/api/auth/login/", {
+        method: "POST", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ login_id: loginId, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (remember) localStorage.setItem("saved_login_id", loginId);
+        else localStorage.removeItem("saved_login_id");
+        showToast("로그인 되었습니다.");
+        setTimeout(() => location.reload(), 500);
+      } else {
+        showToast(data.message || "아이디 또는 비밀번호가 올바르지 않습니다.");
+      }
+    } catch (err) {
+      showToast("로그인 요청에 실패했습니다.");
+    }
+  });
+}
+
+/* ── 세션 만료 감지 (기존과 동일) ── */
+function openSessionExpiredModal() { document.getElementById("session-modal").classList.add("open"); }
+function setupSessionModal() {
+  const overlay = document.getElementById("session-modal");
+  document.getElementById("session-modal-close").addEventListener("click", () => overlay.classList.remove("open"));
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.classList.remove("open"); });
+}
+function startSessionCheckTimer() { if (!sessionCheckTimer) sessionCheckTimer = setInterval(checkSessionStatus, SESSION_CHECK_INTERVAL_MS); }
+function stopSessionCheckTimer() { if (sessionCheckTimer) { clearInterval(sessionCheckTimer); sessionCheckTimer = null; } }
+function setupSessionVisibilityWatcher() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") { checkSessionStatus(); startSessionCheckTimer(); }
+    else { stopSessionCheckTimer(); }
+  });
+}
+async function checkSessionStatus() {
+  try {
+    const res = await fetch("/api/auth/me/", { headers: { Accept: "application/json" }, credentials: "include" });
+    // 새 방식: 로그인 상태면 200, 아니면 401 — 상태코드 자체로 판단 (본문 파싱 불필요)
+    const nowLoggedIn = res.ok;
+    const user = { logged_in: nowLoggedIn };
+    if (sessionKnownLoggedIn === true && nowLoggedIn === false) {
+      renderAuth(user); renderSidebarLoginCard(user); openSessionExpiredModal();
+    }
+    sessionKnownLoggedIn = nowLoggedIn;
+  } catch (err) { console.warn("세션 상태 확인 실패(다음 주기에 재시도):", err.message); }
+}
+
+/* ── 인기 공연 카드 (이미지 프리로드 방식 기존과 동일) ── */
+function renderPerformances(list) {
+  const grid = document.getElementById("performance-grid");
+  grid.innerHTML = "";
+  if (list.length === 0) { grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); padding:40px 0;">조건에 맞는 공연이 없습니다.</div>`; return; }
+  list.forEach((p) => {
+    const card = document.createElement("a");
+    card.className = "perf-card";
+    card.href = `/performances/${p.id}`;
+    const badge = p.badge ? `<span class="badge ${p.badge}">${p.badge === "hot" ? "HOT" : "NEW"}</span>` : "";
+    card.innerHTML = `
+      <div class="thumb"><span class="thumb-fallback">${p.title}</span>${badge}</div>
+      <button class="fav" type="button" aria-label="찜하기">♥</button>
+      <div class="meta">
+        <h3>${p.title}</h3>
+        <div class="date"><span>📅</span><span>${p.date || "-"}</span></div>
+        <div class="venue"><span>📍</span><span>${p.venue}</span></div>
+      </div>
+    `;
+    const thumb = card.querySelector(".thumb");
+    const imgUrl = `/static/performances/${p.id}.jpg`;
+    const preload = new Image();
+    preload.onload = function () {
+      thumb.style.backgroundImage = "url('" + imgUrl + "')";
+      const fb = thumb.querySelector(".thumb-fallback");
+      if (fb) fb.style.display = "none";
+    };
+    preload.src = imgUrl;
+
+    card.querySelector(".fav").addEventListener("click", (e) => {
+      e.preventDefault(); e.stopPropagation();
+      e.currentTarget.classList.toggle("on");
+    });
+    grid.appendChild(card);
+  });
+}
+
+function applyGenreFilter() {
+  const filtered = currentGenre === "all"
+    ? ALL_PERFORMANCES
+    : ALL_PERFORMANCES.filter((p) => p.category === currentGenre);
+  renderPerformances(filtered.slice(0, POPULAR_COUNT));
+}
+
+function setupCategoryStrip() {
+  document.querySelectorAll(".cat-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".cat-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentGenre = btn.dataset.genre;
+      applyGenreFilter();
+    });
+  });
+}
+
+function setupSearch() {
+  document.getElementById("search-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.value.trim()) {
+      location.href = `/performances/?q=${encodeURIComponent(e.target.value.trim())}`;
+    }
+  });
+}
+
+/* ── 커스텀 달력 위젯 ── */
+let dpYear, dpMonth; // dpMonth는 0부터 시작(1월=0)
+let dpSelected = null; // { year, month, day }
+
+function setupDatePicker() {
+  const today = new Date();
+  dpYear = today.getFullYear();
+  dpMonth = today.getMonth();
+
+  const input = document.getElementById("qb-date");
+  const picker = document.getElementById("date-picker");
+
+  input.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !picker.classList.contains("open");
+    picker.classList.toggle("open", willOpen);
+    if (willOpen) renderDatePicker();
+  });
+  document.addEventListener("click", (e) => {
+    if (!picker.contains(e.target) && e.target !== input) picker.classList.remove("open");
+  });
+  picker.addEventListener("click", (e) => e.stopPropagation());
+
+  document.getElementById("dp-prev").addEventListener("click", () => shiftDpMonth(-1));
+  document.getElementById("dp-next").addEventListener("click", () => shiftDpMonth(1));
+}
+
+function shiftDpMonth(delta) {
+  dpMonth += delta;
+  if (dpMonth < 0) { dpMonth = 11; dpYear--; }
+  if (dpMonth > 11) { dpMonth = 0; dpYear++; }
+  renderDatePicker();
+}
+
+// 연도를 클릭하면 숫자 입력창으로 바뀌어, 연도를 직접 타이핑해서 그 해로 바로 이동할 수 있습니다.
+function editDpYear() {
+  const label = document.getElementById("dp-year-label");
+  const wrap = label.parentElement;
+  const input = document.createElement("input");
+  input.type = "number";
+  input.id = "dp-year-input";
+  input.value = dpYear;
+  input.min = 2000; input.max = 2100;
+  wrap.replaceChild(input, label);
+  input.focus();
+  input.select();
+  const commit = () => {
+    const v = parseInt(input.value, 10);
+    if (!isNaN(v) && v >= 2000 && v <= 2100) dpYear = v;
+    renderDatePicker();
+  };
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") commit(); });
+  input.addEventListener("blur", commit);
+}
+
+// 월을 클릭하면 드롭다운으로 바뀌어, 원하는 월을 바로 골라 이동할 수 있습니다.
+function editDpMonth() {
+  const label = document.getElementById("dp-month-label");
+  const wrap = label.parentElement;
+  const input = document.createElement("input");
+  input.type = "number";
+  input.id = "dp-month-input";
+  input.value = dpMonth + 1;
+  input.min = 1; input.max = 12;
+  wrap.replaceChild(input, label);
+  input.focus();
+  input.select();
+  const commit = () => {
+    const v = parseInt(input.value, 10);
+    if (!isNaN(v) && v >= 1 && v <= 12) dpMonth = v - 1;
+    renderDatePicker();
+  };
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") commit(); });
+  input.addEventListener("blur", commit);
+}
+
+function renderDatePicker() {
+  const titleWrap = document.querySelector(".dp-title");
+  titleWrap.innerHTML = `<span class="dp-year" id="dp-year-label">${dpYear}년</span><span class="dp-month" id="dp-month-label">${dpMonth + 1}월</span>`;
+  document.getElementById("dp-year-label").addEventListener("click", editDpYear);
+  document.getElementById("dp-month-label").addEventListener("click", editDpMonth);
+
+  const grid = document.getElementById("dp-grid");
+  grid.innerHTML = "";
+  const firstWeekday = new Date(dpYear, dpMonth, 1).getDay();
+  const daysInMonth = new Date(dpYear, dpMonth + 1, 0).getDate();
+  const daysInPrevMonth = new Date(dpYear, dpMonth, 0).getDate();
+  const today = new Date();
+
+  for (let i = firstWeekday - 1; i >= 0; i--) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = daysInPrevMonth - i;
+    btn.className = "other-month";
+    btn.disabled = true;
+    grid.appendChild(btn);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = d;
+    if (dpYear === today.getFullYear() && dpMonth === today.getMonth() && d === today.getDate()) btn.classList.add("today");
+    if (dpSelected && dpSelected.year === dpYear && dpSelected.month === dpMonth && dpSelected.day === d) btn.classList.add("selected");
+    btn.addEventListener("click", () => selectDpDate(d));
+    grid.appendChild(btn);
+  }
+}
+
+function selectDpDate(d) {
+  dpSelected = { year: dpYear, month: dpMonth, day: d };
+  const iso = `${dpYear}-${String(dpMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const input = document.getElementById("qb-date");
+  input.value = `${dpYear}.${String(dpMonth + 1).padStart(2, "0")}.${String(d).padStart(2, "0")}`;
+  input.dataset.iso = iso;
+  document.getElementById("date-picker").classList.remove("open");
+  renderDatePicker();
+}
+
+/* ── 빠른 예매 위젯 ── */
+function setupQuickBooking() {
+  document.querySelectorAll(".qb-tabs button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".qb-tabs button").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const isDate = btn.dataset.qb === "date";
+      document.getElementById("qb-date-field").style.display = isDate ? "flex" : "none";
+      document.getElementById("qb-name-field").style.display = isDate ? "none" : "flex";
+    });
+  });
+  document.getElementById("qb-submit").addEventListener("click", () => {
+    const params = new URLSearchParams();
+    const dateVal = document.getElementById("qb-date").dataset.iso || "";
+    const nameVal = document.getElementById("qb-name").value.trim();
+    const regionVal = document.getElementById("qb-region").value;
+    if (document.getElementById("qb-name-field").style.display !== "none" && nameVal) params.set("q", nameVal);
+    else if (dateVal) params.set("date", dateVal);
+    if (regionVal) params.set("region", regionVal);
+    location.href = `/performances/?${params.toString()}`;
+  });
+}
+
+/* ── 공지사항 목록 ── */
+const NOTICE_TYPE_KO = { NOTICE: "공지", EVENT: "이벤트", GUIDE: "안내", MAINTENANCE: "점검" };
+
+// 실제 WAS(DRF) 응답은 {notice_id, notice_type, title, published_at, ...} 형태라
+// 우리 화면이 기대하는 {id, tag, title, date} 형태로 변환해줍니다.
+// (더미 데이터는 이미 우리 형태라 그대로 통과시킴)
+function normalizeNotice(n) {
+  if (n.notice_id === undefined) return n;
+  return {
+    id: n.notice_id,
+    tag: NOTICE_TYPE_KO[n.notice_type] || n.notice_type,
+    title: n.title,
+    date: n.published_at ? n.published_at.slice(0, 10).replace(/-/g, ".") : "",
+  };
+}
+
+function renderNoticeList(rawNotices) {
+  const notices = (Array.isArray(rawNotices) ? rawNotices : rawNotices.results || []).map(normalizeNotice);
+  const el = document.getElementById("notice-list");
+  el.innerHTML = "";
+  const tagClass = { "이벤트": "event", "점검": "warn" };
+  notices.slice(0, 4).forEach((n) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div class="ntag ${tagClass[n.tag] || ""}">${n.tag}</div>
+      <div class="ninfo"><a class="ntitle" href="/notices/${n.id}">${n.title}</a><span class="ndate"> · ${n.date}</span></div>
+    `;
+    el.appendChild(li);
+  });
+}
+
+/* ── 히어로 캐러셀 (기존과 동일한 슬라이드 내용) ── */
+function setupHeroCarousel() {
+  const slides = [
+    { tag: "MUSIC CONNECTS US", title: "특별한 순간,<br><span class='hl'>언제나 당신과</span>", body: "좋은 공연이 더 특별한 일상이 되는 곳, LINK TICKET", href: "/performances/" },
+    { tag: "NEVER MISS A BEAT", title: "가장 빠른<br><span class='hl'>티켓 오픈 알림</span>", body: "원하는 공연을 놓치지 않도록 알려드려요.", href: "/performances/" },
+    { tag: "COLLECT THE MOMENT", title: "공연의 순간을<br><span class='hl'>NFT로 소장하기</span>", body: "한정판 디지털 컬렉션으로 특별함을 간직하세요.", href: "/nft" },
+  ];
+  let idx = 0;
+  const tagEl = document.querySelector(".hero-tag");
+  const titleEl = document.querySelector(".hero h1");
+  const bodyEl = document.querySelector(".hero-inner > p");
+  const dots = document.querySelectorAll(".hero-dots .dot");
+
+  function show(i) {
+    idx = (i + slides.length) % slides.length;
+    tagEl.textContent = slides[idx].tag;
+    titleEl.innerHTML = slides[idx].title;
+    bodyEl.textContent = slides[idx].body;
+    dots.forEach((d, di) => d.classList.toggle("active", di === idx));
+  }
+
+  dots.forEach((d) => d.addEventListener("click", () => show(Number(d.dataset.i))));
+  document.getElementById("hero-prev").addEventListener("click", () => show(idx - 1));
+  document.getElementById("hero-next").addEventListener("click", () => show(idx + 1));
+  document.getElementById("hero-cta").addEventListener("click", () => { location.href = slides[idx].href; });
+}
+
+async function init() {
+  setupSessionModal();
+  setupCategoryStrip();
+  setupSearch();
+  setupQuickBooking();
+  setupDatePicker();
+  setupHeroCarousel();
+
+  const [user, performances, notices] = await Promise.all([
+    fetchAuthMe(),
+    fetchJSON("/api/performances/popular/", FALLBACK_PERFORMANCES),
+    fetchJSON("/api/notices/", FALLBACK_NOTICES),
+  ]);
+
+  sessionKnownLoggedIn = !!user.logged_in;
+  ALL_PERFORMANCES = performances;
+  renderAuth(user);
+  renderSidebarLoginCard(user);
+  applyGenreFilter();
+  renderNoticeList(notices);
+
+  setupSessionVisibilityWatcher();
+  startSessionCheckTimer();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LINKTICKET - NFT</title>
+<style>
+  :root{
+    --navy:#1a2144;--blue:#2563eb;--pink:#ec4899;--purple:#7c3aed;
+    --text-dark:#1f2333;--text-gray:#6b7280;--border:#e5e7eb;--bg-light:#f7f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--text-dark);background:#fff;}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  .wrap{max-width:1536px;margin:0 auto;padding:0 32px;}
+
+  /* ===== Header (이벤트 페이지와 동일 구조) ===== */
+  header{border-bottom:1px solid var(--border);}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  header .wrap{padding-left:12px;}
+  .header-left{display:flex;align-items:center;gap:36px;}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+  .logo span{color:var(--blue);}
+  nav.main-nav{display:flex;gap:32px;}
+  nav.main-nav a{font-size:15px;font-weight:600;color:#333;padding:4px 0;}
+  nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .search-box{display:flex;align-items:center;gap:8px;background:var(--bg-light);border-radius:20px;padding:8px 16px;width:280px;}
+  .search-box input{border:none;background:transparent;outline:none;font-size:13px;width:100%;}
+  #auth-area{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  #auth-area .sep{color:var(--border);}
+
+  /* ===== Hero Banner (고정 영역) ===== */
+  .hero{
+    background:linear-gradient(115deg,#120d24 0%,#2a1a40 40%,#4a1f4f 75%,#5c2050 100%);
+    color:#fff;position:relative;overflow:hidden;padding:52px 0;cursor:pointer;
+  }
+  .hero-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    max-width:1536px;margin:0 auto;padding:0 32px;position:relative;z-index:2;gap:24px;
+  }
+  .hero-tag{
+    display:inline-block;font-size:12px;letter-spacing:4px;font-weight:700;
+    color:#ff8fd6;margin-bottom:14px;
+  }
+  .hero h1{font-size:32px;font-weight:800;line-height:1.35;}
+  .hero p{margin-top:14px;color:#d8cdea;font-size:13px;line-height:1.6;}
+  .hero-cta{
+    display:inline-flex;align-items:center;gap:8px;margin-top:20px;
+    background:linear-gradient(120deg,#ec4899,#a855f7);
+    color:#fff;font-size:13px;font-weight:700;padding:12px 22px;border-radius:24px;
+    cursor:pointer;
+  }
+  .hero-mid{flex-shrink:0;width:260px;text-align:center;}
+  .hero-mid .phone{
+    display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);
+    border-radius:16px;padding:18px 22px;font-size:12px;color:#e8d9f5;line-height:1.6;
+  }
+  .hero-script{font-family:"Brush Script MT",cursive;font-size:19px;color:#e7b7ea;line-height:1.5;text-align:right;}
+  .hero-vertical{
+    writing-mode:vertical-rl;font-size:11px;letter-spacing:3px;color:#c9a8ff;font-weight:700;margin-left:8px;
+  }
+
+  /* ===== Feature strip (고정 영역) ===== */
+  .feature-strip{
+    display:grid;grid-template-columns:repeat(4,1fr) 1.6fr;gap:16px;padding:24px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .feature-item{
+    display:flex;align-items:center;gap:12px;font-size:12px;font-weight:700;color:#333;
+  }
+  .feature-item .ic{font-size:20px;}
+  .feature-item small{display:block;font-weight:400;color:var(--text-gray);font-size:11px;margin-top:2px;}
+  .feature-highlight{
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(120deg,#fdf0ff,#f3e8ff);
+    border-radius:12px;padding:14px 18px;
+  }
+  .feature-highlight__text{font-size:13px;font-weight:800;color:var(--navy);}
+  .feature-highlight__text small{display:block;font-weight:400;color:var(--text-gray);font-size:11px;margin-top:2px;}
+
+  /* ===== Layout: 필터 사이드바 + 메인 그리드 + 우측 사이드바 ===== */
+  .content{display:flex;gap:28px;padding:32px 0 64px;align-items:flex-start;}
+  .filter-col{width:260px;flex-shrink:0;}
+  .main-col{flex:1;min-width:0;}
+  .side-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:20px;}
+
+  .filter-box{border:1px solid var(--border);border-radius:14px;padding:20px;}
+  .filter-box h3{font-size:15px;font-weight:800;margin-bottom:14px;}
+  .filter-search{
+    display:flex;align-items:center;gap:8px;background:var(--bg-light);
+    border-radius:10px;padding:9px 12px;margin-bottom:18px;
+  }
+  .filter-search input{border:none;background:transparent;outline:none;font-size:12px;width:100%;}
+  .filter-group{margin-bottom:20px;}
+  .filter-group__title{font-size:13px;font-weight:800;margin-bottom:10px;}
+  .filter-check{
+    display:flex;align-items:center;gap:8px;font-size:13px;color:#444;
+    padding:5px 0;cursor:pointer;
+  }
+  .filter-check input{width:14px;height:14px;}
+  .filter-submit{
+    width:100%;border:none;border-radius:10px;padding:13px;
+    background:linear-gradient(120deg,#ec4899,#a855f7);color:#fff;
+    font-size:13px;font-weight:700;cursor:pointer;
+  }
+
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  .section-head h2{font-size:20px;font-weight:800;}
+  .section-head h2 .count{color:var(--purple);}
+  .sort-select{font-size:13px;color:#555;border:1px solid var(--border);border-radius:8px;padding:8px 12px;background:#fff;}
+
+  /* ===== NFT Card Grid (반복 영역) ===== */
+  .nft-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+
+  /* nft-card: 이 블록 전체가 Django에서 {% for nft in nfts %} ... {% endfor %} 로 반복될 단위 */
+  .nft-card{
+    display:block;border:1px solid var(--border);border-radius:14px;overflow:hidden;
+    background:#fff;cursor:pointer;transition:box-shadow .2s;
+  }
+  .nft-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+  .nft-card__media{
+    position:relative;height:180px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:15px;text-align:center;
+  }
+  .nft-card__badge{
+    position:absolute;top:10px;left:10px;font-size:10px;font-weight:800;
+    padding:4px 9px;border-radius:6px;color:#fff;letter-spacing:0.5px;
+  }
+  .badge-new{background:#ec4899;}
+  .badge-hot{background:#f97316;}
+  .badge-limited{background:var(--navy);}
+  .nft-card__like{
+    position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;
+    background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;font-size:13px;z-index:2;
+  }
+  .nft-card__body{padding:14px 14px 16px;}
+  .nft-card__title{font-size:15px;font-weight:800;}
+  .nft-card__subtitle{font-size:12px;color:var(--text-gray);margin:2px 0 10px;}
+  .nft-card__stats{font-size:11px;color:var(--text-gray);margin-bottom:10px;}
+  .nft-card__footer{display:flex;align-items:center;justify-content:space-between;}
+  .nft-card__price{font-size:14px;font-weight:800;}
+  .nft-card__cart{
+    width:28px;height:28px;border-radius:8px;background:var(--bg-light);
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+  }
+
+  .media-1{background:linear-gradient(150deg,#3a2a5c,#1c1236);}
+  .media-2{background:linear-gradient(150deg,#1f1f1f,#3a3a3a);}
+  .media-3{background:linear-gradient(150deg,#3d1f4a,#6b2f7a);}
+  .media-4{background:linear-gradient(150deg,#161a33,#2b3166);}
+  .media-5{background:linear-gradient(150deg,#0e3d24,#155c34);}
+  .media-6{background:linear-gradient(150deg,#4a1620,#7a2233);}
+  .media-7{background:linear-gradient(150deg,#241c40,#3c2d6b);}
+  .media-8{background:linear-gradient(150deg,#241033,#3d1a52);}
+
+  /* ===== Sidebar ===== */
+  .side-box{border:1px solid var(--border);border-radius:14px;padding:20px;}
+  .side-box__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .side-box__head h3{font-size:15px;font-weight:800;}
+  .side-box__head a{font-size:12px;color:var(--purple);font-weight:700;}
+
+  .rank-list{display:flex;flex-direction:column;gap:14px;}
+  .rank-item{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .rank-item:hover .rank-item__title{color:var(--purple);}
+  .rank-item__num{
+    width:22px;height:22px;border-radius:6px;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;
+  }
+  .rank-item__title{font-size:13px;font-weight:700;}
+  .rank-item__sub{font-size:11px;color:var(--text-gray);margin-top:2px;}
+
+  .info-box{background:linear-gradient(120deg,#faf5ff,#f3e8ff);}
+  .info-box p{font-size:12px;color:#555;line-height:1.6;margin:8px 0 14px;}
+  .info-box__btn{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--purple);
+    cursor:pointer;
+  }
+  .info-box__btn:hover{text-decoration:underline;}
+
+  .cta-banner{
+    background:linear-gradient(120deg,#3a1f5c,#5c2a6b);border-radius:14px;padding:20px;color:#fff;
+    display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  }
+  .cta-banner__text{font-size:13px;font-weight:800;line-height:1.5;}
+
+  /* ===== Footer (고정 영역) ===== */
+  footer{background:var(--bg-light);border-top:1px solid var(--border);padding:40px 0;}
+  .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+  .footer-logo{font-size:18px;font-weight:800;margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--text-gray);letter-spacing:1px;margin-bottom:10px;}
+  .footer-desc{font-size:12px;color:var(--text-gray);max-width:260px;line-height:1.5;}
+  .footer-features{display:flex;gap:36px;}
+  .footer-feature{font-size:12px;}
+  .footer-feature__icon{font-size:18px;margin-bottom:6px;}
+  .footer-feature__title{font-weight:700;margin-bottom:2px;}
+  .footer-feature__desc{color:var(--text-gray);font-size:11px;}
+  .footer-quote{font-size:13px;font-weight:700;text-align:right;color:var(--text-dark);line-height:1.6;}
+
+  @media (max-width:1200px){
+    .content{flex-direction:column;}
+    .filter-col,.side-col{width:100%;}
+    .nft-grid{grid-template-columns:repeat(2,1fr);}
+    .feature-strip{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ Header (고정 영역) ============ -->
+<header>
+  <div class="wrap header-inner">
+    <div class="header-left">
+      <a href="https://www.linkticket.com" class="logo">LINK<span>TICKET</span></a>
+      <nav class="main-nav">
+        <a href="https://www.linkticket.com">홈</a>
+        <a href="https://www.linkticket.com/performance">공연</a>
+        <a href="#">티켓예매</a>
+        <a href="event_list.html">이벤트</a>
+        <a href="#" class="active">NFT</a>
+        <a href="#">공지사항</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div class="search-box">
+        <span onclick="doSearch()" style="cursor:pointer;">🔍</span>
+        <input type="text" id="searchInput" placeholder="공연, 아티스트를 검색하세요..." onkeydown="if(event.key==='Enter') doSearch();">
+      </div>
+      <span>👤</span>
+      <div id="auth-area">
+        <a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ Hero Banner (고정 영역) ============ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-tag">NFT TICKET</span>
+      <h1>특별한 순간을<br>소장하세요</h1>
+      <p>공연의 감동이 담긴 단 하나의 디지털 티켓,<br>LINK TICKET NFT</p>
+      <span class="hero-cta" onclick="document.getElementById('nftCollection').scrollIntoView({behavior:'smooth'})">NFT 컬렉션 둘러보기 →</span>
+    </div>
+    <div class="hero-mid">
+      <div class="phone">LINKTICKET NFT<br>LIVE FOREVER</div>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <div class="hero-script">More Than Tickets<br>More Memories</div>
+      <div class="hero-vertical">MUSIC × NFT YOUR STORY</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Feature Strip (고정 영역) ============ -->
+<div class="wrap feature-strip">
+  <div class="feature-item"><span class="ic">🎫</span><span>공연의 추억을<br><small>디지털 자산으로</small></span></div>
+  <div class="feature-item"><span class="ic">💎</span><span>한정판 NFT<br><small>특별한 소장 가치</small></span></div>
+  <div class="feature-item"><span class="ic">🛡️</span><span>블록체인 기반<br><small>안전한 소유권 인증</small></span></div>
+  <div class="feature-item"><span class="ic">🎁</span><span>다양한 혜택과<br><small>추가 콘텐츠 제공</small></span></div>
+  <div class="feature-highlight">
+    <div class="feature-highlight__text">👑 NFT 보유자만의 특별한 혜택!<small>공연 선예매, 멤버십, 이벤트 참여까지</small></div>
+    <span>›</span>
+  </div>
+</div>
+
+<div class="wrap content">
+
+  <!-- ============ 필터 사이드바 (지금은 화면만 - 실제 필터링 기능은 이벤트 페이지처럼 다음 단계에서) ============ -->
+  <aside class="filter-col">
+    <div class="filter-box">
+      <h3>NFT 컬렉션 필터</h3>
+      <div class="filter-search">
+        <span onclick="applyNftFilter()" style="cursor:pointer;">🔍</span>
+        <input type="text" id="nftSearchInput" placeholder="아티스트, 공연명 검색" onkeydown="if(event.key==='Enter') applyNftFilter();">
+      </div>
+
+      <div class="filter-group" data-group="category">
+        <div class="filter-group__title">카테고리</div>
+        <label class="filter-check"><input type="checkbox" class="filter-all" checked>전체</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="콘서트">콘서트</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="페스티벌">페스티벌</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="뮤지컬">뮤지컬</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="연극">연극</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="클래식">클래식</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="팬 이벤트">팬 이벤트</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="기타">기타</label>
+      </div>
+
+      <div class="filter-group" data-group="artist">
+        <div class="filter-group__title">아티스트</div>
+        <label class="filter-check"><input type="checkbox" class="filter-all" checked>전체</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="IU">IU</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="SEVENTEEN">SEVENTEEN</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="aespa">aespa</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="임영웅">임영웅</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="NCT">NCT</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="르세라핌">르세라핌</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="기타">기타</label>
+      </div>
+
+      <div class="filter-group" data-group="price">
+        <div class="filter-group__title">가격대</div>
+        <label class="filter-check"><input type="checkbox" class="filter-all" checked>전체</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="under10">10만원 미만</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="10to30">10만원 ~ 30만원</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="30to50">30만원 ~ 50만원</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="over50">50만원 이상</label>
+      </div>
+
+      <button type="button" class="filter-submit" onclick="applyNftFilter()">검색하기</button>
+    </div>
+  </aside>
+
+  <!-- ============ Main: NFT Grid ============ -->
+  <div class="main-col" id="nftCollection">
+    <div class="section-head">
+      <h2>NFT 컬렉션 <span class="count">24</span></h2>
+      <select class="sort-select"><option>최신순</option></select>
+    </div>
+
+    <!-- 반복 시작: Django에서는 아래 .nft-grid 안쪽을
+         {% for nft in nfts %} ... {% endfor %} 로 감싸서
+         .nft-card 블록 하나를 nft 데이터로 채워 반복 출력한다 -->
+    <div class="nft-grid">
+
+      <!-- nft-card: 반복 단위 컴포넌트 (1) -->
+      <a href="nft_payment.html?id=1" class="nft-card" data-category="콘서트" data-artist="IU" data-price="150000">
+        <div class="nft-card__media media-1">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">IU</div>
+          <div class="nft-card__subtitle">THE WINNING NFT</div>
+          <div class="nft-card__stats">한정 수량 1,000개 · 소유자 342명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 150,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- nft-card: 반복 단위 컴포넌트 (2) -->
+      <a href="nft_payment.html?id=2" class="nft-card" data-category="콘서트" data-artist="SEVENTEEN" data-price="120000">
+        <div class="nft-card__media media-2">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">SEVENTEEN</div>
+          <div class="nft-card__subtitle">RIGHT HERE WORLD TOUR</div>
+          <div class="nft-card__stats">한정 수량 2,000개 · 소유자 892명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 120,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- nft-card: 반복 단위 컴포넌트 (3) -->
+      <a href="nft_payment.html?id=3" class="nft-card" data-category="콘서트" data-artist="aespa" data-price="130000">
+        <div class="nft-card__media media-3">
+          <span class="nft-card__badge badge-hot">HOT</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">aespa</div>
+          <div class="nft-card__subtitle">SYNK : PARALLEL LINE</div>
+          <div class="nft-card__stats">한정 수량 1,500개 · 소유자 721명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 130,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- nft-card: 반복 단위 컴포넌트 (4) -->
+      <a href="nft_payment.html?id=4" class="nft-card" data-category="콘서트" data-artist="임영웅" data-price="200000">
+        <div class="nft-card__media media-4">
+          <span class="nft-card__badge badge-limited">LIMITED</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">임영웅</div>
+          <div class="nft-card__subtitle">IM HERO TOUR 2025</div>
+          <div class="nft-card__stats">한정 수량 1,000개 · 소유자 612명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 200,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- nft-card: 반복 단위 컴포넌트 (5) -->
+      <a href="nft_payment.html?id=5" class="nft-card" data-category="뮤지컬" data-artist="기타" data-price="180000">
+        <div class="nft-card__media media-5">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">뮤지컬 위키드</div>
+          <div class="nft-card__subtitle">ORIGINAL NFT</div>
+          <div class="nft-card__stats">한정 수량 800개 · 소유자 301명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 180,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- nft-card: 반복 단위 컴포넌트 (6) -->
+      <a href="nft_payment.html?id=6" class="nft-card" data-category="페스티벌" data-artist="기타" data-price="90000">
+        <div class="nft-card__media media-6">
+          <span class="nft-card__badge badge-hot">HOT</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">서울 뮤직 페스티벌</div>
+          <div class="nft-card__subtitle">SEOUL 2025</div>
+          <div class="nft-card__stats">한정 수량 2,500개 · 소유자 1,024명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 90,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- nft-card: 반복 단위 컴포넌트 (7) -->
+      <a href="nft_payment.html?id=7" class="nft-card" data-category="콘서트" data-artist="NCT" data-price="110000">
+        <div class="nft-card__media media-7">
+          <span class="nft-card__badge badge-limited">LIMITED</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">NCT DREAM</div>
+          <div class="nft-card__subtitle">THE DREAM SHOW 3</div>
+          <div class="nft-card__stats">한정 수량 1,500개 · 소유자 658명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 110,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- nft-card: 반복 단위 컴포넌트 (8) -->
+      <a href="nft_payment.html?id=8" class="nft-card" data-category="기타" data-artist="기타" data-price="0">
+        <div class="nft-card__media media-8">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+          <span style="font-size:28px;">?</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">스페셜 컬렉션</div>
+          <div class="nft-card__subtitle">COMING SOON</div>
+          <div class="nft-card__stats">한정 수량 미정 · 소유자 -</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">추후 공개</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+    <!-- 반복 끝 -->
+
+  </div>
+
+  <!-- ============ 우측 사이드바 (지금은 고정 텍스트) ============ -->
+  <aside class="side-col">
+    <div class="side-box">
+      <div class="side-box__head">
+        <h3>인기 NFT 컬렉션</h3>
+        <a href="#">전체보기 ›</a>
+      </div>
+      <div class="rank-list">
+        <a href="nft_payment.html?id=1" class="rank-item">
+          <span class="rank-item__num">1</span>
+          <div><div class="rank-item__title">IU</div><div class="rank-item__sub">THE WINNING NFT</div></div>
+        </a>
+        <a href="nft_payment.html?id=2" class="rank-item">
+          <span class="rank-item__num">2</span>
+          <div><div class="rank-item__title">SEVENTEEN</div><div class="rank-item__sub">RIGHT HERE WORLD TOUR</div></div>
+        </a>
+        <a href="nft_payment.html?id=3" class="rank-item">
+          <span class="rank-item__num">3</span>
+          <div><div class="rank-item__title">aespa</div><div class="rank-item__sub">SYNK : PARALLEL LINE</div></div>
+        </a>
+        <a href="nft_payment.html?id=4" class="rank-item">
+          <span class="rank-item__num">4</span>
+          <div><div class="rank-item__title">임영웅</div><div class="rank-item__sub">IM HERO TOUR 2025</div></div>
+        </a>
+        <a href="nft_payment.html?id=7" class="rank-item">
+          <span class="rank-item__num">5</span>
+          <div><div class="rank-item__title">NCT DREAM</div><div class="rank-item__sub">THE DREAM SHOW 3</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="side-box info-box">
+      <h3>💎 NFT란?</h3>
+      <p>공연의 기억을 블록체인 기반으로 소장할 수 있는 디지털 티켓입니다. 단순한 티켓을 넘어, 특별한 가치를 경험하세요.</p>
+      <span class="info-box__btn" onclick="window.location.href='nft_guide.html'">NFT 가이드 보기 →</span>
+    </div>
+
+    <div class="cta-banner" onclick="window.location.href='nft_list.html'">
+      <div class="cta-banner__text">지금, 당신의 특별한 순간을<br>NFT로 소장하세요.</div>
+      <span>🎫</span>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ Footer (고정 영역) ============ -->
+<footer>
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-logo">LINKTICKET</div>
+      <div class="footer-sub">MUSIC CONNECTS US</div>
+      <div class="footer-desc">공연을 더 특별하게, 모두의 순간을 연결하는 티켓팅 플랫폼</div>
+    </div>
+    <div class="footer-features">
+      <div class="footer-feature"><div class="footer-feature__icon">🎧</div><div class="footer-feature__title">다양한 공연</div><div class="footer-feature__desc">콘서트, 뮤지컬, 페스티벌까지</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">⚡</div><div class="footer-feature__title">빠른 예매</div><div class="footer-feature__desc">안정적이고 빠른 예매 시스템</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">🛡️</div><div class="footer-feature__title">안전한 결제</div><div class="footer-feature__desc">안심하고 이용하세요</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">👥</div><div class="footer-feature__title">특별한 경험</div><div class="footer-feature__desc">LINK TICKET만의 이벤트</div></div>
+    </div>
+    <div class="footer-quote">"좋은 공연은 끝나도,<br>특별한 기억은 계속됩니다."</div>
+  </div>
+</footer>
+
+<script>
+  // 헤더 상단 검색(사이트 전체 공연 검색) - 이건 그대로 외부 검색 페이지로 이동
+  function doSearch(){
+    var keyword = document.getElementById('searchInput').value.trim();
+    if(!keyword){ alert('검색어를 입력해주세요.'); return; }
+    window.location.href = 'https://www.linkticket.com/performances/?q=' + encodeURIComponent(keyword);
+  }
+
+  // ===== NFT 컬렉션 필터 =====
+  // 체크박스(카테고리/아티스트/가격대)는 클릭 즉시 반영, 검색창은 엔터/돋보기/검색하기 버튼을 눌러야 반영.
+  // 실제 서비스에서는 이 로직 전체가 서버에 쿼리 파라미터(category=, artist=, price=, q=)로 요청을 보내고
+  // DB에서 필터링된 결과를 받아오는 방식으로 바뀜
+  var nftCards = document.querySelectorAll('.nft-card');
+  var activeKeyword = ''; // 검색 제출(엔터/돋보기/검색하기)이 있어야만 갱신됨
+
+  // 가격을 가격대 버킷 키로 변환
+  function priceBucket(price){
+    if(price >= 500000) return 'over50';
+    if(price >= 300000) return '30to50';
+    if(price >= 100000) return '10to30';
+    return 'under10';
+  }
+
+  // "전체" 체크박스와 개별 체크박스 동기화 (전체 클릭 -> 개별 일괄 토글 / 개별 클릭 -> 전체 상태 자동 갱신)
+  document.querySelectorAll('.filter-group').forEach(function(group){
+    var allBox = group.querySelector('.filter-all');
+    var itemBoxes = group.querySelectorAll('.filter-item');
+
+    allBox.addEventListener('change', function(){
+      itemBoxes.forEach(function(box){ box.checked = allBox.checked; });
+      applyNftFilter();
+    });
+
+    itemBoxes.forEach(function(box){
+      box.addEventListener('change', function(){
+        var allChecked = Array.prototype.every.call(itemBoxes, function(b){ return b.checked; });
+        allBox.checked = allChecked;
+        applyNftFilter();
+      });
+    });
+  });
+
+  // 검색창(필터 상단 돋보기/엔터, 하단 검색하기 버튼 - 전부 동일 동작)
+  function applyNftFilter(){
+    activeKeyword = document.getElementById('nftSearchInput').value.trim().toLowerCase();
+    runNftFilter();
+  }
+
+  function runNftFilter(){
+    // 그룹별로 "개별 항목 중 체크된 값" 목록을 만든다. 아무것도 체크 안 돼있으면(=전체 상태) 그 그룹은 필터링하지 않음
+    var groupValues = {};
+    document.querySelectorAll('.filter-group').forEach(function(group){
+      var key = group.getAttribute('data-group');
+      var checked = Array.prototype.filter.call(group.querySelectorAll('.filter-item'), function(b){ return b.checked; })
+                          .map(function(b){ return b.getAttribute('data-value'); });
+      groupValues[key] = checked; // 빈 배열 = 제한 없음
+    });
+
+    var visibleCount = 0;
+
+    nftCards.forEach(function(card){
+      var category = card.getAttribute('data-category');
+      var artist = card.getAttribute('data-artist');
+      var price = parseInt(card.getAttribute('data-price'), 10);
+
+      var matchCategory = groupValues.category.length === 0 || groupValues.category.indexOf(category) !== -1;
+      var matchArtist = groupValues.artist.length === 0 || groupValues.artist.indexOf(artist) !== -1;
+      // 가격 미정(0)인 항목(예: 스페셜 컬렉션)은 가격대 필터에서 항상 통과시킴
+      var matchPrice = groupValues.price.length === 0 || price === 0 || groupValues.price.indexOf(priceBucket(price)) !== -1;
+      var matchKeyword = !activeKeyword || card.textContent.toLowerCase().indexOf(activeKeyword) !== -1;
+
+      var match = matchCategory && matchArtist && matchPrice && matchKeyword;
+      card.style.display = match ? '' : 'none';
+      if(match) visibleCount++;
+    });
+
+    var countEl = document.querySelector('.section-head .count');
+    if(countEl){ countEl.textContent = visibleCount; }
+  }
+</script>
+
+</body>
+</html>

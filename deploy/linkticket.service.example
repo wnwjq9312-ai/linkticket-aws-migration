@@ -1,0 +1,20 @@
+[Unit]
+Description=LINKTICKET Django application
+After=network-online.target remote-fs.target
+Wants=network-online.target
+
+[Service]
+# Confirm the existing account before installing this unit.
+User=linkticket
+Group=linkticket
+WorkingDirectory=/var/www/ticket_app
+EnvironmentFile=/etc/linkticket/linkticket.env
+ExecStart=/var/www/ticket_app/.venv/bin/gunicorn --config deploy/gunicorn.conf.py config.wsgi:application
+Restart=on-failure
+RestartSec=5
+UMask=0027
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

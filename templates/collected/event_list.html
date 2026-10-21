@@ -1,0 +1,196 @@
+{% extends 'base.html' %}{% load static %}{% block extra_css %}<link rel="stylesheet" href="{% static 'linkticket/collected/event_list.css' %}">{% endblock %}{% block content %}<div class="collected-page event_list"><p class="demo-note container">화면 미리보기 · 이벤트 및 NFT는 예시 데이터이며 실제 구매·발급이 이루어지지 않습니다.</p>
+
+
+
+
+
+
+<section class="hero" onclick="window.location.href='{% url 'ui:events' %}'">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-tag">SPECIAL EVENT</span>
+      <h1>특별한 순간이<br>더 특별해지는 곳</h1>
+      <p>LINK TICKET과 함께하는<br>다양한 이벤트를 만나보세요.</p>
+    </div>
+    <div class="hero-script">More Than Tickets<br>More Memories</div>
+  </div>
+</section>
+
+
+<div class="filter-bar">
+  <div class="wrap filter-tabs">
+    <div class="filter-tab active" data-filter="all"><span class="icon">⭐</span>전체</div>
+    <div class="filter-tab" data-filter="preorder"><span class="icon">🎁</span>예매 이벤트</div>
+    <div class="filter-tab" data-filter="membership"><span class="icon">👑</span>이벤트 혜택</div>
+    <div class="filter-tab" data-filter="promo"><span class="icon">📢</span>프로모션</div>
+    <div class="filter-tab" data-filter="sns"><span class="icon">📷</span>SNS 이벤트</div>
+    <div class="filter-tab" data-filter="fan"><span class="icon">🤝</span>팬 이벤트</div>
+    <div class="filter-tab" data-filter="partner"><span class="icon">🤝</span>제휴 이벤트</div>
+  </div>
+</div>
+
+<div class="wrap content">
+
+  
+  <div class="main-col">
+    <div class="section-head">
+      <h2>진행중인 이벤트 <span class="count">6</span></h2>
+      <select class="sort-select">
+        <option>최신순</option>
+      </select>
+    </div>
+
+    
+    <div class="event-grid">
+
+      
+      <a href="{% url 'ui:event-detail' %}?id=1" class="event-card" data-category="preorder">
+        <div class="event-card__media media-1">
+          <span class="event-card__tag tag-preorder">예매 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">EARLY BIRD 할인 이벤트</h3>
+          <p class="event-card__desc">지금, 가장 특별한 가격으로 공연을 만나보세요!</p>
+          <div class="event-card__date">📅 2025.04.01(화) ~ 2025.04.30(수)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:event-detail' %}?id=2" class="event-card" data-category="membership">
+        <div class="event-card__media media-2">
+          <span class="event-card__tag tag-membership">이벤트 혜택</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">LINK TICKET 이벤트 특별 혜택</h3>
+          <p class="event-card__desc">이벤트 회원만을 위한 다양한 혜택과 선예매 기회를 드립니다.</p>
+          <div class="event-card__date">📅 2025.04.01(화) ~ 상시 진행</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:event-detail' %}?id=3" class="event-card" data-category="sns">
+        <div class="event-card__media media-3">
+          <span class="event-card__tag tag-sns">SNS 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">공연 인증샷 이벤트</h3>
+          <p class="event-card__desc">공연장의 뜨거운 순간을 공유하고 푸짐한 선물을 받아보세요!</p>
+          <div class="event-card__date">📅 2025.04.05(토) ~ 2025.05.10(토)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:event-detail' %}?id=4" class="event-card" data-category="promo">
+        <div class="event-card__media media-4">
+          <span class="event-card__tag tag-promo">프로모션</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">친구와 함께 예매하면 할인!</h3>
+          <p class="event-card__desc">함께할수록 더 즐거운 공연, 지금 친구를 초대하세요!</p>
+          <div class="event-card__date">📅 2025.04.10(목) ~ 2025.05.15(목)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:event-detail' %}?id=5" class="event-card" data-category="fan">
+        <div class="event-card__media media-5">
+          <span class="event-card__tag tag-fan">팬 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">아티스트 사인회 초대 이벤트</h3>
+          <p class="event-card__desc">공연 티켓 예매하고 아티스트와 가까워질 특별한 기회!</p>
+          <div class="event-card__date">📅 2025.04.15(화) ~ 2025.05.20(화)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:event-detail' %}?id=6" class="event-card" data-category="partner">
+        <div class="event-card__media media-6">
+          <span class="event-card__tag tag-partner">제휴 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+          <span class="partner-badge">STARBUCKS</span>
+          <span class="partner-badge">GS25</span>
+          <span class="partner-badge">배달의민족</span>
+          <span class="partner-badge">toss</span>
+          <span class="partner-badge">CGV</span>
+          <span class="partner-badge">yanolja</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">제휴사 할인 혜택</h3>
+          <p class="event-card__desc">다양한 제휴사와 함께하는 특별한 할인 혜택을 만나보세요!</p>
+          <div class="event-card__date">📅 2025.04.01(화) ~ 2025.06.30(월)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+    </div>
+    
+
+  </div>
+
+  
+  <aside class="side-col">
+
+    <div class="side-box">
+      <h3>이벤트 소식을 가장 먼저 받아보세요!</h3>
+      <p>새로운 이벤트, 공연 소식, 할인 정보를<br>이메일로 받아보실 수 있습니다.</p>
+      <div class="subscribe-input" id="subscribeInput">
+        <input type="email" id="subscribeEmail" placeholder="이메일을 입력하세요.">
+        <button type="button" onclick="subscribeEmail()">구독하기 →</button>
+      </div>
+      <div class="subscribe-success" id="subscribeSuccess">✓ 구독 신청이 완료되었습니다!</div>
+    </div>
+
+    <div class="side-box">
+      <h3 style="margin-bottom:14px;">인기 이벤트</h3>
+      <div class="popular-list">
+        <a href="{% url 'ui:event-detail' %}?id=1" class="popular-item">
+          <span class="popular-item__rank">1</span>
+          <div>
+            <div class="popular-item__title">EARLY BIRD 할인 이벤트</div>
+            <div class="popular-item__date">2025.04.01 ~ 2025.04.30</div>
+          </div>
+        </a>
+        <a href="{% url 'ui:event-detail' %}?id=3" class="popular-item">
+          <span class="popular-item__rank">2</span>
+          <div>
+            <div class="popular-item__title">공연 인증샷 이벤트</div>
+            <div class="popular-item__date">2025.04.05 ~ 2025.05.10</div>
+          </div>
+        </a>
+        <a href="{% url 'ui:event-detail' %}?id=5" class="popular-item">
+          <span class="popular-item__rank">3</span>
+          <div>
+            <div class="popular-item__title">아티스트 사인회 초대 이벤트</div>
+            <div class="popular-item__date">2025.04.15 ~ 2025.05.20</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    
+    <div class="gift-banner" onclick="window.location.href='{% url 'ui:events' %}'">
+      <div class="gift-banner__text">특별한 이벤트로<br>더 특별한 추억을!
+        <small>LINK TICKET과 함께하세요.</small>
+      </div>
+      <span>🎁</span>
+    </div>
+
+  </aside>
+</div>
+
+
+
+
+
+</div>{% endblock %}{% block scripts %}<script id="ui-routes" type="application/json">{"performances":"{% url 'ui:performances' %}","nftPayment":"{% url 'ui:nft-payment' %}","nftComplete":"{% url 'ui:nft-complete' %}"}</script><script src="{% static 'linkticket/collected/event_list.js' %}"></script>{% endblock %}

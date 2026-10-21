@@ -1,0 +1,32 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'payment/css/venue.css' %}?v=1">
+<script defer src="{% static 'payment/js/venue.js' %}?v=20260923-5"></script>
+{{ venue_map_config|json_script:'lt-venue-config' }}
+<dialog class="lt-venue-modal" aria-labelledby="lt-venue-title">
+<button type="button" class="lt-venue-close" aria-label="공연장 안내 닫기">×</button>
+<div class="lt-venue-layout">
+<aside class="lt-venue-info">
+<header><span class="lt-location-icon">●</span><div><h2 id="lt-venue-title">공연장 안내</h2><p>공연장의 위치와 교통 정보를 확인하세요.</p></div></header>
+<img class="lt-venue-photo" src="{% static venue.image %}" alt="{{ venue.name }} 공연장 시안 이미지">
+<h3>{{ venue.name }} ({{ venue.subtitle }})</h3><p>{{ venue.description }}</p>
+<dl><dt>♧　주소</dt><dd>{{ venue.address }}<small>{{ venue.address_note }}</small></dd><dt>▣　공연장명</dt><dd>{{ venue.name }} ({{ venue.subtitle }})</dd><dt>☎　대표전화</dt><dd>{{ venue.phone }}</dd><dt>♧　수용 인원</dt><dd>{{ venue.capacity }}</dd></dl>
+<a class="lt-btn lt-kakao-link" href="https://map.kakao.com/link/search/{{ venue.search_query|urlencode }}" target="_blank" rel="noopener noreferrer">▧　카카오맵에서 보기 ↗</a>
+<a class="lt-btn lt-directions" aria-disabled="true" target="_blank" rel="noopener noreferrer">♧　길찾기 시작하기 ↗</a>
+<small class="lt-venue-mock">{{ venue.data_status }}</small>
+</aside>
+<section class="lt-venue-right" aria-label="공연장 지도와 교통 안내">
+<div class="lt-map-frame"><div id="lt-kakao-map" aria-label="Kakao 공연장 지도"></div><div class="lt-map-fallback" role="status"><span>♧</span><strong>공연장 지도</strong><p>카카오맵 API 키를 설정하면 공연장 지도가 표시됩니다.</p></div>
+<div class="lt-map-types"><button type="button" data-map-type="map" class="active" disabled>지도</button><button type="button" data-map-type="sky" disabled>스카이뷰</button></div>
+<div class="lt-map-controls"><button type="button" data-venue-zoom="in" aria-label="지도 확대" disabled>＋</button><button type="button" data-venue-zoom="out" aria-label="지도 축소" disabled>−</button><button type="button" data-venue-center aria-label="공연장 위치로 이동" disabled>⊙</button></div></div>
+<div class="lt-venue-address"><span>📍　{{ venue.address }} {{ venue.address_note }}</span><button type="button" data-copy-address>▧ 주소 복사</button></div>
+<div class="lt-venue-tabs" role="tablist" aria-label="공연장 상세 안내">
+<button type="button" id="venue-tab-transit" role="tab" aria-selected="true" aria-controls="venue-panel-transit" data-venue-tab="transit">▣　대중교통 안내</button>
+<button type="button" id="venue-tab-parking" role="tab" aria-selected="false" aria-controls="venue-panel-parking" tabindex="-1" data-venue-tab="parking">▰　주차 안내</button>
+<button type="button" id="venue-tab-facilities" role="tab" aria-selected="false" aria-controls="venue-panel-facilities" tabindex="-1" data-venue-tab="facilities">♧　주변 편의시설</button>
+<button type="button" id="venue-tab-notices" role="tab" aria-selected="false" aria-controls="venue-panel-notices" tabindex="-1" data-venue-tab="notices">ⓘ　유의사항</button></div>
+<div id="venue-panel-transit" role="tabpanel" aria-labelledby="venue-tab-transit" class="lt-venue-transit" data-venue-panel="transit"><div><h3>▣　지하철 이용 시</h3>{% for item in venue.subway %}<p><b class="line-{{ item.color }}">{{ item.line }}</b><span>{{ item.station }}</span><small>→　{{ item.walk }}</small></p>{% endfor %}</div><div><h3>▣　버스 이용 시</h3>{% for item in venue.buses %}<p><b class="line-{{ item.color }}">{{ item.type }}</b><span>{{ item.routes }}</span></p>{% endfor %}</div></div>
+<div id="venue-panel-parking" role="tabpanel" aria-labelledby="venue-tab-parking" data-venue-panel="parking" hidden><h3>주차 안내</h3>{% for text in venue.parking %}<p>{{ text }}</p>{% endfor %}<small>Mock / 운영 정보 확인 예정</small></div>
+<div id="venue-panel-facilities" role="tabpanel" aria-labelledby="venue-tab-facilities" data-venue-panel="facilities" hidden><h3>주변 편의시설</h3>{% for text in venue.facilities %}<p>{{ text }}</p>{% endfor %}<small>Mock / 시설 목록 확인 예정</small></div>
+<div id="venue-panel-notices" role="tabpanel" aria-labelledby="venue-tab-notices" data-venue-panel="notices" hidden><h3>유의사항</h3>{% for text in venue.notices %}<p>{{ text }}</p>{% endfor %}</div>
+<p class="lt-venue-status" aria-live="polite"></p>
+</section></div></dialog>

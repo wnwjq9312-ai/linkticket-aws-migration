@@ -1,0 +1,191 @@
+{% extends 'payment/base.html' %}{% load static %}{% block content %}
+<div class="lt-banner booking" role="img" aria-label="티켓예매. 특별한 순간을 가장 가까이에서 만나는 방법, LINK TICKET">
+</div>
+<div class="lt-breadcrumb">⌂ 홈　›　티켓예매　›　공연 상세　›　<strong>예매하기</strong>
+</div>
+<main class="lt-booking-layout">
+<aside class="lt-sidebar">
+<section class="lt-panel lt-side-steps">
+<div>
+<b>01</b>
+<span>
+<strong>날짜/회차 선택</strong>
+<small>관람일과 회차를 선택하세요.</small>
+</span>
+</div>
+<div class="active">
+<b>02</b>
+<span>
+<strong>좌석 선택</strong>
+<small>원하는 좌석을 선택하세요.</small>
+</span>
+</div>
+<div>
+<b>03</b>
+<span>
+<strong>예매 정보 확인</strong>
+<small>선택한 정보를 확인하세요.</small>
+</span>
+</div>
+<div>
+<b>04</b>
+<span>
+<strong>결제하기</strong>
+<small>결제를 진행하세요.</small>
+</span>
+</div>
+<div>
+<b>05</b>
+<span>
+<strong>예매 완료</strong>
+<small>예매가 완료되었습니다.</small>
+</span>
+</div>
+</section>
+<img class="lt-ad" src="{% static 'payment/images/live-music.webp' %}" alt="LIVE MUSIC. BETTER. TOGETHER.">
+</aside>
+<div class="lt-booking-main">
+<section class="lt-panel lt-performance">
+{% include 'payment/includes/poster.html' with poster_class='lt-poster' %}
+<div class="lt-performance-copy">
+<span class="lt-badge">콘서트</span>
+<h1>{{ performance.title }}</h1>
+<p class="subtitle">{{ performance.subtitle }}</p>
+<ul>
+<li>▣　{{ dates.0.day }}부터</li>
+<li>♧　{{ performance.venue }} <button class="lt-pill" data-map>지도보기</button>
+</li>
+<li>◷　{{ performance.duration }}</li>
+<li>♧　{{ performance.age }}</li>
+</ul>
+<div class="lt-tags">
+<span>#{{ performance.artist }}</span>
+
+
+<span>#KPOP</span>
+</div>
+</div>
+<div class="lt-promo">
+<div class="lt-social">
+<button data-like>♡ 3.2만</button>
+<button data-share aria-label="공유하기">♧</button>
+</div>
+<div class="lt-music">More<br>Than<br>Music<hr>
+<small>음악 그 이상의 감동,<br>LINK TICKET과 함께</small>
+</div>
+</div>
+</section>
+<div class="lt-step-strip">
+<span>① 날짜/회차 선택</span>
+<strong>❷ 좌석 선택</strong>
+<span>③ 예매 정보 확인</span>
+<span>④ 결제하기</span>
+<span>⑤ 예매 완료</span>
+</div>
+<div class="lt-selection">
+<section class="lt-panel lt-seat-panel">
+<h2>좌석 선택 <button class="lt-help" data-seat-help aria-label="좌석 선택 도움말">ⓘ</button>
+</h2>
+<p class="lt-seat-guide">앞쪽 중앙 VIP · 전방 R · 중후방 S · 외곽/후방 A<br>등급 변경 시 선택 좌석이 해제됩니다. 잔여석은 현재 구역의 Mock 수량입니다.</p>
+<div class="lt-seat-map">
+<div class="lt-stage">STAGE</div>
+<div class="lt-wings">
+<span>A</span>
+<span>C</span>
+</div>
+<div class="lt-seat-grid" aria-label="1층 D구역 좌석">
+</div>
+<div class="lt-sections">
+<span>B</span>
+<span>D</span>
+</div>
+<div class="lt-sections lower">
+<span>E</span>
+<span>F</span>
+<span>G</span>
+</div>
+<div class="lt-map-controls">
+<button data-zoom="in" aria-label="좌석 확대">＋</button>
+<button data-zoom="out" aria-label="좌석 축소">−</button>
+<button data-zoom="reset" aria-label="배율 초기화">⟳</button>
+</div>
+</div>
+<div class="lt-legend">
+<span>
+<i class="available">
+</i>선택 가능 (등급색)</span>
+<span>
+<i class="selected">
+</i>선택한 좌석</span>
+<span>
+<i class="reserved">
+</i>예매 완료</span>
+<span>
+<i class="unavailable">
+</i>다른 등급 / 선택 불가</span>
+</div>
+</section>
+<section class="lt-panel lt-options">
+<h2>관람일/회차 선택</h2>
+<div class="booking-calendar" data-calendar></div><div class="lt-dates">{% for date in dates %}<button data-date="{{ date.id }}" data-label="{{ date.label }} {{ date.time }}" class="{% if forloop.first %}active{% endif %}">{{ date.label }}<br>{{ date.time }}</button>{% endfor %}</div>
+<h2>좌석 등급 선택</h2>
+<div class="lt-grades">{% for grade,price in prices.items %}<button data-grade="{{ grade }}">
+<i class="grade-{{ grade }}">
+</i>
+<strong>{{ grade }}석</strong>
+<span data-money="{{ price }}">
+</span>
+<small data-remaining="{{ grade }}"></small>
+</button>{% endfor %}</div>
+<label class="lt-discount">할인 / 쿠폰<select data-discount>
+<option value="none">선택 안 함</option>
+<option value="youth">청년 할인 (20%)</option>
+<option value="coupon">웰컴 쿠폰 (10,000원)</option>
+</select>
+</label>
+</section>
+</div>
+</div>
+<aside class="lt-booking-summary">
+<section class="lt-panel">{% include 'payment/includes/summary.html' %}</section>
+<section class="lt-panel">
+<div class="lt-section-heading">
+<h2>선택 좌석</h2>
+<button data-reset>⟳ 초기화</button>
+</div>
+<div data-selected-seats>
+</div>
+</section>
+<section class="lt-panel">
+<h2>결제 금액</h2>
+<div class="lt-line">
+<span>티켓 금액</span>
+<span data-subtotal>
+</span>
+</div>
+<div class="lt-line">
+<span>할인 금액</span>
+<span data-discount-total>
+</span>
+</div>
+<div class="lt-line">
+<span>예매 수수료</span>
+<span data-fee>
+</span>
+</div>
+<div class="lt-total">
+<strong>총 결제 금액</strong>
+<b data-total>
+</b>
+</div>
+<a href="{% url 'payment:checkout' %}?performance={{ performance.id }}" class="lt-btn primary" data-next>다음 단계　 →</a>
+<div class="lt-actions">
+<button data-like>♡ 찜하기</button>
+<button data-share>♧ 공유하기</button>
+</div>
+<p class="lt-info">◴　좌석을 선택한 후 다음 단계에서<br>　　결제를 진행해주세요.</p>
+</section>
+</aside>
+</main>
+
+{% endblock %}

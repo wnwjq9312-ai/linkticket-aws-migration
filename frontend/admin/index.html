@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LINKTICKET 관리자 페이지</title>
+<link rel="stylesheet" href="../shared/style.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-header">
+    <h1>LINKTICKET 관리자 페이지</h1>
+    <span class="role-badge" id="whoami">로그인이 필요합니다</span>
+  </div>
+
+  <div class="session-bar" id="login-bar">
+    <input type="text" id="login-id" placeholder="아이디" autocomplete="username" />
+    <input type="password" id="login-password" placeholder="비밀번호" autocomplete="current-password" />
+    <button id="login-btn">로그인</button>
+  </div>
+  <div class="session-bar" id="logout-bar" hidden>
+    <button class="secondary" id="logout-btn">로그아웃</button>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-button active" data-tab="dashboard">대시보드</button>
+    <button class="tab-button" data-tab="staff">직원 관리</button>
+    <button class="tab-button" data-tab="members">회원 관리</button>
+    <button class="tab-button" data-tab="reservations">예약 현황</button>
+    <button class="tab-button" data-tab="tickets">티켓 관리</button>
+  </nav>
+
+  <!-- 대시보드 -->
+  <section class="panel active" id="panel-dashboard">
+    <div class="kpi-row">
+      <div class="stat-tile"><div class="label">공개된 공연 수</div><div class="value" id="kpi-performances">—</div></div>
+      <div class="stat-tile"><div class="label">오늘 확정 예매 건수</div><div class="value" id="kpi-today-reservations">—</div></div>
+      <div class="stat-tile"><div class="label">전체 미판매 좌석 수</div><div class="value" id="kpi-unsold-seats">—</div></div>
+      <div class="stat-tile"><div class="label">누적 매출</div><div class="value" id="kpi-revenue">—</div></div>
+    </div>
+
+    <div class="card">
+      <h2>공연별 예매 현황</h2>
+      <form class="inline-form" id="dashboard-form">
+        <div class="field" style="grid-column: span 2">
+          <label for="d-performance">공연</label>
+          <select id="d-performance"></select>
+        </div>
+        <div>
+          <button type="submit">조회</button>
+        </div>
+      </form>
+
+      <div id="performance-summary"></div>
+
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--series-sold)"></span>판매완료(RESERVED)</span>
+        <span><span class="swatch" style="background:var(--series-unsold)"></span>미판매(AVAILABLE)</span>
+        <span><span class="swatch" style="background:var(--series-blocked)"></span>판매불가(BLOCKED)</span>
+      </div>
+      <div id="schedule-table" class="empty-state">공연을 선택하고 조회하세요.</div>
+    </div>
+  </section>
+
+  <!-- 직원 관리 -->
+  <section class="panel" id="panel-staff">
+    <div class="card">
+      <h2>직원 아이디 부여</h2>
+      <form class="inline-form" id="staff-create-form">
+        <div class="field">
+          <label for="st-login-id">아이디</label>
+          <input id="st-login-id" name="login_id" required />
+        </div>
+        <div class="field">
+          <label for="st-name">이름</label>
+          <input id="st-name" name="name" required />
+        </div>
+        <div class="field">
+          <label for="st-phone">연락처</label>
+          <input id="st-phone" name="phone" />
+        </div>
+        <div class="field">
+          <label for="st-email">이메일</label>
+          <input id="st-email" name="email" type="email" required />
+        </div>
+        <div class="field">
+          <label for="st-password">초기 비밀번호</label>
+          <input id="st-password" name="password" type="password" required />
+        </div>
+        <div>
+          <button type="submit">계정 발급</button>
+        </div>
+      </form>
+      <p class="muted">role은 자동으로 STAFF로 지정됩니다. 발급 후 직원 본인이 비밀번호를 변경하도록 안내하세요.</p>
+    </div>
+
+    <div class="card">
+      <h2>직원 목록</h2>
+      <div id="staff-list" class="empty-state">불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 회원 관리 -->
+  <section class="panel" id="panel-members">
+    <div class="card">
+      <h2>전체 회원</h2>
+      <div id="member-list" class="empty-state">불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 예약 현황 -->
+  <section class="panel" id="panel-reservations">
+    <div class="card">
+      <h2>전체 예약</h2>
+      <form class="inline-form" id="reservation-filter-form">
+        <div class="field">
+          <label for="r-status">상태 필터</label>
+          <select id="r-status">
+            <option value="">전체</option>
+            <option value="PENDING_PAYMENT">결제 대기</option>
+            <option value="CONFIRMED">예매 확정</option>
+            <option value="CANCELLED">취소</option>
+            <option value="EXPIRED">시간 초과</option>
+            <option value="REFUNDED">환불 완료</option>
+          </select>
+        </div>
+        <div><button type="submit">조회</button></div>
+      </form>
+      <div id="reservation-list" class="empty-state">불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 티켓 관리 -->
+  <section class="panel" id="panel-tickets">
+    <div class="card">
+      <h2>티켓 차단</h2>
+      <p class="muted">부정 사용(양도/암표 등)이 확인된 티켓을 차단 처리합니다. 차단된 티켓은 검표 시 거부됩니다.</p>
+      <form class="inline-form" id="ticket-block-form">
+        <div class="field">
+          <label for="t-ticket-id">티켓 ID</label>
+          <input id="t-ticket-id" type="number" min="1" required />
+        </div>
+        <div><button type="submit" class="danger">차단</button></div>
+      </form>
+      <div id="ticket-block-result"></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../shared/api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

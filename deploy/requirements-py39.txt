@@ -1,0 +1,9 @@
+# Compatibility bounds for the requested legacy Python 3.9 runtime.
+# Resolve/freeze on the target before release; this is not a security support claim.
+Django==4.2.30
+djangorestframework>=3.14,<3.17
+redis>=5,<6
+python-dotenv>=1,<1.2
+PyMySQL>=1.1,<1.2
+Pillow>=10.4,<12
+gunicorn>=23,<24

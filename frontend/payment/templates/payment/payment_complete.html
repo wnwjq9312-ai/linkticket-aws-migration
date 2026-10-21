@@ -1,0 +1,69 @@
+{% extends 'payment/base.html' %}
+{% load static %}
+{% block title %}LINKTICKET · 결제 완료{% endblock %}
+{% block page %}complete{% endblock %}
+{% block content %}
+<div class="lt-complete-background">
+<main class="lt-complete">
+<nav class="lt-complete-steps" aria-label="예매 진행 단계"><span><b>1</b> 좌석 선택</span><i></i><span><b>2</b> 결제하기</span><i></i><strong aria-current="step"><b>3</b> 결제 완료</strong></nav>
+<header class="lt-success-heading"><div class="lt-success-check">✓</div><div><h1>예매가 <span>완료되었습니다!</span></h1><p>LINKTICKET을 이용해 주셔서 감사합니다.<br>멋진 공연에서 특별한 추억을 만드시길 바랍니다.</p><small>Mock 결제 성공 · 실제 결제 및 티켓 발급은 이루어지지 않습니다.</small></div></header>
+<div class="lt-complete-grid">
+<div class="lt-complete-main">
+<div class="lt-receipt-grid">
+<div class="lt-complete-poster">{% include 'payment/includes/poster.html' %}<span>LIVE CONCERT</span></div>
+<section class="lt-panel lt-receipt" id="reservation-details" tabindex="-1"><h2>예매 상세 정보</h2>
+<dl>
+<dt>▧　예매번호</dt><dd>{{ receipt.code }}</dd>
+<dt>♬　공연명</dt><dd>{{ receipt.title }}</dd>
+<dt>▣　공연일시</dt><dd>{{ receipt.schedule }}</dd>
+<dt>♧　공연장</dt><dd>{{ receipt.venue }}</dd>
+<dt>▤　좌석정보</dt><dd><ul class="lt-receipt-seats">{% for seat in receipt.seats %}<li><b>{{ receipt.grade }}석</b> · {{ seat }}</li>{% endfor %}</ul></dd>
+<dt>♧　티켓수량</dt><dd>{{ receipt.quantity }}매</dd>
+<dt>♙　예매자명</dt><dd>{{ receipt.name }}</dd>
+<dt>♧　연락처</dt><dd>{{ receipt.phone }}</dd>
+<dt>▣　결제수단</dt><dd>{{ receipt.method }}{% if receipt.card %} ({{ receipt.card }}) · {{ receipt.installment }}{% endif %}</dd>
+<dt>▣　결제일시</dt><dd>{{ receipt.paid_at }}</dd>
+</dl>
+<div class="lt-line"><span>할인금액</span><strong data-money="{{ receipt.discount }}">{{ receipt.discount }}원</strong></div>
+<div class="lt-complete-total"><strong>최종 결제금액</strong><b data-money="{{ receipt.total }}">{{ receipt.total }}원</b><button data-open-payment-dialog="lt-detail-dialog">결제 내역 보기 ›</button></div>
+</section></div>
+<div class="lt-complete-actions"><a class="lt-btn" href="/">⌂　홈으로 가기</a><a class="lt-btn" href="#reservation-details">☷　예매내역 보기</a><a class="lt-btn" href="{% url 'payment:booking' %}">▣　다른 공연 예매하기</a></div>
+</div>
+<aside class="lt-complete-aside">
+<section class="lt-panel lt-ticket-notice"><i>♧</i><h2>모바일 티켓 발급 안내</h2><p>실제 서비스에서는 마이페이지 &gt; 예매내역에서<br>모바일 티켓(QR코드)을 확인하실 수 있습니다.</p><button class="lt-btn gradient" data-open-payment-dialog="lt-ticket-dialog">모바일 티켓 확인하기　→</button></section>
+<section class="lt-panel lt-visit-notice"><h2>♧　꼭 확인해주세요!</h2><ul><li>공연 시작 1시간 전까지 입장해주세요.</li><li>실제 서비스의 입장 규정은 추후 확정됩니다.</li><li>예매한 좌석 이외의 좌석으로 이동할 수 없습니다.</li><li>취소·환불은 공연별 확정 규정을 확인해주세요.</li><li>공연장 내 음식물 반입이 제한될 수 있습니다.</li></ul><small>시안용 관람 안내입니다. 실제 규정은 추후 연결됩니다.</small><button data-open-payment-dialog="lt-refund-dialog">취소/환불 규정 보기</button></section>
+<section class="lt-panel lt-review-notice"><i>♡</i><h2>좋은 공연이 되셨나요?</h2><p>관람 후기를 남겨주세요.<br>다른 팬들에게 큰 도움이 됩니다!</p><button data-title="공연 후기" data-complete-info="공연 후기 기능은 다른 팀원의 마이페이지·공연 영역과 통합 후 연결됩니다.">후기 작성하기 →</button></section>
+</aside></div>
+<section class="lt-recommendations"><div class="lt-section-heading"><h2>이런 공연은 어떠세요?</h2><button data-title="추천 공연" data-complete-info="추천 공연은 첨부 시안의 임시 데이터입니다. 공연 목록·상세 기능 통합 후 연결됩니다.">전체보기 ›</button></div>
+<div class="lt-recommendation-grid">
+{% for show in recommendations %}<button class="lt-recommendation" data-title="{{ show.name }}" data-complete-info="{{ show.subtitle }} · {{ show.date }} · {{ show.venue }}. 추천 공연은 화면용 Mock Data이며 상세 페이지는 통합 후 연결됩니다."><img src="{% static show.image %}" alt="{{ show.name }} 공연 이미지"><strong>{{ show.name }}</strong><span>{{ show.subtitle }}</span><small>{{ show.date }}　|　{{ show.venue }}</small></button>{% endfor %}
+</div></section>
+</main></div>
+
+<dialog class="lt-payment-dialog" id="lt-detail-dialog" aria-labelledby="lt-detail-title">
+<button class="lt-modal-close" data-close-payment-dialog aria-label="결제 내역 닫기">×</button>
+<h2 id="lt-detail-title">결제 상세내역 · Mock</h2>
+<div class="lt-line"><span>티켓 금액</span><strong data-money="{{ receipt.subtotal }}"></strong></div>
+<div class="lt-line"><span>할인 금액</span><strong data-money="{{ receipt.discount }}"></strong></div>
+<div class="lt-line"><span>예매 수수료</span><strong data-money="{{ receipt.fee }}"></strong></div>
+<div class="lt-total"><strong>최종 결제 금액</strong><b data-money="{{ receipt.total }}"></b></div>
+<p>{{ receipt.method }} (Mock) · {{ receipt.paid_at }}</p><p>실제 청구나 승인 내역이 아닙니다.</p>
+</dialog>
+<dialog class="lt-payment-dialog lt-mock-ticket" id="lt-ticket-dialog" aria-labelledby="lt-ticket-title">
+<button class="lt-modal-close" data-close-payment-dialog aria-label="모바일 티켓 닫기">×</button>
+<h2 id="lt-ticket-title">LINKTICKET · Mock Ticket</h2>
+<strong class="lt-demo-badge">DEMO · 실제 입장 불가</strong>
+<h3>{{ receipt.title }}</h3><p>{{ receipt.schedule }}</p><p>{{ receipt.venue }}</p>
+<ul class="lt-receipt-seats">{% for seat in receipt.seats %}<li>{{ receipt.grade }}석 · {{ seat }}</li>{% endfor %}</ul>
+<p>예매번호 <b>{{ receipt.code }}</b></p>
+<div class="lt-mock-qr" role="img" aria-label="스캔 기능이 없는 Mock QR 시안"><div class="lt-qr-pattern"></div><strong>DEMO</strong></div>
+<p>Mock QR 시안 · 스캔/입장 기능 없음<br>개인정보를 담지 않은 장식 이미지입니다.</p>
+</dialog>
+<dialog class="lt-payment-dialog" id="lt-refund-dialog" aria-labelledby="lt-refund-title">
+<button class="lt-modal-close" data-close-payment-dialog aria-label="취소 환불 안내 닫기">×</button>
+<h2 id="lt-refund-title">취소/환불 · Mock 안내</h2>
+<p>LINKTICKET 프로젝트의 화면 확인용 안내입니다. 실제 사업자의 취소·환불 정책이 아닙니다.</p>
+<p>현재는 결제와 좌석 확보가 이루어지지 않아 취소 요청이나 환불도 처리하지 않습니다.</p>
+<p>실제 서비스에서는 공연별 취소 가능 기간, 수수료, 환불 방법 및 문의처를 확인한 뒤 확정 정책을 연결할 예정입니다.</p>
+</dialog>
+{% endblock %}

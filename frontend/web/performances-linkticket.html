@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공연 - LINKTICKET</title>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --white: #ffffff;
+    --ink: #14161f;
+    --muted: #6b7280;
+    --line: #e6e8ee;
+    --blue: #2563eb;
+    --blue-dark: #1d4ed8;
+    --blue-light: #eef4ff;
+    --red: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+
+  /* ── 헤더 (메인 페이지와 동일) ───────────────────────── */
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 68px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+  }
+  .left-group { display: flex; align-items: center; height: 100%; }
+  .left-group > * + * { margin-left: 32px; }
+  .logo { font-size: 21px; font-weight: 900; letter-spacing: .5px; flex: none; color: var(--ink); }
+  .logo span { color: var(--blue); }
+
+  .main-nav { display: flex; align-items: center; height: 100%; font-size: 14px; font-weight: 600; flex: none; }
+  .main-nav > * + * { margin-left: 40px; }
+  .main-nav a {
+    color: #4b5163; background: none; border: none; font: inherit; padding: 0;
+    position: relative; display: flex; align-items: center; height: 100%;
+  }
+  .main-nav a:hover { color: var(--ink); }
+  .main-nav .active { color: var(--ink); }
+  .main-nav .active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 2px; background: var(--blue);
+  }
+
+  .right-group { display: flex; align-items: center; }
+  .right-group > * + * { margin-left: 18px; }
+
+  .search-bar {
+    flex: none; width: 260px;
+    display: flex; align-items: center;
+    background: #f1f3f8; border: 1px solid var(--line);
+    border-radius: 999px; padding: 10px 18px;
+    color: var(--muted);
+  }
+  .search-bar > * + * { margin-left: 10px; }
+  .search-bar svg { flex: none; opacity: .6; }
+  .search-bar input {
+    flex: 1; background: none; border: none; outline: none;
+    color: var(--ink); font-size: 13px; font-family: inherit;
+  }
+  .search-bar input::placeholder { color: #9aa0b0; }
+
+  .head-right { display: flex; align-items: center; font-size: 14px; flex: none; }
+  .head-right > * + * { margin-left: 14px; }
+  #auth-area { display: flex; align-items: center; color: #4b5163; font-weight: 600; }
+  #auth-area > * + * { margin-left: 8px; }
+  #auth-area a:hover { color: var(--ink); }
+  #auth-area .sep { color: var(--line); }
+
+  @media (max-width: 980px) {
+    .main-nav, .search-bar { display: none; }
+  }
+
+  /* ── 페이지 히어로 (공연 목록용 - 배경 이미지 교체 가능, 사진 위라 어둡게 유지) ────── */
+  .page-hero {
+    position: relative; overflow: hidden;
+    padding: 46px 40px 40px;
+    min-height: 300px;
+    background:
+      linear-gradient(180deg, rgba(5,5,10,.4), rgba(11,10,21,.72)),
+      url('assets/hero-bg.jpg') center 35% / cover no-repeat;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .page-hero-inner { max-width: 560px; }
+  .page-hero .tag { font-size: 12px; letter-spacing: 3px; color: #cfe0ff; font-weight: 700; margin-bottom: 14px; }
+  .page-hero h1 { font-size: 34px; line-height: 1.25; margin: 0 0 12px; font-weight: 800; color: #fff; }
+  .page-hero p { color: #e6e9f3; font-size: 14px; margin: 0; }
+  .page-hero-side {
+    text-align: right; font-style: italic; font-size: 20px; line-height: 1.35;
+    color: rgba(255,255,255,.9); flex: none;
+  }
+  @media (max-width: 900px) { .page-hero-side { display: none; } }
+
+  /* ── 카테고리 아이콘 스트립 (메인 페이지와 동일) ───────────── */
+  .strip { display: flex; padding: 26px 40px; align-items: stretch; }
+  .strip > * + * { margin-left: 18px; }
+  .cat-icons {
+    flex: 1; display: flex; overflow-x: auto;
+    background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 14px 10px;
+  }
+  .cat-icons > * + * { margin-left: 10px; }
+  .cat-btn {
+    background: none; border: none; display: flex; flex-direction: column; align-items: center;
+    padding: 8px 16px; color: #6b7280; font-size: 12px; font-weight: 600; border-radius: 12px; flex: none;
+  }
+  .cat-btn > * + * { margin-top: 8px; }
+  .cat-btn .ico {
+    width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--blue-light); border: 1px solid var(--line);
+  }
+  .cat-btn:hover, .cat-btn.active { color: var(--ink); }
+  .cat-btn.active .ico { background: var(--blue); color: #fff; border-color: transparent; }
+
+  .membership {
+    flex: none; width: 300px; border-radius: 16px; padding: 20px 22px;
+    background: linear-gradient(120deg, #eef2ff, #e3ecff);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .membership .txt .eng { font-size: 11px; letter-spacing: 2px; color: var(--blue); opacity: .9; }
+  .membership .txt h4 { margin: 2px 0 4px; font-size: 15px; color: var(--ink); }
+  .membership .txt p { margin: 0; font-size: 12px; color: var(--muted); }
+  .membership .chev { font-size: 22px; opacity: .6; margin-left: 10px; color: var(--ink); }
+  @media (max-width: 980px) { .membership { display: none; } }
+
+  /* ── 본문: 좌측 필터 + 우측 목록 ───────────────────── */
+  .layout {
+    display: flex; align-items: flex-start;
+    padding: 10px 40px 60px;
+  }
+  .layout > * + * { margin-left: 28px; }
+
+  .filters {
+    flex: none; width: 240px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 16px;
+    padding: 22px;
+    position: sticky; top: 88px;
+  }
+  .filters h3 { font-size: 15px; margin: 0 0 16px; color: var(--ink); }
+  .filter-group { margin-bottom: 22px; }
+  .filter-group .fg-title {
+    display: flex; align-items: center; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 10px;
+  }
+  .filter-group .fg-title > * + * { margin-left: 6px; }
+  .filter-group label {
+    display: flex; align-items: center; font-size: 13px; color: var(--muted);
+    padding: 5px 0; cursor: pointer;
+  }
+  .filter-group label > * + * { margin-left: 8px; }
+  .filter-group label:hover { color: var(--ink); }
+  .filter-group input[type="checkbox"] { accent-color: var(--blue); width: 14px; height: 14px; }
+  .filter-group input[type="date"] {
+    width: 100%; margin-top: 8px; padding: 9px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--white); color: var(--ink); font-size: 12px; font-family: inherit;
+  }
+  .filters .apply-btn {
+    display: block; width: 100%; padding: 13px; border: none; border-radius: 10px;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 14px; margin-top: 6px;
+  }
+  .filters .apply-btn:hover { background: var(--blue-dark); }
+  @media (max-width: 980px) { .filters { display: none; } }
+
+  .results { flex: 1; min-width: 0; }
+  .results-head {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;
+  }
+  .results-head .count { font-size: 17px; font-weight: 800; color: var(--ink); }
+  .results-head .count span { color: var(--blue); }
+  .sort-select {
+    background: var(--white); border: 1px solid var(--line); color: var(--ink);
+    border-radius: 8px; padding: 9px 14px; font-size: 13px; font-family: inherit;
+  }
+
+  #performance-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  @media (min-width: 1700px) { #performance-grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (max-width: 1200px) { #performance-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 860px) { #performance-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .perf-card {
+    position: relative; display: block; border-radius: 14px; overflow: hidden;
+    background: var(--white); border: 1px solid var(--line);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .perf-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(20,22,40,.09); }
+  .perf-card .thumb {
+    position: relative;
+    aspect-ratio: 4/3;
+    background: linear-gradient(150deg, #dfe6f7, #c7d3ef);
+    background-size: cover;
+    display: flex; align-items: center; justify-content: center;
+    color: #6b7280; font-size: 12px; text-align: center; padding: 12px;
+  }
+  .perf-card .fav {
+    position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(255,255,255,.9); border: none; color: #9aa0b0; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .perf-card .fav.on { color: var(--red); }
+  .perf-card .meta { padding: 14px; }
+  .perf-card .cat { font-size: 11px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+  .perf-card h3 { margin: 0 0 6px; font-size: 15px; font-weight: 700; color: var(--ink); }
+  .perf-card .date, .perf-card .venue {
+    font-size: 12px; color: var(--muted); display: flex; align-items: center;
+  }
+  .perf-card .date > * + *, .perf-card .venue > * + * { margin-left: 5px; }
+  .perf-card .date { margin-bottom: 3px; }
+  .perf-card .tags { display: flex; flex-wrap: wrap; margin-top: 9px; }
+  .perf-card .tags > * + * { margin-left: 6px; }
+  .perf-card .tags span { font-size: 11px; color: var(--blue); }
+
+  .skeleton, .empty { color: var(--muted); font-size: 14px; padding: 40px 0; text-align: center; grid-column: 1/-1; }
+
+  .pagination {
+    display: flex; align-items: center; justify-content: center; margin-top: 32px;
+  }
+  .pagination > * + * { margin-left: 8px; }
+  .pagination button {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--white); color: #4b5163; font-size: 13px; font-weight: 600;
+  }
+  .pagination button:hover { border-color: var(--blue); color: var(--ink); }
+  .pagination button.active { background: var(--blue); border-color: transparent; color: #fff; }
+  .pagination button:disabled { opacity: .35; cursor: default; }
+
+  /* ── 토스트 / 모달 ────────────────── */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); border: 1px solid var(--line); color: #fff;
+    padding: 12px 24px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    box-shadow: 0 14px 34px rgba(0,0,0,.25); z-index: 100;
+    opacity: 0; transition: opacity .2s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,12,20,.5);
+    display: none; align-items: center; justify-content: center; z-index: 50;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal { width: min(420px, 90vw); padding: 30px; border-radius: 16px; background: #fff; border: 1px solid var(--line); position: relative; }
+  .modal h2 { font-size: 18px; margin: 0 0 12px; color: var(--ink); }
+  .modal p { font-size: 14px; color: var(--muted); margin: 0 0 20px; }
+  .modal .close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 18px; color: var(--muted); }
+  .modal .close:hover { color: var(--ink); }
+  .modal .dont-show { font-size: 12px; color: var(--muted); display: flex; align-items: center; }
+  .modal .dont-show > * + * { margin-left: 6px; }
+  .modal .modal-login-btn {
+    display: block; width: 100%; box-sizing: border-box; text-align: center;
+    padding: 13px; border-radius: 8px; margin-top: 6px;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none;
+  }
+  .modal .modal-login-btn:hover { background: var(--blue-dark); }
+
+  /* ── 푸터 (메인 페이지와 동일) ───────────────────────── */
+  footer {
+    border-top: 1px solid var(--line); background: var(--white);
+    padding: 30px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  }
+  footer .brand-col .logo { font-size: 17px; margin-bottom: 4px; }
+  footer .brand-col .tagline { font-size: 11px; letter-spacing: 2px; color: var(--muted); }
+  .feat-row { display: flex; flex-wrap: wrap; margin: 6px 0; }
+  .feat-row > * { margin: 0 17px; }
+  .feat { display: flex; align-items: center; }
+  .feat > * + * { margin-left: 10px; }
+  .feat .ico {
+    width: 38px; height: 38px; border-radius: 50%; background: var(--blue-light); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; color: var(--blue); flex: none;
+  }
+  .feat h5 { margin: 0; font-size: 13px; color: var(--ink); }
+  .feat p { margin: 0; font-size: 11px; color: var(--muted); }
+  .footer-cta { font-size: 13px; color: var(--muted); text-align: right; }
+  .footer-cta .brand { font-weight: 800; color: var(--ink); }
+  .footer-cta .brand span { color: var(--blue); }
+  .legal-links { display: flex; font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .legal-links > * + * { margin-left: 14px; }
+  .legal-links a:hover { color: var(--ink); }
+
+  @media (max-width: 980px) { footer { justify-content: center; text-align: center; } .footer-cta { text-align: center; } }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="left-group">
+      <a href="/" class="logo">LINK<span>TICKET</span></a>
+      <nav class="main-nav">
+        <a href="/">홈</a>
+        <a href="/performances" class="active">공연</a>
+        <a href="/tickets">티켓예매</a>
+        <a href="/events">이벤트</a>
+        <a href="/nft">NFT</a>
+      </nav>
+    </div>
+    <div class="right-group">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" placeholder="공연, 아티스트를 검색하세요...">
+      </div>
+      <div class="head-right">
+        <div id="auth-area">
+          <a href="/login">로그인</a>
+          <span class="sep">|</span>
+          <a href="/login?tab=signup">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="page-hero-inner">
+      <div class="tag">CONCERT</div>
+      <h1>음악이 만드는<br>특별한 순간</h1>
+      <p>좋은 공연은, 언제나 당신의 일상을 더 특별하게 합니다.</p>
+    </div>
+    <div class="page-hero-side">Live<br>More<br>Music</div>
+  </section>
+
+  <div class="strip">
+    <div class="cat-icons" id="cat-icons">
+      <button class="cat-btn active" data-genre="all"><span class="ico">★</span>전체</button>
+      <button class="cat-btn" data-genre="콘서트"><span class="ico">🎤</span>콘서트</button>
+      <button class="cat-btn" data-genre="뮤지컬"><span class="ico">🎵</span>뮤지컬</button>
+      <button class="cat-btn" data-genre="페스티벌"><span class="ico">🎉</span>페스티벌</button>
+      <button class="cat-btn" data-genre="연극"><span class="ico">🎭</span>연극</button>
+      <button class="cat-btn" data-genre="클래식"><span class="ico">🎻</span>클래식</button>
+      <button class="cat-btn" data-genre="팬미팅"><span class="ico">💎</span>팬미팅</button>
+      <button class="cat-btn" data-genre="기타"><span class="ico">✨</span>기타</button>
+    </div>
+    <a class="membership" href="/performances?genre=콘서트">
+      <div class="txt">
+        <div class="eng">SPECIAL CONCERT</div>
+        <h4>지금, 특별한 공연을</h4>
+        <p>만나보세요!</p>
+      </div>
+      <span class="chev">›</span>
+    </a>
+  </div>
+
+  <div class="layout">
+    <aside class="filters">
+      <h3>필터 검색</h3>
+
+      <div class="filter-group">
+        <div class="fg-title"><span>📍</span><span>지역</span></div>
+        <label><input type="checkbox" name="region" value="all" checked>전체</label>
+        <label><input type="checkbox" name="region" value="서울">서울</label>
+        <label><input type="checkbox" name="region" value="부산">부산</label>
+        <label><input type="checkbox" name="region" value="대구">대구</label>
+        <label><input type="checkbox" name="region" value="인천">인천</label>
+        <label><input type="checkbox" name="region" value="광주">광주</label>
+        <label><input type="checkbox" name="region" value="대전">대전</label>
+        <label><input type="checkbox" name="region" value="기타">기타</label>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title"><span>📅</span><span>기간</span></div>
+        <label><input type="checkbox" name="period" value="all" checked>전체</label>
+        <label><input type="checkbox" name="period" value="week">이번 주</label>
+        <label><input type="checkbox" name="period" value="month">이번 달</label>
+        <label><input type="checkbox" name="period" value="next-month">다음 달</label>
+        <input type="date" id="date-pick">
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title"><span>💰</span><span>가격대</span></div>
+        <label><input type="checkbox" name="price" value="all" checked>전체</label>
+        <label><input type="checkbox" name="price" value="0-5">~ 5만원</label>
+        <label><input type="checkbox" name="price" value="5-10">5만원 ~ 10만원</label>
+        <label><input type="checkbox" name="price" value="10-15">10만원 ~ 15만원</label>
+        <label><input type="checkbox" name="price" value="15-">15만원 이상</label>
+      </div>
+
+      <button class="apply-btn" id="apply-filters-btn">🔍 검색하기</button>
+    </aside>
+
+    <main class="results">
+      <div class="results-head">
+        <div class="count">전체 공연 <span id="result-count">0</span>개</div>
+        <select class="sort-select" id="sort-select">
+          <option value="latest">최신순</option>
+          <option value="name">이름순</option>
+        </select>
+      </div>
+
+      <div id="performance-grid">
+        <div class="skeleton" id="grid-skeleton">공연 목록을 불러오는 중…</div>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </main>
+  </div>
+
+  <footer>
+    <div class="brand-col">
+      <div class="logo">LINK<span style="color:#2563eb">TICKET</span></div>
+      <div class="tagline">MUSIC CONNECTS US</div>
+      <div class="legal-links">
+        <a href="/terms">이용약관</a>
+        <a href="/privacy">개인정보 처리방침</a>
+      </div>
+    </div>
+    <div class="feat-row">
+      <div class="feat"><span class="ico">🎧</span><div><h5>다양한 공연</h5><p>콘서트, 뮤지컬, 페스티벌까지</p></div></div>
+      <div class="feat"><span class="ico">⚡</span><div><h5>빠른 예매</h5><p>안정적이고 빠른 예매 시스템</p></div></div>
+      <div class="feat"><span class="ico">🛡️</span><div><h5>안전한 결제</h5><p>안심하고 이용하세요</p></div></div>
+      <div class="feat"><span class="ico">🤝</span><div><h5>특별한 경험</h5><p>LINK TICKET만의 이벤트</p></div></div>
+    </div>
+    <div class="footer-cta">
+      지금, 당신의 특별한 순간을<br>
+      <span class="brand">LINK<span>TICKET</span></span>과 함께하세요.
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="session-modal">
+    <div class="modal">
+      <button class="close" id="session-modal-close">&times;</button>
+      <h2>로그인이 필요합니다</h2>
+      <p>세션이 만료되어 로그인이 해제되었습니다. 계속 이용하시려면 다시 로그인해주세요.</p>
+      <a href="/login" class="modal-login-btn">로그인하기</a>
+    </div>
+  </div>
+
+<script>
+/*
+ * 이 페이지는 메인 페이지(index)와 헤더·푸터·카테고리 스트립·로그인 상태 로직을
+ * 그대로 공유합니다. 좌측 필터(지역/기간/가격대)는 UI까지만 완성되어 있고,
+ * 실제 필터링은 performance 데이터에 region/price/date 필드가 있을 때만 동작합니다.
+ * 해당 필드가 아직 API에 없다면 그 조건은 자동으로 무시(전체 통과)됩니다.
+ */
+
+const FALLBACK_PERFORMANCES = [
+  { id: 1, title: "2025 공연 1 (더미)", category: "콘서트", venue: "KSPO DOME", region: "서울", date: "2025.04.12(토) - 04.14(월)", tags: ["콘서트", "서울"] },
+  { id: 2, title: "공연 2 (더미)", category: "뮤지컬", venue: "블루스퀘어", region: "서울", date: "2025.07.12(토) - 10.26(일)", tags: ["뮤지컬", "서울"] },
+  { id: 3, title: "공연 3 (더미)", category: "연극", venue: "장소 미정", region: "부산", date: "2025.05.10(토) - 05.12(월)", tags: ["연극"] },
+  { id: 4, title: "공연 4 (더미)", category: "페스티벌", venue: "난지한강공원", region: "서울", date: "2025.06.14(토) - 06.15(일)", tags: ["페스티벌", "서울"] },
+];
+
+let ALL_PERFORMANCES = [];
+let currentGenre = "all";
+let currentPage = 1;
+const PAGE_SIZE = 8;
+let sessionKnownLoggedIn = null;
+const SESSION_CHECK_INTERVAL_MS = 5 * 60 * 1000;
+let sessionCheckTimer = null;
+
+async function fetchJSON(path, fallback) {
+  try {
+    const res = await fetch(path, {
+      headers: { Accept: "application/json" },
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error(res.status);
+    return await res.json();
+  } catch (err) {
+    console.warn(`[stub] ${path} 응답 실패, 더미 데이터 사용:`, err.message);
+    return fallback;
+  }
+}
+
+async function fetchAuthMe() {
+  // /api/auth/me/ 는 새 컨벤션(DRF)에서 200+{success,data:{회원정보}} 또는 401로 응답합니다.
+  // fetchJSON의 "실패하면 그냥 fallback" 방식과 달리, 401은 "확실히 로그아웃 상태"로
+  // 구분해서 처리해야 해서 별도 함수로 뺐습니다.
+  try {
+    const res = await fetch("/api/auth/me/", { headers: { Accept: "application/json" }, credentials: "include" });
+    if (!res.ok) return { logged_in: false };
+    const body = await res.json();
+    return { logged_in: true, ...(body.data || {}) };
+  } catch (err) {
+    console.warn("[stub] /api/auth/me/ 응답 실패, 더미 데이터 사용:", err.message);
+    return { logged_in: false };
+  }
+}
+
+function showToast(text) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = text;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+  return toast;
+}
+
+function renderAuth(user) {
+  const area = document.getElementById("auth-area");
+  if (user && user.logged_in) {
+    area.innerHTML = `<a href="/mypage/">${user.name}님</a><span class="sep">|</span><a href="#" id="logout-link">로그아웃</a>`;
+    document.getElementById("logout-link").addEventListener("click", async (e) => {
+      e.preventDefault();
+      let message = "로그아웃 되었습니다.";
+      try {
+        const res = await fetch("/api/auth/logout/", { method: "POST", credentials: "include" });
+        const data = await res.json();
+        message = data.message || message;
+      } catch (err) {
+        message = "로그아웃 요청에 실패했습니다.";
+      }
+      showToast(message);
+      setTimeout(() => { location.href = "/"; }, 600);
+    });
+  } else {
+    area.innerHTML = `<a href="/login">로그인</a><span class="sep">|</span><a href="/login?tab=signup">회원가입</a>`;
+  }
+}
+
+function openSessionExpiredModal() {
+  const overlay = document.getElementById("session-modal");
+  if (overlay) overlay.classList.add("open");
+}
+function setupSessionModal() {
+  const overlay = document.getElementById("session-modal");
+  const closeBtn = document.getElementById("session-modal-close");
+  closeBtn.addEventListener("click", () => overlay.classList.remove("open"));
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.classList.remove("open"); });
+}
+function startSessionCheckTimer() {
+  if (sessionCheckTimer) return;
+  sessionCheckTimer = setInterval(checkSessionStatus, SESSION_CHECK_INTERVAL_MS);
+}
+function stopSessionCheckTimer() {
+  if (sessionCheckTimer) { clearInterval(sessionCheckTimer); sessionCheckTimer = null; }
+}
+function setupSessionVisibilityWatcher() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") { checkSessionStatus(); startSessionCheckTimer(); }
+    else { stopSessionCheckTimer(); }
+  });
+}
+async function checkSessionStatus() {
+  try {
+    const res = await fetch("/api/auth/me/", { headers: { Accept: "application/json" }, credentials: "include" });
+    // 새 방식: 로그인 상태면 200, 아니면 401 — 상태코드 자체로 판단 (본문 파싱 불필요)
+    const nowLoggedIn = res.ok;
+    const user = { logged_in: nowLoggedIn };
+    if (sessionKnownLoggedIn === true && nowLoggedIn === false) {
+      renderAuth(user);
+      openSessionExpiredModal();
+    }
+    sessionKnownLoggedIn = nowLoggedIn;
+  } catch (err) {
+    console.warn("세션 상태 확인 실패(다음 주기에 재시도):", err.message);
+  }
+}
+
+/* ── 공연 카드 렌더링 (메인 페이지와 동일한 이미지 프리로드 방식) ── */
+const GENRE_KO = { CONCERT: "콘서트", MUSICAL: "뮤지컬", FESTIVAL: "페스티벌", PLAY: "연극", CLASSICAL: "클래식", FANMEETING: "팬미팅", EXHIBITION_ETC: "전시/기타" };
+
+// 실제 WAS(DRF, /api/performances/) 응답은 performance_id/performance_name/genre(영문코드) 형태라
+// 우리 화면이 기대하는 id/title/category/venue 형태로 변환해줍니다.
+// (date/tags/badge는 이 목록 API엔 아직 없어서 표시가 안 될 수 있음 — 카드가 그 필드 없이도
+// 동작하도록 이미 만들어뒀지만, 필요하면 나중에 이 목록 API에도 필드 추가 요청 필요)
+function normalizePerformance(p) {
+  if (p.performance_id === undefined) return p;
+  return {
+    id: p.performance_id,
+    title: p.performance_name,
+    category: GENRE_KO[p.genre] || p.genre,
+    venue: p.venue_name,
+  };
+}
+
+function renderPerformances(rawList) {
+  const list = (Array.isArray(rawList) ? rawList : rawList.results || []).map(normalizePerformance);
+  const grid = document.getElementById("performance-grid");
+  grid.innerHTML = "";
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="empty">조건에 맞는 공연이 없습니다.</div>`;
+    return;
+  }
+  list.forEach((p) => {
+    const card = document.createElement("a");
+    card.className = "perf-card";
+    card.href = `/performances/${p.id}`;
+    const dateRow = p.date ? `<div class="date"><span>📅</span><span>${p.date}</span></div>` : "";
+    const tagsRow = (p.tags && p.tags.length)
+      ? `<div class="tags">${p.tags.map((t) => `<span>#${t}</span>`).join("")}</div>` : "";
+    card.innerHTML = `
+      <div class="thumb"><span class="thumb-fallback">${p.title} 이미지</span></div>
+      <button class="fav" type="button" aria-label="찜하기">♥</button>
+      <div class="meta">
+        <div class="cat">${p.category}</div>
+        <h3>${p.title}</h3>
+        ${dateRow}
+        <div class="venue"><span>📍</span><span>${p.venue}</span></div>
+        ${tagsRow}
+      </div>
+    `;
+    const thumb = card.querySelector(".thumb");
+    const imgUrl = `/static/performances/${p.id}.jpg`;
+    const preload = new Image();
+    preload.onload = function () {
+      thumb.style.backgroundColor = "#3a1f4d";
+      thumb.style.backgroundImage = "url('" + imgUrl + "')";
+      thumb.style.backgroundSize = "contain";
+      thumb.style.backgroundRepeat = "no-repeat";
+      thumb.style.backgroundPosition = "center";
+      const fb = thumb.querySelector(".thumb-fallback");
+      if (fb) fb.style.display = "none";
+    };
+    preload.src = imgUrl;
+
+    card.querySelector(".fav").addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.currentTarget.classList.toggle("on");
+      // TODO: 찜하기 기능은 아직 WAS API가 없어 화면 표시만 됩니다.
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ── 체크박스 그룹에서 선택된 값들 읽기 (전체 체크 시 필터 안 함) ── */
+function getCheckedValues(name) {
+  const boxes = Array.from(document.querySelectorAll(`input[name="${name}"]`));
+  const all = boxes.find((b) => b.value === "all");
+  const others = boxes.filter((b) => b.value !== "all");
+  if (all.checked || others.every((b) => !b.checked)) return null; // 전체 또는 아무것도 선택 안 함 = 필터 없음
+  return others.filter((b) => b.checked).map((b) => b.value);
+}
+
+function applyFilters() {
+  const q = (document.getElementById("search-input").value || "").trim().toLowerCase();
+  const regions = getCheckedValues("region");
+  const prices = getCheckedValues("price");
+
+  let filtered = currentGenre === "all"
+    ? ALL_PERFORMANCES
+    : ALL_PERFORMANCES.filter((p) => p.category === currentGenre);
+
+  if (q) filtered = filtered.filter((p) => p.title.toLowerCase().includes(q));
+  // region/price는 데이터에 해당 필드가 있는 항목에만 적용 (없는 항목은 통과)
+  if (regions) filtered = filtered.filter((p) => !p.region || regions.includes(p.region));
+  if (prices) filtered = filtered.filter((p) => !p.priceBucket || prices.includes(p.priceBucket));
+
+  const sortMode = document.getElementById("sort-select").value;
+  filtered = filtered.slice().sort((a, b) => {
+    if (sortMode === "name") return a.title.localeCompare(b.title, "ko");
+    return b.id - a.id; // 최신순 = id 역순
+  });
+
+  currentPage = 1;
+  renderPage(filtered);
+}
+
+/* ── 페이지네이션 ── */
+function renderPage(filtered) {
+  const total = filtered.length;
+  document.getElementById("result-count").textContent = total;
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+  renderPerformances(pageItems);
+  renderPaginationControls(totalPages, filtered);
+}
+
+function renderPaginationControls(totalPages, filtered) {
+  const el = document.getElementById("pagination");
+  el.innerHTML = "";
+  if (totalPages <= 1) return;
+
+  const prev = document.createElement("button");
+  prev.textContent = "‹";
+  prev.disabled = currentPage === 1;
+  prev.addEventListener("click", () => { currentPage--; renderPage(filtered); });
+  el.appendChild(prev);
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentPage) btn.classList.add("active");
+    btn.addEventListener("click", () => { currentPage = i; renderPage(filtered); });
+    el.appendChild(btn);
+  }
+
+  const next = document.createElement("button");
+  next.textContent = "›";
+  next.disabled = currentPage === totalPages;
+  next.addEventListener("click", () => { currentPage++; renderPage(filtered); });
+  el.appendChild(next);
+}
+
+function setupCategoryStrip() {
+  document.querySelectorAll(".cat-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".cat-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentGenre = btn.dataset.genre;
+      applyFilters();
+    });
+  });
+}
+function setupSearch() {
+  document.getElementById("search-input").addEventListener("input", applyFilters);
+}
+function setupSidebarFilters() {
+  document.querySelectorAll('.filters input[type="checkbox"]').forEach((box) => {
+    box.addEventListener("change", (e) => {
+      // "전체"를 누르면 같은 그룹의 나머지 체크 해제 (그 반대도 마찬가지)
+      const group = e.target.name;
+      const boxes = document.querySelectorAll(`input[name="${group}"]`);
+      if (e.target.value === "all" && e.target.checked) {
+        boxes.forEach((b) => { if (b.value !== "all") b.checked = false; });
+      } else if (e.target.value !== "all" && e.target.checked) {
+        document.querySelector(`input[name="${group}"][value="all"]`).checked = false;
+      }
+      applyFilters();
+    });
+  });
+  document.getElementById("apply-filters-btn").addEventListener("click", applyFilters);
+  document.getElementById("sort-select").addEventListener("change", applyFilters);
+}
+
+async function init() {
+  setupSessionModal();
+  setupCategoryStrip();
+  setupSearch();
+  setupSidebarFilters();
+
+  const [user, performances] = await Promise.all([
+    fetchAuthMe(),
+    fetchJSON("/api/performances/", FALLBACK_PERFORMANCES),
+  ]);
+
+  const rawPerformances = Array.isArray(performances) ? performances : (performances.results || []);
+  ALL_PERFORMANCES = rawPerformances.map(normalizePerformance);
+  sessionKnownLoggedIn = !!user.logged_in;
+
+  renderAuth(user);
+  applyFilters(); // 최초 렌더 (전체 목록 + 1페이지)
+
+  setupSessionVisibilityWatcher();
+  startSessionCheckTimer();
+}
+
+init();
+</script>
+</body>
+</html>

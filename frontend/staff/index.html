@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LINKTICKET 직원 페이지</title>
+<link rel="stylesheet" href="../shared/style.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="app-header">
+    <h1>LINKTICKET 직원 페이지</h1>
+    <span class="role-badge" id="whoami">로그인이 필요합니다</span>
+  </div>
+
+  <div class="session-bar" id="login-bar">
+    <input type="text" id="login-id" placeholder="아이디" autocomplete="username" />
+    <input type="password" id="login-password" placeholder="비밀번호" autocomplete="current-password" />
+    <button id="login-btn">로그인</button>
+  </div>
+  <div class="session-bar" id="logout-bar" hidden>
+    <button class="secondary" id="logout-btn">로그아웃</button>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-button active" data-tab="performances">공연 관리</button>
+    <button class="tab-button" data-tab="notices">공지사항 관리</button>
+    <button class="tab-button" data-tab="verify">검표(QR)</button>
+  </nav>
+
+  <!-- 공연 관리 -->
+  <section class="panel active" id="panel-performances">
+    <div class="card">
+      <h2>새 공연 올리기</h2>
+      <form class="inline-form" id="performance-form">
+        <div class="field">
+          <label for="p-name">공연명</label>
+          <input id="p-name" name="performance_name" required />
+        </div>
+        <div class="field">
+          <label for="p-genre">장르</label>
+          <select id="p-genre" name="genre" required>
+            <option value="CONCERT">콘서트</option>
+            <option value="MUSICAL">뮤지컬</option>
+            <option value="FESTIVAL">페스티벌</option>
+            <option value="PLAY">연극</option>
+            <option value="CLASSICAL">클래식</option>
+            <option value="FANMEETING">팬미팅</option>
+            <option value="EXHIBITION_ETC">전시/기타</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="p-venue">공연장</label>
+          <input id="p-venue" name="venue_name" required />
+        </div>
+        <div class="field">
+          <label for="p-address">주소</label>
+          <input id="p-address" name="address" required />
+        </div>
+        <div class="field">
+          <label for="p-price">기본 가격(원)</label>
+          <input id="p-price" name="base_price" type="number" min="0" required />
+        </div>
+        <div class="field">
+          <label for="p-total-seats">전체 좌석 수</label>
+          <input id="p-total-seats" name="total_seats" type="number" min="1" required />
+        </div>
+        <div class="field" style="grid-column: 1 / -1">
+          <label for="p-desc">설명</label>
+          <textarea id="p-desc" name="description"></textarea>
+        </div>
+        <div>
+          <button type="submit">공연 등록</button>
+        </div>
+      </form>
+      <p class="muted">등록 직후 상태는 DRAFT(등록 중)입니다. 회차와 좌석까지 등록해야 고객에게 노출·판매됩니다.</p>
+    </div>
+
+    <div class="card">
+      <h2>회차 등록</h2>
+      <form class="inline-form" id="schedule-form">
+        <div class="field">
+          <label for="s-performance">공연</label>
+          <select id="s-performance" name="performance_id" required></select>
+        </div>
+        <div class="field">
+          <label for="s-date">공연 날짜</label>
+          <input id="s-date" name="performance_date" type="date" required />
+        </div>
+        <div class="field">
+          <label for="s-start">시작 시각</label>
+          <input id="s-start" name="start_time" type="time" required />
+        </div>
+        <div class="field">
+          <label for="s-end">종료 시각</label>
+          <input id="s-end" name="end_time" type="time" required />
+        </div>
+        <div class="field">
+          <label for="s-sale-start">예매 시작</label>
+          <input id="s-sale-start" name="sale_start_at" type="datetime-local" required />
+        </div>
+        <div class="field">
+          <label for="s-sale-end">예매 종료</label>
+          <input id="s-sale-end" name="sale_end_at" type="datetime-local" required />
+        </div>
+        <div>
+          <button type="submit">회차 등록</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>좌석 일괄 등록</h2>
+      <form class="inline-form" id="seat-form">
+        <div class="field">
+          <label for="seat-schedule">회차 ID</label>
+          <input id="seat-schedule" name="schedule_id" type="number" min="1" required />
+        </div>
+        <div class="field">
+          <label for="seat-grade">등급</label>
+          <input id="seat-grade" name="seat_grade" placeholder="VIP / R / S" required />
+        </div>
+        <div class="field">
+          <label for="seat-price">좌석 가격(원)</label>
+          <input id="seat-price" name="seat_price" type="number" min="0" required />
+        </div>
+        <div class="field">
+          <label for="seat-numbers">좌석 번호(쉼표로 구분)</label>
+          <input id="seat-numbers" name="seat_numbers" placeholder="A1, A2, A3" required />
+        </div>
+        <div>
+          <button type="submit">좌석 등록</button>
+        </div>
+      </form>
+      <p class="muted">회차 ID는 위 "회차 등록" 응답이나 공연 상세 API(GET /api/performances/{id}/schedules/)에서 확인합니다.</p>
+    </div>
+
+    <div class="card">
+      <h2>내가 등록한 공연 목록</h2>
+      <div id="performance-list" class="empty-state">불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 공지사항 관리 -->
+  <section class="panel" id="panel-notices">
+    <div class="card">
+      <h2>공지 올리기</h2>
+      <form class="inline-form" id="notice-form">
+        <div class="field">
+          <label for="n-type">유형</label>
+          <select id="n-type" name="notice_type">
+            <option value="NOTICE">공지</option>
+            <option value="EVENT">이벤트</option>
+            <option value="GUIDE">안내</option>
+            <option value="MAINTENANCE">점검</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column: span 2">
+          <label for="n-title">제목</label>
+          <input id="n-title" name="title" required />
+        </div>
+        <div class="field checkbox">
+          <input id="n-published" name="is_published" type="checkbox" checked />
+          <label for="n-published">즉시 공개</label>
+        </div>
+        <div class="field" style="grid-column: 1 / -1">
+          <label for="n-content">내용</label>
+          <textarea id="n-content" name="content" required></textarea>
+        </div>
+        <div>
+          <button type="submit">공지 등록</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>공지 목록</h2>
+      <div id="notice-list" class="empty-state">불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 검표 -->
+  <section class="panel" id="panel-verify">
+    <div class="card">
+      <h2>QR 검표</h2>
+      <p class="muted">고객 티켓 QR에 담긴 토큰 값을 스캐너 또는 수기로 입력합니다. 이미 사용/취소/차단된 티켓은 오류로 반환됩니다.</p>
+      <form class="inline-form" id="verify-form">
+        <div class="field" style="grid-column: span 2">
+          <label for="qr-token">QR 토큰</label>
+          <input id="qr-token" name="qr_token" required autofocus />
+        </div>
+        <div>
+          <button type="submit">검표</button>
+        </div>
+      </form>
+      <div id="verify-result"></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../shared/api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

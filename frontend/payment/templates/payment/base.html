@@ -1,0 +1,23 @@
+{% load static %}<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}LINKTICKET · 티켓예매{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'payment/css/payment.css' %}?v=20260923-prototype-1">
+<script defer src="{% static 'payment/js/payment.js' %}?v=20260923-prototype-1">
+</script>
+</head>
+<body class="lt" data-page="{% block page %}booking{% endblock %}">{% include 'payment/includes/header.html' %}{% block content %}{% endblock %}{% include 'payment/includes/footer.html' %}
+{{ mock_config|json_script:'payment-config' }}
+<div class="lt-toast" role="status" aria-live="polite">
+</div>
+<dialog class="lt-dialog">
+<h2 id="dialog-title">
+</h2>
+<p id="dialog-text">
+</p>
+<button class="lt-btn primary" data-close>확인</button>
+</dialog>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}{% load static %}{% block extra_css %}<link rel="stylesheet" href="{% static 'linkticket/collected/event_detail.css' %}">{% endblock %}{% block content %}<div class="collected-page event_detail"><p class="demo-note container">화면 미리보기 · 이벤트 및 NFT는 예시 데이터이며 실제 구매·발급이 이루어지지 않습니다.</p>
+
+
+
+<div class="wrap">
+  <div class="breadcrumb">
+    <a href="{% url 'ui:events' %}">이벤트</a> &gt; <span class="current">이벤트 상세</span>
+  </div>
+
+  
+  <div class="detail-hero" id="detailHero">
+    <span class="tag" id="detailTag">예매 이벤트</span>
+    <h1 id="detailTitle">EARLY BIRD 할인 이벤트</h1>
+  </div>
+
+  <div class="detail-body">
+    <div class="detail-main">
+      <a href="{% url 'ui:events' %}" class="back-link">← 이벤트 목록으로</a>
+
+      <div class="info-row"><b>진행 기간</b><span id="detailDate">2025.04.01(화) ~ 2025.04.30(수)</span></div>
+      <div class="info-row"><b>참여 대상</b><span>LINK TICKET 전체 회원</span></div>
+      <div class="info-row"><b>진행 상태</b><span>진행중</span></div>
+
+      <div class="section-title">이벤트 안내</div>
+      <div class="desc-block" id="detailDesc">
+        지금, 가장 특별한 가격으로 공연을 만나보세요!
+      </div>
+    </div>
+
+    <aside class="detail-side">
+      <div class="side-card">
+        <h3>이벤트 요약</h3>
+        <div class="info-row"><b>기간</b><span id="detailDateShort">04.01 ~ 04.30</span></div>
+        <div class="info-row"><b>대상</b><span>전체 회원</span></div>
+        <a href="{% url 'ui:performances' %}" class="cta-btn">공연 예매하러 가기</a>
+      </div>
+    </aside>
+  </div>
+</div>
+
+
+
+</div>{% endblock %}{% block scripts %}<script id="ui-routes" type="application/json">{"performances":"{% url 'ui:performances' %}","nftPayment":"{% url 'ui:nft-payment' %}","nftComplete":"{% url 'ui:nft-complete' %}"}</script><script src="{% static 'linkticket/collected/event_detail.js' %}"></script>{% endblock %}

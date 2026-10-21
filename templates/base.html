@@ -1,0 +1,12 @@
+{% load static %}<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}LINKTICKET · 특별한 순간, 언제나 당신과{% endblock %}</title>
+{% block extra_css %}{% endblock %}<link rel="stylesheet" href="{% static 'linkticket/site.css' %}"><link rel="stylesheet" href="{% static 'linkticket/refinements.css' %}"><link rel="stylesheet" href="{% static 'linkticket/final-ui.css' %}"><link rel="stylesheet" href="{% static 'linkticket/ui3.css' %}?v=20261001-profile">
+<script defer src="{% static 'linkticket/site.js' %}"></script><script defer src="{% static 'linkticket/date-picker.js' %}"></script><script defer src="{% static 'linkticket/list-pages.js' %}"></script><script defer src="{% static 'linkticket/schedules.js' %}"></script>{% block extra_js %}{% endblock %}</head>
+<body class="{% block body_class %}{% endblock %}" data-page="{% block page %}{% endblock %}">
+<a class="skip-link" href="#page-content">본문 바로가기</a>{% include 'includes/header.html' %}
+{% if messages %}<div class="container messages" role="status">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+<div id="page-content">{% block content %}{% endblock %}</div>{% include 'includes/footer.html' %}
+<div class="site-toast" role="status" aria-live="polite"></div>
+<dialog class="site-dialog" id="site-dialog"><h2>안내</h2><p></p><button type="button" data-close-dialog>닫기</button></dialog>
+{% include 'payment/includes/venue_modal.html' %}{% block scripts %}{% endblock %}</body></html>

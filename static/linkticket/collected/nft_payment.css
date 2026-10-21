@@ -1,0 +1,251 @@
+@scope (.collected-page) {
+
+  :root{
+    --navy:#1a2144;--blue:#2563eb;--pink:#ec4899;--purple:#7c3aed;
+    --text-dark:#1f2333;--text-gray:#6b7280;--border:#e5e7eb;--bg-light:#f7f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--text-dark);background:#fff;}
+  a{text-decoration:none;color:inherit;}
+  .wrap{max-width:1536px;margin:0 auto;padding:0 32px;}
+
+  /* ===== Header (다른 페이지와 동일 구조) ===== */
+  header{border-bottom:1px solid var(--border);}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  header .wrap{padding-left:12px;}
+  .header-left{display:flex;align-items:center;gap:36px;}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+  .logo span{color:var(--blue);}
+  nav.main-nav{display:flex;gap:32px;}
+  nav.main-nav a{font-size:15px;font-weight:600;color:#333;padding:4px 0;}
+  nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .search-box{display:flex;align-items:center;gap:8px;background:var(--bg-light);border-radius:20px;padding:8px 16px;width:280px;}
+  .search-box input{border:none;background:transparent;outline:none;font-size:13px;width:100%;}
+  #auth-area{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  #auth-area .sep{color:var(--border);}
+
+  /* ===== Progress Steps (고정 영역, 3단계: NFT 선택 -> 결제하기 -> 결제 완료) ===== */
+  .steps{padding:28px 0;border-bottom:1px solid var(--border);}
+  .steps-track{
+    display:flex;align-items:center;justify-content:center;gap:0;max-width:640px;margin:0 auto;
+  }
+  .step{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;}
+  .step__num{
+    width:34px;height:34px;border-radius:50%;background:var(--bg-light);color:var(--text-gray);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;
+  }
+  .step.done .step__num{background:linear-gradient(120deg,#2563eb,#7c3aed);color:#fff;}
+  .step.active .step__num{background:linear-gradient(120deg,#ec4899,#a855f7);color:#fff;}
+  .step__label{font-size:12px;color:var(--text-gray);font-weight:600;white-space:nowrap;}
+  .step.active .step__label{color:var(--text-dark);font-weight:800;}
+  .step-line{flex:1;height:2px;background:var(--border);margin:0 10px;min-width:80px;}
+  .step-line.done{background:linear-gradient(90deg,#2563eb,#7c3aed);}
+
+  /* ===== Layout: 상품카드 / 결제폼 / 결제정보 3단 ===== */
+  .content{display:flex;gap:24px;padding:32px 0 64px;align-items:flex-start;}
+  .product-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;}
+  .main-col{flex:1;min-width:0;}
+  .side-col{width:340px;flex-shrink:0;}
+
+  /* ----- 상품 카드 (좌측) ----- */
+  .product-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+  .product-card__media{
+    position:relative;height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#fff;text-align:center;padding:20px;overflow:hidden;
+  }
+  .product-card__media .glow{
+    position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,0.18),transparent 60%);
+  }
+  .product-card__badge{
+    position:absolute;top:14px;left:14px;background:rgba(124,58,237,0.9);color:#fff;
+    font-size:11px;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:20px;z-index:2;
+  }
+  .product-card__like{
+    position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;
+    background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;
+    font-size:15px;z-index:2;color:var(--pink);
+  }
+  .product-card__ticket{
+    position:relative;z-index:2;font-size:13px;font-weight:700;letter-spacing:2px;opacity:.85;margin-bottom:10px;
+  }
+  .product-card__name{position:relative;z-index:2;font-size:22px;font-weight:800;line-height:1.3;}
+  .product-card__body{padding:20px;}
+  .product-card__title{font-size:19px;font-weight:800;margin-bottom:2px;}
+  .product-card__subtitle{font-size:13px;color:var(--text-gray);margin-bottom:16px;}
+
+  .pinfo-row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-gray);margin-bottom:11px;}
+  .pinfo-row .ic{width:16px;text-align:center;flex-shrink:0;}
+  .pinfo-row b{color:var(--text-dark);font-weight:600;}
+
+  .guide-box{
+    border:1px solid var(--border);border-radius:16px;padding:18px;font-size:12px;color:#555;line-height:1.6;
+    display:flex;gap:10px;
+  }
+  .guide-box .ic{font-size:18px;flex-shrink:0;}
+  .guide-box b{display:block;font-size:14px;font-weight:800;color:var(--text-dark);margin-bottom:4px;}
+  .guide-box a{color:var(--blue);font-weight:700;display:inline-block;margin-top:8px;}
+
+  /* ----- 결제 폼 (중앙) ----- */
+  .pay-card{border:1px solid var(--border);border-radius:16px;padding:28px;}
+  .pay-card__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:8px;}
+  .pay-card__head h2{font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;}
+  .pay-card__head .kg{font-size:12px;color:var(--text-gray);}
+
+  .pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:26px;}
+  .pay-method{
+    border:1.5px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;
+    font-size:13px;font-weight:700;cursor:pointer;color:#555;
+  }
+  .pay-method .ic{margin-right:6px;}
+  .pay-method.active{border-color:transparent;background:linear-gradient(120deg,#7c3aed,#a855f7);color:#fff;}
+
+  .section-label{font-size:14px;font-weight:800;margin-bottom:12px;}
+
+  .card-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:22px;}
+  .card-opt{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    border:1.5px solid var(--border);border-radius:12px;padding:14px 6px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;
+  }
+  .card-opt input{display:none;}
+  .card-opt.active{border-color:var(--purple);background:#faf5ff;color:var(--purple);}
+
+  /* ----- 결제수단별 패널 전환 (카드결제 / 간편결제 / 가상자산결제) ----- */
+  .method-panel{display:none;}
+  .method-panel.active{display:block;}
+
+  .easypay-list{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+  .easypay-opt{
+    display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);border-radius:12px;
+    padding:14px 16px;cursor:pointer;font-weight:700;font-size:13px;
+  }
+  .easypay-opt input{display:none;}
+  .easypay-opt.active{border-color:var(--purple);background:#faf5ff;}
+  .easypay-opt .logo{
+    width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:11px;font-weight:800;flex-shrink:0;
+  }
+  .logo-kakao{background:#FEE500;color:#3A1D1D;}
+  .logo-naver{background:#03C75A;}
+  .logo-toss{background:#1B64DA;}
+  .logo-payco{background:#FA3D3D;}
+  .easypay-sub{font-size:11px;color:var(--text-gray);font-weight:500;margin-top:2px;}
+
+  .bank-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:22px;}
+  .bank-opt{
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    border:1.5px solid var(--border);border-radius:12px;padding:14px 6px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .bank-opt input{display:none;}
+  .bank-opt.active{border-color:var(--purple);background:#faf5ff;color:var(--purple);}
+
+  .vaccount-note{
+    background:var(--bg-light);border-radius:12px;padding:16px;font-size:12px;color:#555;line-height:1.8;
+  }
+  .vaccount-note b{color:var(--text-dark);font-size:13px;}
+
+  .form-row{margin-bottom:20px;}
+  .form-row label{display:block;font-size:13px;font-weight:800;margin-bottom:8px;}
+  .text-input{
+    width:100%;border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;outline:none;
+  }
+  .text-input:focus{border-color:var(--purple);}
+  select.text-input{background:#fff;}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+  .input-icon-wrap{position:relative;}
+  .input-icon-wrap .ic{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text-gray);}
+
+  .agree-list{margin-bottom:24px;}
+  .agree-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:11px 0;font-size:13px;border-bottom:1px solid #f2f2f2;
+  }
+  .agree-item label{display:flex;align-items:center;gap:8px;cursor:pointer;}
+  .agree-item.all{
+    font-weight:800;font-size:14px;background:#faf5ff;border-radius:10px;
+    padding:14px;margin-bottom:8px;border-bottom:none;
+  }
+  .agree-item .view{color:var(--text-gray);font-size:12px;cursor:pointer;}
+
+  .btn-row{display:flex;gap:12px;}
+  .btn-back{
+    flex:1;border:1px solid var(--border);border-radius:12px;background:#fff;
+    font-size:14px;font-weight:700;padding:15px;cursor:pointer;
+  }
+  .btn-pay{
+    flex:2;border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:800;padding:15px;
+    background:linear-gradient(120deg,#7c3aed,#a855f7);cursor:pointer;
+  }
+  .btn-pay:disabled{background:#d1d5db;cursor:not-allowed;}
+  .secure-note{text-align:center;font-size:11px;color:var(--text-gray);margin-top:14px;}
+
+  /* ----- 사이드바: 결제 정보 (우측) ----- */
+  .side-box{border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:16px;}
+  .side-box__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .side-box__head h3{font-size:16px;font-weight:800;}
+  .timer{
+    display:inline-flex;align-items:center;gap:6px;background:#fdf2f8;color:var(--pink);
+    font-size:12px;font-weight:800;padding:5px 10px;border-radius:20px;
+  }
+  .order-item{display:flex;gap:12px;margin-bottom:18px;}
+  .order-item__media{
+    width:72px;height:72px;border-radius:10px;flex-shrink:0;position:relative;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:10px;text-align:center;
+  }
+  .order-item__badge{display:inline-block;font-size:10px;font-weight:800;background:var(--purple);color:#fff;padding:3px 8px;border-radius:5px;margin-bottom:4px;}
+  .order-item__title{font-size:14px;font-weight:800;line-height:1.35;}
+  .order-item__sub{font-size:12px;color:var(--text-gray);margin-top:3px;}
+
+  .info-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--text-gray);margin-bottom:10px;}
+  .info-row b{color:var(--text-dark);font-weight:700;}
+  .divider-line{border-top:1px dashed var(--border);margin:16px 0;}
+  .price-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin-bottom:10px;color:#444;}
+  .final-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+  .final-row .label{font-size:15px;font-weight:800;}
+  .final-row .amount{font-size:22px;font-weight:800;color:var(--pink);}
+
+  .checklist{list-style:none;margin-top:12px;}
+  .checklist li{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#444;line-height:1.5;margin-bottom:8px;}
+  .checklist .box{
+    width:16px;height:16px;border-radius:4px;flex-shrink:0;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;
+  }
+  .checklist .box.on{background:var(--navy);color:#fff;}
+  .checklist .box.note{background:#fef3c7;color:#b45309;}
+  .guide-note-title{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;}
+
+  .cta-banner{
+    background:linear-gradient(120deg,#e9d8fd,#c9a8ff);border-radius:16px;padding:20px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--navy);
+  }
+  .cta-banner__text{font-size:14px;font-weight:800;line-height:1.5;}
+  .cta-banner__ic{font-size:26px;flex-shrink:0;}
+
+  .media-1{background:linear-gradient(150deg,#3a2a5c,#1c1236);}
+  .media-2{background:linear-gradient(150deg,#1f1f1f,#3a3a3a);}
+  .media-3{background:linear-gradient(150deg,#3d1f4a,#6b2f7a);}
+  .media-4{background:linear-gradient(150deg,#161a33,#2b3166);}
+  .media-5{background:linear-gradient(150deg,#0e3d24,#155c34);}
+  .media-6{background:linear-gradient(150deg,#4a1620,#7a2233);}
+  .media-7{background:linear-gradient(150deg,#161a33,#1a2144);}
+  .media-8{background:linear-gradient(150deg,#241033,#3d1a52);}
+
+  footer{background:var(--bg-light);border-top:1px solid var(--border);padding:40px 0;}
+  .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+  .footer-logo{font-size:18px;font-weight:800;margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--text-gray);letter-spacing:1px;margin-bottom:10px;}
+  .footer-desc{font-size:12px;color:var(--text-gray);max-width:260px;line-height:1.5;}
+  .footer-features{display:flex;gap:36px;}
+  .footer-feature{font-size:12px;}
+  .footer-feature__icon{font-size:18px;margin-bottom:6px;}
+  .footer-feature__title{font-weight:700;margin-bottom:2px;}
+  .footer-feature__desc{color:var(--text-gray);font-size:11px;}
+  .footer-quote{font-size:13px;font-weight:700;text-align:right;color:var(--text-dark);line-height:1.6;}
+
+  @media (max-width:1200px){
+    .content{flex-direction:column;}
+    .product-col,.side-col{width:100%;}
+    .card-grid{grid-template-columns:repeat(3,1fr);}
+  }
+
+}

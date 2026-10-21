@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LINKTICKET - 결제 완료</title>
+<style>
+  :root{
+    --navy:#1a2144;--blue:#2563eb;--pink:#ec4899;--purple:#7c3aed;
+    --text-dark:#1f2333;--text-gray:#6b7280;--border:#e5e7eb;--bg-light:#f7f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--text-dark);background:#fff;}
+  a{text-decoration:none;color:inherit;}
+  .wrap{max-width:1536px;margin:0 auto;padding:0 32px;}
+
+  header{border-bottom:1px solid var(--border);}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  header .wrap{padding-left:12px;}
+  .header-left{display:flex;align-items:center;gap:36px;}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+  .logo span{color:var(--blue);}
+  nav.main-nav{display:flex;gap:32px;}
+  nav.main-nav a{font-size:15px;font-weight:600;color:#333;padding:4px 0;}
+  nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .search-box{display:flex;align-items:center;gap:8px;background:var(--bg-light);border-radius:20px;padding:8px 16px;width:280px;}
+  .search-box input{border:none;background:transparent;outline:none;font-size:13px;width:100%;}
+  #auth-area{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  #auth-area .sep{color:var(--border);}
+
+  /* ===== Progress Steps ===== */
+  .steps{padding:28px 0;border-bottom:1px solid var(--border);}
+  .steps-track{display:flex;align-items:center;justify-content:center;gap:0;max-width:640px;margin:0 auto;}
+  .step{display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;}
+  .step__num{
+    width:34px;height:34px;border-radius:50%;background:var(--bg-light);color:var(--text-gray);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;
+  }
+  .step.done .step__num{background:linear-gradient(120deg,#2563eb,#7c3aed);color:#fff;}
+  .step__label{font-size:12px;color:var(--text-gray);font-weight:600;white-space:nowrap;}
+  .step.done .step__label{color:var(--text-dark);font-weight:800;}
+  .step-line{flex:1;height:2px;background:var(--border);margin:0 10px;min-width:80px;}
+  .step-line.done{background:linear-gradient(90deg,#2563eb,#7c3aed);}
+
+  /* ===== 완료 배너 ===== */
+  .complete-banner{
+    position:relative;overflow:hidden;text-align:center;padding:56px 20px 40px;
+    background:radial-gradient(ellipse at 50% 0%,#f5f0ff 0%,#ffffff 65%);
+  }
+  .confetti{position:absolute;font-size:20px;opacity:.9;}
+  .confetti.c1{top:18%;left:22%;}
+  .confetti.c2{top:12%;left:38%;}
+  .confetti.c3{top:24%;right:26%;}
+  .confetti.c4{top:14%;right:18%;}
+  .confetti.c5{top:34%;left:14%;}
+  .confetti.c6{top:30%;right:12%;}
+  .check-circle{
+    width:76px;height:76px;border-radius:50%;margin:0 auto 20px;
+    background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;
+    box-shadow:0 10px 30px rgba(124,58,237,0.3);position:relative;z-index:2;
+  }
+  .complete-title{font-size:30px;font-weight:800;position:relative;z-index:2;}
+  .complete-title b{background:linear-gradient(120deg,var(--purple),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .complete-sub{font-size:14px;color:var(--text-gray);margin-top:12px;line-height:1.6;position:relative;z-index:2;}
+
+  /* ===== Layout ===== */
+  .content{display:flex;gap:24px;padding:0 0 40px;align-items:flex-start;}
+  .product-col{width:280px;flex-shrink:0;}
+  .info-col{flex:1;min-width:0;}
+  .aside-col{width:340px;flex-shrink:0;display:flex;flex-direction:column;gap:16px;}
+
+  .product-card{border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+  .product-card__media{
+    position:relative;height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#fff;text-align:center;padding:20px;
+  }
+  .product-card__badge{
+    position:absolute;top:14px;left:14px;background:rgba(124,58,237,0.9);color:#fff;
+    font-size:11px;font-weight:800;letter-spacing:1px;padding:6px 12px;border-radius:20px;
+  }
+  .product-card__ticket{font-size:12px;font-weight:700;letter-spacing:2px;opacity:.8;margin-bottom:10px;}
+  .product-card__name{font-size:22px;font-weight:800;line-height:1.3;}
+  .product-card__body{padding:16px 18px;}
+  .product-card__title{font-size:17px;font-weight:800;}
+  .product-card__subtitle{font-size:13px;color:var(--text-gray);margin-top:2px;}
+
+  .info-box{border:1px solid var(--border);border-radius:16px;padding:26px;}
+  .info-box h3{font-size:17px;font-weight:800;margin-bottom:18px;}
+  .info-table{width:100%;border-collapse:collapse;}
+  .info-table tr{border-bottom:1px solid #f2f2f2;}
+  .info-table tr:last-child{border-bottom:none;}
+  .info-table td{padding:11px 4px;font-size:13px;vertical-align:middle;}
+  .info-table td.k{color:var(--text-gray);width:120px;white-space:nowrap;}
+  .info-table td.v{font-weight:700;color:var(--text-dark);}
+  .copy-ic{color:var(--text-gray);font-size:12px;margin-left:6px;cursor:pointer;}
+  .final-box{
+    display:flex;align-items:center;justify-content:space-between;
+    background:var(--bg-light);border-radius:12px;padding:16px 18px;margin-top:16px;
+  }
+  .final-box .label{font-size:14px;font-weight:800;}
+  .final-box .amount{font-size:22px;font-weight:800;color:var(--pink);}
+
+  .action-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+  .action-btn{
+    flex:1;min-width:150px;border:1px solid var(--border);border-radius:10px;background:#fff;
+    padding:13px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .action-btn.primary{
+    background:linear-gradient(120deg,#7c3aed,#a855f7);color:#fff;border:none;
+  }
+
+  .notice-card{border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;gap:12px;}
+  .notice-card .ic{font-size:22px;flex-shrink:0;}
+  .notice-card h4{font-size:14px;font-weight:800;margin-bottom:6px;}
+  .notice-card p{font-size:12px;color:var(--text-gray);line-height:1.6;}
+  .notice-card .link-btn{
+    display:inline-block;margin-top:10px;background:linear-gradient(120deg,#2563eb,#7c3aed);color:#fff;
+    font-size:12px;font-weight:800;padding:10px 14px;border-radius:9px;
+  }
+  .notice-card ul{list-style:none;margin-top:6px;}
+  .notice-card ul li{font-size:12px;color:#444;line-height:1.8;}
+
+  /* ===== 추천 공연 ===== */
+  .rec-section{padding:8px 0 60px;}
+  .rec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .rec-head h2{font-size:19px;font-weight:800;}
+  .rec-head a{font-size:13px;font-weight:700;color:var(--text-gray);}
+  .rec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .rec-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:box-shadow .2s;}
+  .rec-card:hover{box-shadow:0 8px 22px rgba(0,0,0,.08);}
+  .rec-card__media{position:relative;height:140px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;}
+  .rec-card__like{
+    position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.9);
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+  }
+  .rec-card__body{padding:14px;}
+  .rec-card__title{font-size:14px;font-weight:800;}
+  .rec-card__sub{font-size:12px;color:var(--text-gray);margin-top:2px;}
+  .rec-card__meta{font-size:11px;color:var(--text-gray);margin-top:8px;}
+
+  .media-1{background:linear-gradient(150deg,#3a2a5c,#1c1236);}
+  .media-2{background:linear-gradient(150deg,#1f1f1f,#3a3a3a);}
+  .media-3{background:linear-gradient(150deg,#3d1f4a,#6b2f7a);}
+  .media-4{background:linear-gradient(150deg,#161a33,#2b3166);}
+  .media-5{background:linear-gradient(150deg,#0e3d24,#155c34);}
+  .media-6{background:linear-gradient(150deg,#4a1620,#7a2233);}
+  .media-7{background:linear-gradient(150deg,#161a33,#1a2144);}
+  .media-8{background:linear-gradient(150deg,#241033,#3d1a52);}
+
+  footer{background:var(--bg-light);border-top:1px solid var(--border);padding:40px 0;}
+  .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+  .footer-logo{font-size:18px;font-weight:800;margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--text-gray);letter-spacing:1px;margin-bottom:10px;}
+  .footer-desc{font-size:12px;color:var(--text-gray);max-width:260px;line-height:1.5;}
+  .footer-features{display:flex;gap:36px;}
+  .footer-feature{font-size:12px;}
+  .footer-feature__icon{font-size:18px;margin-bottom:6px;}
+  .footer-feature__title{font-weight:700;margin-bottom:2px;}
+  .footer-feature__desc{color:var(--text-gray);font-size:11px;}
+  .footer-quote{font-size:13px;font-weight:700;text-align:right;color:var(--text-dark);line-height:1.6;}
+
+  @media (max-width:1200px){
+    .content{flex-direction:column;}
+    .product-col,.aside-col{width:100%;}
+    .rec-grid{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="header-left">
+      <a href="https://www.linkticket.com" class="logo">LINK<span>TICKET</span></a>
+      <nav class="main-nav">
+        <a href="https://www.linkticket.com">홈</a>
+        <a href="https://www.linkticket.com/performance">공연</a>
+        <a href="#">티켓예매</a>
+        <a href="event_list.html">이벤트</a>
+        <a href="nft_list.html" class="active">NFT</a>
+        <a href="#">공지사항</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div class="search-box">
+        <span onclick="doSearch()" style="cursor:pointer;">🔍</span>
+        <input type="text" id="searchInput" placeholder="공연, 아티스트를 검색하세요..." onkeydown="if(event.key==='Enter') doSearch();">
+      </div>
+      <span>👤</span>
+      <div id="auth-area">
+        <a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ Progress Steps: 결제 완료가 마지막 단계 ============ -->
+<div class="steps">
+  <div class="steps-track">
+    <div class="step done"><div class="step__num">1</div><div class="step__label">NFT 선택</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step__num">2</div><div class="step__label">결제하기</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step__num">3</div><div class="step__label">결제 완료</div></div>
+  </div>
+</div>
+
+<!-- ============ 완료 배너 ============ -->
+<div class="complete-banner">
+  <span class="confetti c1">🎉</span><span class="confetti c2">✨</span><span class="confetti c3">🎊</span>
+  <span class="confetti c4">💜</span><span class="confetti c5">⭐</span><span class="confetti c6">🎈</span>
+  <div class="check-circle">✓</div>
+  <div class="complete-title">결제가 <b>완료</b>되었습니다!</div>
+  <div class="complete-sub">LINKTICKET을 이용해 주셔서 감사합니다.<br>특별한 순간이 더욱 빛나길 바랍니다.</div>
+</div>
+
+<div class="wrap content">
+
+  <!-- ============ 좌측: 구매한 NFT 카드 ============ -->
+  <div class="product-col">
+    <div class="product-card">
+      <div class="product-card__media" id="productMedia">
+        <span class="product-card__badge" id="productBadge">LIMITED</span>
+        <div class="product-card__ticket">LINKTICKET NFT</div>
+        <div class="product-card__name" id="productMediaName">NCT DREAM</div>
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__title" id="productTitle">NCT DREAM</div>
+        <div class="product-card__subtitle" id="productSubtitle">THE DREAM SHOW 3</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 중앙: 예매 정보 ============ -->
+  <div class="info-col">
+    <div class="info-box">
+      <h3>예매 정보</h3>
+      <table class="info-table">
+        <tr><td class="k">예매번호</td><td class="v" id="rsvId">RSV-00000000-000000<span class="copy-ic" onclick="copyRsvId()">⧉</span></td></tr>
+        <tr><td class="k">공연명</td><td class="v" id="rsvTitle">NCT DREAM THE DREAM SHOW 3</td></tr>
+        <tr><td class="k">공연일시</td><td class="v" id="rsvDate">2026.10.15 (목) 19:00</td></tr>
+        <tr><td class="k">공연장</td><td class="v" id="rsvVenue">서울 월드컵 경기장</td></tr>
+        <tr><td class="k">좌석정보</td><td class="v" id="rsvSeat">스탠딩 A구역</td></tr>
+        <tr><td class="k">티켓수량</td><td class="v">1매</td></tr>
+        <tr><td class="k">예매자명</td><td class="v" id="rsvBuyer">홍길동</td></tr>
+        <tr><td class="k">결제수단</td><td class="v" id="rsvMethod">신한카드 (일반결제)</td></tr>
+        <tr><td class="k">결제일시</td><td class="v" id="rsvPaidAt">2026.09.22 (화) 16:25:18</td></tr>
+      </table>
+      <div class="final-box">
+        <span class="label">최종 결제금액</span>
+        <span class="amount" id="rsvFinal">₩110,000</span>
+      </div>
+
+      <div class="action-row">
+        <a href="https://www.linkticket.com" class="action-btn">🏠 홈으로 가기</a>
+        <a href="#" class="action-btn">📋 예매내역 보기</a>
+        <a href="nft_list.html" class="action-btn">📅 다른 공연 예매하기</a>
+        <a href="#" class="action-btn primary" onclick="event.preventDefault();shareRsv();">🔗 예매 공유하기</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 우측: 안내 카드 ============ -->
+  <aside class="aside-col">
+    <div class="notice-card">
+      <span class="ic">🎫</span>
+      <div>
+        <h4>모바일 티켓이 발급되었습니다!</h4>
+        <p>마이페이지 &gt; 예매내역에서 모바일 티켓을 확인하실 수 있습니다.</p>
+        <a href="#" class="link-btn">모바일 티켓 확인하기 →</a>
+      </div>
+    </div>
+    <div class="notice-card">
+      <span class="ic">✉️</span>
+      <div>
+        <h4>예매 내역이 이메일로 발송되었습니다.</h4>
+        <p>입력하신 이메일로 예매 상세 내용을 보내드렸습니다.</p>
+      </div>
+    </div>
+    <div class="notice-card">
+      <span class="ic">📅</span>
+      <div>
+        <h4>공연 전 꼭 확인하세요!</h4>
+        <ul>
+          <li>✔ 공연 시작 1시간 전까지 입장해주세요.</li>
+          <li>✔ 모바일 티켓(QR코드)로 입장 가능합니다.</li>
+          <li>✔ 공연 당일 취소/환불은 불가합니다.</li>
+          <li>✔ 공연장 규정을 반드시 확인해주세요.</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ 이런 공연은 어떠세요? (추천) ============ -->
+<div class="wrap rec-section">
+  <div class="rec-head">
+    <h2>이런 공연은 어떠세요?</h2>
+    <a href="nft_list.html">전체보기 ›</a>
+  </div>
+  <div class="rec-grid" id="recGrid"></div>
+</div>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-logo">LINKTICKET</div>
+      <div class="footer-sub">MUSIC CONNECTS US</div>
+      <div class="footer-desc">공연을 더 특별하게, 모두의 순간을 연결하는 티켓팅 플랫폼</div>
+    </div>
+    <div class="footer-features">
+      <div class="footer-feature"><div class="footer-feature__icon">🎧</div><div class="footer-feature__title">다양한 공연</div><div class="footer-feature__desc">콘서트, 뮤지컬, 페스티벌까지</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">⚡</div><div class="footer-feature__title">빠른 예매</div><div class="footer-feature__desc">안정적이고 빠른 예매 시스템</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">🛡️</div><div class="footer-feature__title">안전한 결제</div><div class="footer-feature__desc">안심하고 이용하세요</div></div>
+      <div class="footer-feature"><div class="footer-feature__icon">👥</div><div class="footer-feature__title">특별한 경험</div><div class="footer-feature__desc">LINK TICKET만의 이벤트</div></div>
+    </div>
+    <div class="footer-quote">"좋은 공연은 끝나도,<br>특별한 기억은 계속됩니다."</div>
+  </div>
+</footer>
+
+<script>
+  function doSearch(){
+    var keyword = document.getElementById('searchInput').value.trim();
+    if(!keyword){ alert('검색어를 입력해주세요.'); return; }
+    window.location.href = 'https://www.linkticket.com/performances/?q=' + encodeURIComponent(keyword);
+  }
+
+  // nft_payment.html과 동일한 더미 데이터 (실제로는 DB에서 예매/결제 결과를 조회)
+  var nftData = {
+    "1": { badge:"LIMITED", title:"IU", subtitle:"THE WINNING NFT", date:"2026.11.02 (월) 19:00", venue:"고척스카이돔", seat:"스탠딩 A구역", price:150000, media:"media-1" },
+    "2": { badge:"LIMITED", title:"SEVENTEEN", subtitle:"RIGHT HERE WORLD TOUR", date:"2026.09.20 (일) 18:00", venue:"잠실종합운동장", seat:"VIP석", price:120000, media:"media-2" },
+    "3": { badge:"LIMITED", title:"aespa", subtitle:"SYNK : PARALLEL LINE", date:"2026.10.05 (월) 19:30", venue:"KSPO DOME", seat:"지정석", price:130000, media:"media-3" },
+    "4": { badge:"LIMITED", title:"임영웅", subtitle:"IM HERO TOUR 2026", date:"2026.12.12 (토) 18:00", venue:"고척스카이돔", seat:"스탠딩", price:200000, media:"media-4" },
+    "5": { badge:"LIMITED", title:"뮤지컬 위키드", subtitle:"ORIGINAL NFT", date:"2026.08.15 (토) 14:00", venue:"블루스퀘어", seat:"R석", price:180000, media:"media-5" },
+    "6": { badge:"LIMITED", title:"서울 뮤직 페스티벌", subtitle:"SEOUL 2026", date:"2026.07.25 (토) ~ 26 (일)", venue:"서울월드컵경기장", seat:"스탠딩", price:90000, media:"media-6" },
+    "7": { badge:"LIMITED", title:"NCT DREAM", subtitle:"THE DREAM SHOW 3", date:"2026.10.15 (목) 19:00", venue:"서울 월드컵 경기장", seat:"스탠딩 A구역", price:100000, media:"media-7" },
+    "8": { badge:"COMING SOON", title:"스페셜 컬렉션", subtitle:"COMING SOON", date:"미정", venue:"미정", seat:"미정", price:0, media:"media-8" }
+  };
+
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id') || "7";
+  var methodParam = params.get('method');
+  var data = nftData[id] || nftData["7"];
+
+  document.getElementById('productMedia').classList.add(data.media);
+  document.getElementById('productBadge').textContent = data.badge;
+  document.getElementById('productMediaName').textContent = data.title;
+  document.getElementById('productTitle').textContent = data.title;
+  document.getElementById('productSubtitle').textContent = data.subtitle;
+
+  document.getElementById('rsvTitle').textContent = data.title + ' ' + data.subtitle;
+  document.getElementById('rsvDate').textContent = data.date;
+  document.getElementById('rsvVenue').textContent = data.venue;
+  document.getElementById('rsvSeat').textContent = data.seat;
+  if(methodParam){ document.getElementById('rsvMethod').textContent = methodParam; }
+
+  var fee = data.price > 0 ? Math.round(data.price * 0.05) : 0;
+  var vat = data.price > 0 ? Math.round(data.price * 0.05) : 0;
+  var final = data.price + fee + vat;
+  document.getElementById('rsvFinal').textContent = '₩' + final.toLocaleString();
+
+  // 예매번호 / 결제일시: 실제로는 DB에서 내려주는 값. 지금은 현재 시각 기준으로 생성
+  var now = new Date();
+  var pad = function(n){ return (n<10?'0':'')+n; };
+  var ymd = now.getFullYear() + '' + pad(now.getMonth()+1) + pad(now.getDate());
+  var randNo = String(Math.floor(Math.random()*900000)+100000);
+  document.getElementById('rsvId').firstChild.textContent = 'RSV-' + ymd + '-' + randNo + ' ';
+
+  var days = ['일','월','화','수','목','금','토'];
+  var paidAt = now.getFullYear() + '.' + pad(now.getMonth()+1) + '.' + pad(now.getDate()) +
+    ' (' + days[now.getDay()] + ') ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  document.getElementById('rsvPaidAt').textContent = paidAt;
+
+  function copyRsvId(){
+    var text = document.getElementById('rsvId').firstChild.textContent.trim();
+    if(navigator.clipboard){ navigator.clipboard.writeText(text); }
+    alert('예매번호가 복사되었습니다: ' + text);
+  }
+  function shareRsv(){
+    alert('지금은 화면만 확인하는 단계라, 실제 공유 기능(카카오톡 공유 등)은 백엔드 연결 후 동작합니다.');
+  }
+
+  // ===== 이런 공연은 어떠세요? : 현재 구매한 항목을 제외한 나머지 중 4개 =====
+  var recGrid = document.getElementById('recGrid');
+  var ids = Object.keys(nftData).filter(function(k){ return k !== id && nftData[k].price > 0; }).slice(0,4);
+  ids.forEach(function(k){
+    var d = nftData[k];
+    var card = document.createElement('a');
+    card.href = 'nft_payment.html?id=' + k;
+    card.className = 'rec-card';
+    card.innerHTML =
+      '<div class="rec-card__media ' + d.media + '"><span class="rec-card__like">♡</span></div>' +
+      '<div class="rec-card__body">' +
+        '<div class="rec-card__title">' + d.title + '</div>' +
+        '<div class="rec-card__sub">' + d.subtitle + '</div>' +
+        '<div class="rec-card__meta">' + d.date + ' · ' + d.venue + '</div>' +
+      '</div>';
+    recGrid.appendChild(card);
+  });
+</script>
+
+</body>
+</html>

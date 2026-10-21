@@ -1,0 +1,239 @@
+@scope (.collected-page) {
+
+  :root{
+    --navy:#1a2144;
+    --blue:#2563eb;
+    --pink:#ec4899;
+    --purple:#7c3aed;
+    --text-dark:#1f2333;
+    --text-gray:#6b7280;
+    --border:#e5e7eb;
+    --bg-light:#f7f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    color:var(--text-dark);
+    background:#fff;
+  }
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  img,svg{display:block;}
+
+  .wrap{max-width:1536px;margin:0 auto;padding:0 32px;}
+
+  /* ===== Header ===== */
+  header{
+    border-bottom:1px solid var(--border);
+  }
+  .header-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  header .wrap{padding-left:12px;}
+  .header-left{display:flex;align-items:center;gap:36px;}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+  .logo span{color:var(--blue);}
+  nav.main-nav{display:flex;gap:32px;}
+  nav.main-nav a{font-size:15px;font-weight:600;color:#333;padding:4px 0;}
+  nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .search-box{
+    display:flex;align-items:center;gap:8px;
+    background:var(--bg-light);border-radius:20px;
+    padding:8px 16px;width:280px;
+  }
+  .search-box input{
+    border:none;background:transparent;outline:none;font-size:13px;width:100%;
+  }
+  .auth-links{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  .auth-links .divider{color:var(--border);}
+  /* 웹서버 담당자가 준 실제 로그인/회원가입 마크업(id="auth-area")에 맞춘 스타일 */
+  #auth-area{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  #auth-area .sep{color:var(--border);}
+
+  /* ===== Hero Banner (고정 영역) ===== */
+  .hero{
+    background:linear-gradient(120deg,#241a3d 0%,#3b1f5c 45%,#5c2a6b 100%);
+    color:#fff;position:relative;overflow:hidden;
+    padding:56px 0;cursor:pointer;
+  }
+  .hero-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    max-width:1536px;margin:0 auto;padding:0 32px;position:relative;z-index:2;
+  }
+  .hero-tag{
+    display:inline-block;font-size:12px;letter-spacing:3px;font-weight:700;
+    color:#c9a8ff;margin-bottom:14px;
+  }
+  .hero h1{font-size:36px;font-weight:800;line-height:1.35;}
+  .hero p{margin-top:14px;color:#d8cdea;font-size:14px;line-height:1.6;}
+  .hero-script{
+    font-family:"Brush Script MT",cursive;font-size:20px;color:#e7b7ea;
+    text-align:right;line-height:1.5;
+  }
+
+  /* ===== Filter Tab Bar (고정 영역) ===== */
+  .filter-bar{border-bottom:1px solid var(--border);}
+  .filter-tabs{
+    display:flex;align-items:center;gap:8px;padding:20px 0;
+  }
+  .filter-tab{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:14px 22px;border-radius:10px;font-size:13px;font-weight:600;color:#555;
+    cursor:pointer;min-width:96px;
+  }
+  .filter-tab .icon{font-size:18px;}
+  .filter-tab.active{background:var(--blue);color:#fff;}
+
+  /* ===== Layout ===== */
+  .content{display:flex;gap:32px;padding:32px 0 64px;align-items:flex-start;}
+  .main-col{flex:1;min-width:0;}
+  .side-col{width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:20px;}
+
+  .section-head{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;
+  }
+  .section-head h2{font-size:20px;font-weight:800;}
+  .section-head h2 .count{color:var(--blue);}
+  .sort-select{
+    font-size:13px;color:#555;border:1px solid var(--border);
+    border-radius:8px;padding:8px 12px;background:#fff;
+  }
+
+  /* ===== Event Card Grid (반복 영역) ===== */
+  .event-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  }
+
+  /* 카드 컴포넌트: 이 블록 전체가 Django에서 {% for event in events %} ... {% endfor %} 로 반복될 단위 */
+  /* .event-card 자체가 <a> 태그 -> 카드 박스 어디를 눌러도 상세페이지로 이동 */
+  .event-card{
+    display:block;
+    border:1px solid var(--border);border-radius:14px;overflow:hidden;
+    background:#fff;transition:box-shadow .2s;cursor:pointer;
+  }
+  .event-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+
+  .event-card__media{
+    position:relative;height:160px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:14px;text-align:center;
+  }
+  .event-card__tag{
+    position:absolute;top:12px;left:12px;
+    font-size:11px;font-weight:700;padding:5px 10px;border-radius:6px;color:#fff;
+    pointer-events:none;
+  }
+  .event-card__like{
+    position:absolute;top:12px;right:12px;
+    width:28px;height:28px;border-radius:50%;
+    background:rgba(255,255,255,0.9);
+    display:flex;align-items:center;justify-content:center;font-size:14px;
+    z-index:2;cursor:pointer;
+  }
+
+  .event-card__body{padding:16px 16px 18px;}
+  .event-card__title{font-size:16px;font-weight:800;margin-bottom:8px;line-height:1.35;}
+  .event-card__title a{cursor:pointer;}
+  .event-card__title a:hover{text-decoration:underline;}
+  .event-card__desc{font-size:13px;color:var(--text-gray);line-height:1.5;margin-bottom:12px;min-height:38px;}
+  .event-card__date{
+    display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-gray);margin-bottom:14px;
+  }
+  .event-card__btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:700;color:var(--blue);
+  }
+
+  /* 카드별 미디어 배경(현재는 고정 색상 - 실제 서비스에선 event.image_url 로 교체) */
+  .media-1{background:linear-gradient(135deg,#3a3f6b,#1c2140);}
+  .media-2{background:linear-gradient(135deg,#2b2b2b,#4a4a4a);}
+  .media-3{background:linear-gradient(135deg,#6b2fb3,#a24bd6);}
+  .media-4{background:linear-gradient(135deg,#4776E6,#8E54E9);}
+  .media-5{background:linear-gradient(135deg,#8a2b6b,#c23c8f);}
+  .media-6{
+    background:#fff;color:var(--text-dark);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:16px;
+  }
+  .partner-badge{
+    font-size:11px;font-weight:700;padding:6px 10px;border:1px solid var(--border);border-radius:6px;
+    pointer-events:none;
+  }
+
+  .tag-preorder{background:#ec4899;}
+  .tag-membership{background:var(--navy);}
+  .tag-sns{background:#7c3aed;}
+  .tag-promo{background:#2563eb;}
+  .tag-fan{background:#d6336c;}
+  .tag-partner{background:var(--navy);}
+
+  /* ===== Sidebar ===== */
+  .side-box{
+    border:1px solid var(--border);border-radius:14px;padding:20px;
+  }
+  .side-box h3{font-size:15px;font-weight:800;margin-bottom:6px;}
+  .side-box p{font-size:12px;color:var(--text-gray);line-height:1.5;margin-bottom:14px;}
+  .subscribe-input{
+    display:flex;gap:0;margin-bottom:0;
+  }
+  .subscribe-input input{
+    flex:1;border:1px solid var(--border);border-right:none;
+    border-radius:8px 0 0 8px;padding:10px 12px;font-size:12px;outline:none;
+  }
+  .subscribe-input button{
+    border:none;background:var(--blue);color:#fff;font-size:12px;font-weight:700;
+    padding:0 16px;border-radius:0 8px 8px 0;cursor:pointer;
+  }
+  .subscribe-success{
+    display:none;align-items:center;gap:8px;
+    background:#f0fdf4;color:#16a34a;font-size:12px;font-weight:700;
+    border-radius:8px;padding:12px;
+  }
+  .subscribe-success.show{display:flex;}
+
+  .popular-list{display:flex;flex-direction:column;gap:14px;}
+  .popular-item{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .popular-item:hover .popular-item__title{color:var(--blue);}
+  .popular-item__rank{
+    width:22px;height:22px;border-radius:50%;background:var(--bg-light);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text-gray);
+    flex-shrink:0;
+  }
+  .popular-item__title{font-size:13px;font-weight:700;}
+  .popular-item__date{font-size:11px;color:var(--text-gray);margin-top:2px;}
+
+  .gift-banner{
+    background:linear-gradient(120deg,#3a2e6d,#5b3a8f);
+    border-radius:14px;padding:20px;color:#fff;
+    display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;
+  }
+  .gift-banner__text{font-size:14px;font-weight:800;line-height:1.5;}
+  .gift-banner__text small{display:block;font-size:12px;font-weight:400;color:#d8cdea;margin-top:6px;}
+
+  /* ===== Footer (고정 영역) ===== */
+  footer{background:var(--bg-light);border-top:1px solid var(--border);padding:40px 0;}
+  .footer-inner{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;
+  }
+  .footer-logo{font-size:18px;font-weight:800;margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--text-gray);letter-spacing:1px;margin-bottom:10px;}
+  .footer-desc{font-size:12px;color:var(--text-gray);max-width:260px;line-height:1.5;}
+
+  .footer-features{display:flex;gap:36px;}
+  .footer-feature{font-size:12px;}
+  .footer-feature__icon{font-size:18px;margin-bottom:6px;}
+  .footer-feature__title{font-weight:700;margin-bottom:2px;}
+  .footer-feature__desc{color:var(--text-gray);font-size:11px;}
+
+  .footer-quote{font-size:13px;font-weight:700;text-align:right;color:var(--text-dark);line-height:1.6;}
+
+  @media (max-width:1100px){
+    .content{flex-direction:column;}
+    .side-col{width:100%;flex-direction:row;flex-wrap:wrap;}
+    .event-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+
+}

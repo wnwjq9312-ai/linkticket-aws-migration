@@ -1,0 +1,180 @@
+{% extends 'payment/base.html' %}{% load static %}{% block title %}LINKTICKET · 결제하기{% endblock %}{% block page %}checkout{% endblock %}{% block content %}
+<div class="lt-banner checkout" role="img" aria-label="PAYMENT. 특별한 순간을 완성하는 마지막 단계. 안전하고 간편한 결제">
+</div>
+<div class="lt-checkout-steps">
+<span>01<small>좌석 선택</small>
+</span>
+<span>02<small>예매 정보</small>
+</span>
+<span class="current">03<small>결제</small>
+</span>
+<span>04<small>예매 완료</small>
+</span>
+</div>
+<main class="lt-checkout-layout">
+<section class="lt-panel lt-payment-form">
+<div class="lt-pay-heading">
+<h1>결제하기</h1>
+<small>안전한 결제를 위해 KG이니시스와 함께합니다.</small>
+<strong class="lt-kg">KG <span>이니시스<small>▣ 안전한 결제 시스템</small>
+</span>
+</strong>
+</div>
+<div class="lt-methods" role="group" aria-label="결제 수단">
+<button data-method="신용카드" aria-pressed="false">
+<i>▣</i>신용카드</button>
+<button data-method="계좌이체">
+<i>♜</i>계좌이체</button>
+<button data-method="가상계좌">
+<i>ⓦ</i>가상계좌</button>
+<button data-method="휴대폰 결제">
+<i>♙</i>휴대폰 결제</button>
+<button data-method="간편결제">
+<i>▦</i>간편결제</button>
+</div>
+<div data-card-panel>
+<h2>카드사 선택</h2>
+<div class="lt-cards">{% for card in cards %}<label>
+<input type="radio" name="card" value="{{ card }}" {% if forloop.first %}checked{% endif %}>
+<i class="card-logo logo-{{ forloop.counter }}">{% cycle 'S' 'KB' 'SAMSUNG' '현대' 'L' '하나' 'W' 'NH' 'BC' 'citi' 'B' '▤' %}</i>
+<span>{{ card }}</span>
+</label>{% endfor %}</div>
+<div class="lt-card-details">
+<label>
+<h2>할부 개월 선택</h2>
+<select data-installment>
+<option>일시불</option>
+<option>2개월</option>
+<option>3개월</option>
+<option>6개월</option>
+<option>12개월</option>
+</select>
+</label>
+<div>
+<h2>카드 정보 입력</h2>
+<p class="lt-mock-card-hint">Mock 입력 전용 · 실제 카드정보는 입력하지 마세요.<br>예시: 0000 0000 0000 0000 / 12/30 / 000 / DEMO USER</p>
+<label class="lt-card-field">카드번호
+<input data-card-input="number" aria-label="데모 카드번호" aria-describedby="card-number-error" inputmode="numeric" maxlength="19" autocomplete="off" placeholder="0000 0000 0000 0000">
+<small id="card-number-error" data-card-error="number" aria-live="polite"></small></label>
+<div class="lt-input-row">
+<label class="lt-card-field">유효기간
+<input data-card-input="expiry" aria-label="데모 유효기간" aria-describedby="card-expiry-error" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="MM/YY">
+<small id="card-expiry-error" data-card-error="expiry" aria-live="polite"></small></label>
+<label class="lt-card-field">CVC
+<input data-card-input="cvc" aria-label="데모 CVC" aria-describedby="card-cvc-error" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="000">
+<small id="card-cvc-error" data-card-error="cvc" aria-live="polite"></small></label>
+</div>
+<label class="lt-card-field">카드 소유자명
+<input data-card-input="holder" aria-label="데모 소유자" aria-describedby="card-holder-error" maxlength="40" autocomplete="off" placeholder="DEMO USER">
+<small id="card-holder-error" data-card-error="holder" aria-live="polite"></small></label>
+</div>
+</div>
+</div>
+<div class="lt-alt-method">
+<h2 data-method-title>결제수단을 선택해주세요.</h2>
+<p>선택한 결제 수단의 화면을 미리 보고 있습니다.</p>
+<p>실제 인증이나 결제 요청은 전송되지 않습니다.</p>
+</div>
+<div class="lt-agreements">
+<h2>결제 동의</h2>
+<label class="lt-agree-all">
+<input type="checkbox" data-all>전체 동의 (필수)</label>
+<div>
+<label>
+<input type="checkbox" data-required>
+<span>
+<em>[필수]</em> 전자금융거래 이용약관 동의</span>
+</label>
+<button data-terms="전자금융거래 이용약관">보기 ›</button>
+</div>
+<div>
+<label>
+<input type="checkbox" data-required>
+<span>
+<em>[필수]</em> 개인정보 수집 및 이용 동의</span>
+</label>
+<button data-terms="개인정보 수집 및 이용">보기 ›</button>
+</div>
+<div>
+<label>
+<input type="checkbox" data-required>
+<span>
+<em>[필수]</em> 개인정보 제3자 제공 동의 (KG이니시스)</span>
+</label>
+<button data-terms="개인정보 제3자 제공">보기 ›</button>
+</div>
+<div>
+<label>
+<input type="checkbox" data-optional>
+<span>[선택] 이벤트 및 마케팅 정보 수신 동의</span>
+</label>
+<button data-terms="이벤트 및 마케팅 정보 수신">보기 ›</button>
+</div>
+</div>
+<form id="lt-mock-payment" method="post" action="{% url 'payment:mock_pay' %}">
+{% csrf_token %}
+<input type="hidden" name="attempt" value="{{ payment_attempt }}">
+<label class="lt-demo-approval">Mock 결제 확인 <small>실제 카드정보 대신 <b>DEMO</b>를 입력해주세요.</small>
+<input name="approval_code" maxlength="20" placeholder="DEMO" autocomplete="off" required>
+</label>
+</form>
+<p class="lt-form-error" role="alert">{{ payment_error }}
+</p>
+<div class="lt-pay-actions">
+<a class="lt-btn" href="{% url 'payment:booking' %}">←　이전 단계로</a>
+<button type="submit" form="lt-mock-payment" class="lt-btn gradient" data-pay>결제하기　 →</button>
+</div>
+<p class="lt-secure">▣ UI 데모 · 카드 정보는 가상 값이며 브라우저에서만 검증하며 서버로 전송하거나 저장하지 않습니다.</p>
+</section>
+<aside>
+<section class="lt-panel lt-checkout-summary">{% include 'payment/includes/summary.html' with checkout=True %}<h2>예매 내역</h2>
+<div class="lt-line">
+<span>좌석 정보</span>
+<strong data-seat-summary>
+</strong>
+</div>
+<div class="lt-line">
+<span>티켓 수량</span>
+<strong data-quantity>
+</strong>
+</div>
+<div class="lt-line">
+<span>티켓 금액</span>
+<strong data-subtotal>
+</strong>
+</div>
+<h2>할인 내역</h2>
+<label class="lt-checkout-discount">
+<select data-discount>
+<option value="none">선택 안 함</option>
+<option value="youth">청년 할인 (20%)</option>
+<option value="coupon">웰컴 쿠폰 (10,000원)</option>
+</select>
+<strong data-discount-total>
+</strong>
+</label>
+<h2>결제 금액</h2>
+<div class="lt-line">
+<span>티켓 금액</span>
+<span data-subtotal>
+</span>
+</div>
+<div class="lt-line">
+<span>할인 금액</span>
+<span class="pink" data-discount-total>
+</span>
+</div>
+<div class="lt-line">
+<span>예매 수수료</span>
+<span data-fee>
+</span>
+</div>
+<div class="lt-total pink">
+<strong>최종 결제 금액</strong>
+<b data-total>
+</b>
+</div>
+</section>
+<img class="lt-mobile-ad" src="{% static 'payment/images/mobile-ticket.webp' %}" alt="결제가 완료되면 모바일 티켓이 바로 발급됩니다. 데모에서는 발급되지 않습니다.">
+</aside>
+</main>{% endblock %}

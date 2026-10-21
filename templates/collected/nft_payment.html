@@ -1,0 +1,236 @@
+{% extends 'base.html' %}{% load static %}{% block extra_css %}<link rel="stylesheet" href="{% static 'linkticket/collected/nft_payment.css' %}">{% endblock %}{% block content %}<div class="collected-page nft_payment"><p class="demo-note container">화면 미리보기 · 이벤트 및 NFT는 예시 데이터이며 실제 구매·발급이 이루어지지 않습니다.</p>
+
+
+
+
+<div class="steps">
+  <div class="steps-track">
+    <div class="step done"><div class="step__num">1</div><div class="step__label">NFT 선택</div></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step__num">2</div><div class="step__label">결제하기</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step__num">3</div><div class="step__label">결제 완료</div></div>
+  </div>
+</div>
+
+<div class="wrap content">
+
+  
+  <div class="product-col">
+    <div class="product-card">
+      <div class="product-card__media" id="productMedia">
+        <div class="glow"></div>
+        <span class="product-card__badge" id="productBadge">LIMITED</span>
+        <span class="product-card__like">♡</span>
+        <div class="product-card__ticket">LINKTICKET NFT</div>
+        <div class="product-card__name" id="productMediaName">NCT DREAM</div>
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__title" id="productTitle">NCT DREAM</div>
+        <div class="product-card__subtitle" id="productSubtitle">THE DREAM SHOW 3</div>
+
+        <div class="pinfo-row"><span class="ic">📅</span>공연일시&nbsp;<b id="productDate">2026.10.15 (목) 19:00</b></div>
+        <div class="pinfo-row"><span class="ic">📍</span>공연장&nbsp;<b id="productVenue">서울 월드컵 경기장</b></div>
+        <div class="pinfo-row"><span class="ic">🎫</span>NFT 티켓&nbsp;<b id="productType">일반석 NFT</b></div>
+        <div class="pinfo-row"><span class="ic">👤</span>좌석정보&nbsp;<b id="productSeat">스탠딩 A구역</b></div>
+        <div class="pinfo-row"><span class="ic">🏢</span>발행사&nbsp;<b>LINKTICKET</b></div>
+        <div class="pinfo-row"><span class="ic">💳</span>발행 수량&nbsp;<b id="productSupply">1,000개 (한정판)</b></div>
+      </div>
+    </div>
+
+    <div class="guide-box">
+      <span class="ic">🎟️</span>
+      <div>
+        <b>LINKTICKET NFT란?</b>
+        공연의 추억을 블록체인 기반으로 소장할 수 있는 디지털 티켓입니다. 단순한 티켓을 넘어 특별한 가치를 경험하세요.
+        <br><a href="{% url 'ui:nft-guide' %}">NFT 가이드 보기 →</a>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="main-col">
+    <div class="pay-card">
+      <div class="pay-card__head">
+        <h2>🔒 NFT 결제하기</h2>
+        <span class="kg">ⓘ 안전한 결제 시스템으로 보호됩니다.</span>
+      </div>
+
+      <div class="pay-methods">
+        <div class="pay-method active" data-method="card"><span class="ic">💳</span>카드 결제</div>
+        <div class="pay-method" data-method="easy"><span class="ic">📱</span>간편결제</div>
+        <div class="pay-method" data-method="vaccount"><span class="ic">🏦</span>가상계좌 결제</div>
+      </div>
+
+      
+      <div class="method-panel active" id="panel-card">
+        <div class="section-label">카드 정보 입력</div>
+        <div class="card-grid">
+          <label class="card-opt active"><input type="radio" name="card" checked>신한카드</label>
+          <label class="card-opt"><input type="radio" name="card">현대카드</label>
+          <label class="card-opt"><input type="radio" name="card">삼성카드</label>
+          <label class="card-opt"><input type="radio" name="card">KB국민카드</label>
+          <label class="card-opt"><input type="radio" name="card">LOTTE CARD</label>
+          <label class="card-opt"><input type="radio" name="card">하나카드</label>
+        </div>
+
+        <div class="form-row">
+          <label>카드번호</label>
+          <div class="input-icon-wrap">
+            <input type="text" class="text-input" id="cardNumberInput" placeholder="0000 - 0000 - 0000 - 0000" inputmode="numeric" maxlength="25" oninput="formatCardNumber(this)">
+            <span class="ic">▭</span>
+          </div>
+          <div class="field-grid">
+            <div>
+              <label style="font-size:12px;font-weight:700;margin:10px 0 6px;">유효기간</label>
+              <input type="text" class="text-input" id="cardExpiryInput" placeholder="MM / YY" inputmode="numeric" maxlength="7" oninput="formatExpiry(this)">
+            </div>
+            <div>
+              <label style="font-size:12px;font-weight:700;margin:10px 0 6px;">CVC ⓘ</label>
+              <input type="text" class="text-input" id="cardCvcInput" placeholder="123" inputmode="numeric" maxlength="3" oninput="this.value=this.value.replace(/\D/g,'').slice(0,3);">
+            </div>
+          </div>
+          <label style="font-size:12px;font-weight:700;margin:14px 0 6px;display:block;">카드 소유자명</label>
+          <input type="text" class="text-input" placeholder="이름을 입력하세요.">
+        </div>
+      </div>
+
+      
+      <div class="method-panel" id="panel-easy">
+        <div class="section-label">간편결제 수단 선택</div>
+        <div class="easypay-list">
+          <label class="easypay-opt active">
+            <input type="radio" name="easypay" checked>
+            <span class="logo logo-kakao">Kakao</span>
+            <span><div>카카오페이</div><div class="easypay-sub">카카오톡으로 간편하게 결제</div></span>
+          </label>
+          <label class="easypay-opt">
+            <input type="radio" name="easypay">
+            <span class="logo logo-naver">N</span>
+            <span><div>네이버페이</div><div class="easypay-sub">네이버 포인트 적립 및 결제</div></span>
+          </label>
+          <label class="easypay-opt">
+            <input type="radio" name="easypay">
+            <span class="logo logo-toss">Toss</span>
+            <span><div>토스페이</div><div class="easypay-sub">토스 앱에서 간편 인증 결제</div></span>
+          </label>
+          <label class="easypay-opt">
+            <input type="radio" name="easypay">
+            <span class="logo logo-payco">PAYCO</span>
+            <span><div>페이코</div><div class="easypay-sub">페이포인트 적립 및 결제</div></span>
+          </label>
+        </div>
+        <div class="secure-note" style="text-align:left;margin-top:0;">선택한 간편결제 앱으로 이동해 인증 후 결제가 진행됩니다.</div>
+      </div>
+
+      
+      <div class="method-panel" id="panel-vaccount">
+        <div class="section-label">입금 은행 선택</div>
+        <div class="bank-grid">
+          <label class="bank-opt active"><input type="radio" name="bank" checked>국민은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">신한은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">우리은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">하나은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">농협은행</label>
+          <label class="bank-opt"><input type="radio" name="bank">기업은행</label>
+        </div>
+
+        <div class="form-row">
+          <label>입금자명</label>
+          <input type="text" class="text-input" placeholder="입금자명을 입력하세요. (카드 소유자명과 동일하지 않아도 됩니다)">
+        </div>
+
+        <div class="vaccount-note">
+          <div><b>가상계좌 안내</b></div>
+          <div>· 결제하기를 누르면 입금 전용 가상계좌가 발급됩니다.</div>
+          <div>· 입금기한 <span id="vaccountDeadline">발급 후 24시간 이내</span>까지 입금해야 예매가 확정됩니다.</div>
+          <div>· 입금 확인 후 NFT가 자동으로 발행되며, 별도 승인 절차는 없습니다.</div>
+        </div>
+      </div>
+
+      <div class="section-label">결제 동의</div>
+      <div class="agree-list">
+        <div class="agree-item all">
+          <label><input type="checkbox" id="agreeAll" onclick="toggleAll(this)">전체 동의하기</label>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox" class="agree-req">(필수) NFT 티켓 구매 및 발행에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox" class="agree-req">(필수) 개인정보 수집 및 이용에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox" class="agree-req">(필수) 결제대행 서비스 이용약관에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+        <div class="agree-item">
+          <label><input type="checkbox">(선택) LINKTICKET 이벤트 및 마케팅 정보 수신에 동의합니다.</label>
+          <span class="view">보기 ›</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-back" onclick="history.back()">이전 단계</button>
+        <button type="button" class="btn-pay" id="payBtn" onclick="submitPayment()">결제하기&nbsp; <span id="payBtnPrice">₩110,000</span></button>
+      </div>
+    </div>
+  </div>
+
+  
+  <aside class="side-col">
+    <div class="side-box">
+      <div class="side-box__head">
+        <h3>결제 정보</h3>
+        <span class="timer">⏱ <span id="timer">09:52</span></span>
+      </div>
+
+      <div class="order-item">
+        <div class="order-item__media" id="orderMedia">NFT</div>
+        <div>
+          <div class="order-item__title" id="orderTitle">NCT DREAM</div>
+          <div class="order-item__sub" id="orderSub">THE DREAM SHOW 3</div>
+          <div class="order-item__badge" id="orderBadge" style="margin-top:6px;">LIMITED</div>
+        </div>
+      </div>
+
+      <div class="info-row"><span>공연일시</span><b id="sumDate">2026.10.15 (목) 19:00</b></div>
+      <div class="info-row"><span>공연장</span><b id="sumVenue">서울 월드컵 경기장</b></div>
+      <div class="info-row"><span>좌석정보</span><b id="sumSeat">스탠딩 A구역</b></div>
+      <div class="info-row"><span>NFT 유형</span><b id="sumType">일반석 NFT</b></div>
+
+      <div class="divider-line"></div>
+
+      <div class="price-row"><span>NFT 티켓 가격</span><span id="priceBase">₩100,000</span></div>
+      <div class="price-row"><span>수수료</span><span id="priceFee">₩5,000</span></div>
+      <div class="price-row"><span>부가세 (10%)</span><span id="priceVat">₩5,000</span></div>
+
+      <div class="final-row">
+        <span class="label">최종 결제 금액</span>
+        <span class="amount" id="priceFinal">₩110,000</span>
+      </div>
+    </div>
+
+    <div class="side-box">
+      <div class="guide-note-title">🎁 구매 후 안내</div>
+      <ul class="checklist">
+        <li><span class="box on">✓</span>결제 완료 후 즉시 NFT가 발행됩니다.</li>
+        <li><span class="box on">✓</span>마이페이지 &gt; 보유 NFT에서 확인할 수 있습니다.</li>
+        <li><span class="box on">✓</span>공연 당일 QR코드로 입장 가능합니다.</li>
+        <li><span class="box note">!</span>NFT는 양도/판매가 가능할 수 있으며, 정책에 따라 제한될 수 있습니다.</li>
+      </ul>
+    </div>
+
+    <div class="cta-banner" onclick="window.location.href='{% url 'ui:nft' %}'" style="cursor:pointer;">
+      <div class="cta-banner__text">특별한 순간을<br>영원한 NFT로 소장하세요.</div>
+      <span class="cta-banner__ic">🎫</span>
+    </div>
+  </aside>
+</div>
+
+
+
+
+
+</div>{% endblock %}{% block scripts %}<script id="ui-routes" type="application/json">{"performances":"{% url 'ui:performances' %}","nftPayment":"{% url 'ui:nft-payment' %}","nftComplete":"{% url 'ui:nft-complete' %}"}</script><script src="{% static 'linkticket/collected/nft_payment.js' %}"></script>{% endblock %}

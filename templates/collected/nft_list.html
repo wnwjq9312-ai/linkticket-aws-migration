@@ -1,0 +1,286 @@
+{% extends 'base.html' %}{% load static %}{% block extra_css %}<link rel="stylesheet" href="{% static 'linkticket/collected/nft_list.css' %}">{% endblock %}{% block content %}<div class="collected-page nft_list"><p class="demo-note container">화면 미리보기 · 이벤트 및 NFT는 예시 데이터이며 실제 구매·발급이 이루어지지 않습니다.</p>
+
+
+
+
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-tag">NFT TICKET</span>
+      <h1>특별한 순간을<br>소장하세요</h1>
+      <p>공연의 감동이 담긴 단 하나의 디지털 티켓,<br>LINK TICKET NFT</p>
+      <span class="hero-cta" onclick="document.getElementById('nftCollection').scrollIntoView({behavior:'smooth'})">NFT 컬렉션 둘러보기 →</span>
+    </div>
+    <div class="hero-mid">
+      <div class="phone">LINKTICKET NFT<br>LIVE FOREVER</div>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <div class="hero-script">More Than Tickets<br>More Memories</div>
+      <div class="hero-vertical">MUSIC × NFT YOUR STORY</div>
+    </div>
+  </div>
+</section>
+
+
+<div class="wrap feature-strip">
+  <div class="feature-item"><span class="ic">🎫</span><span>공연의 추억을<br><small>디지털 자산으로</small></span></div>
+  <div class="feature-item"><span class="ic">💎</span><span>한정판 NFT<br><small>특별한 소장 가치</small></span></div>
+  <div class="feature-item"><span class="ic">🛡️</span><span>블록체인 기반<br><small>안전한 소유권 인증</small></span></div>
+  <div class="feature-item"><span class="ic">🎁</span><span>다양한 혜택과<br><small>추가 콘텐츠 제공</small></span></div>
+  <div class="feature-highlight">
+    <div class="feature-highlight__text">👑 NFT 보유자만의 특별한 혜택!<small>공연 선예매, 이벤트, 이벤트 참여까지</small></div>
+    <span>›</span>
+  </div>
+</div>
+
+<div class="wrap content">
+
+  
+  <aside class="filter-col">
+    <div class="filter-box">
+      <h3>NFT 컬렉션 필터</h3>
+      <div class="filter-search">
+        <span onclick="applyNftFilter()" style="cursor:pointer;">🔍</span>
+        <input type="text" id="nftSearchInput" placeholder="아티스트, 공연명 검색" onkeydown="if(event.key==='Enter') applyNftFilter();">
+      </div>
+
+      <div class="filter-group" data-group="category">
+        <div class="filter-group__title">카테고리</div>
+        <label class="filter-check"><input type="checkbox" class="filter-all" checked>전체</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="콘서트">콘서트</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="페스티벌">페스티벌</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="뮤지컬">뮤지컬</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="연극">연극</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="클래식">클래식</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="팬 이벤트">팬 이벤트</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="기타">기타</label>
+      </div>
+
+      <div class="filter-group" data-group="artist">
+        <div class="filter-group__title">아티스트</div>
+        <label class="filter-check"><input type="checkbox" class="filter-all" checked>전체</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="IU">IU</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="SEVENTEEN">SEVENTEEN</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="aespa">aespa</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="임영웅">임영웅</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="NCT">NCT</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="르세라핌">르세라핌</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="기타">기타</label>
+      </div>
+
+      <div class="filter-group" data-group="price">
+        <div class="filter-group__title">가격대</div>
+        <label class="filter-check"><input type="checkbox" class="filter-all" checked>전체</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="under10">10만원 미만</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="10to30">10만원 ~ 30만원</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="30to50">30만원 ~ 50만원</label>
+        <label class="filter-check"><input type="checkbox" class="filter-item" data-value="over50">50만원 이상</label>
+      </div>
+
+      <button type="button" class="filter-submit" onclick="applyNftFilter()">검색하기</button>
+    </div>
+  </aside>
+
+  
+  <div class="main-col" id="nftCollection">
+    <div class="section-head">
+      <h2>NFT 컬렉션 <span class="count">24</span></h2>
+      <select class="sort-select"><option>최신순</option></select>
+    </div>
+
+    
+    <div class="nft-grid">
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=1" class="nft-card" data-category="콘서트" data-artist="IU" data-price="150000">
+        <div class="nft-card__media media-1">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">IU</div>
+          <div class="nft-card__subtitle">THE WINNING NFT</div>
+          <div class="nft-card__stats">한정 수량 1,000개 · 소유자 342명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 150,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=2" class="nft-card" data-category="콘서트" data-artist="SEVENTEEN" data-price="120000">
+        <div class="nft-card__media media-2">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">SEVENTEEN</div>
+          <div class="nft-card__subtitle">RIGHT HERE WORLD TOUR</div>
+          <div class="nft-card__stats">한정 수량 2,000개 · 소유자 892명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 120,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=3" class="nft-card" data-category="콘서트" data-artist="aespa" data-price="130000">
+        <div class="nft-card__media media-3">
+          <span class="nft-card__badge badge-hot">HOT</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">aespa</div>
+          <div class="nft-card__subtitle">SYNK : PARALLEL LINE</div>
+          <div class="nft-card__stats">한정 수량 1,500개 · 소유자 721명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 130,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=4" class="nft-card" data-category="콘서트" data-artist="임영웅" data-price="200000">
+        <div class="nft-card__media media-4">
+          <span class="nft-card__badge badge-limited">LIMITED</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">임영웅</div>
+          <div class="nft-card__subtitle">IM HERO TOUR 2025</div>
+          <div class="nft-card__stats">한정 수량 1,000개 · 소유자 612명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 200,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=5" class="nft-card" data-category="뮤지컬" data-artist="기타" data-price="180000">
+        <div class="nft-card__media media-5">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">뮤지컬 위키드</div>
+          <div class="nft-card__subtitle">ORIGINAL NFT</div>
+          <div class="nft-card__stats">한정 수량 800개 · 소유자 301명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 180,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=6" class="nft-card" data-category="페스티벌" data-artist="기타" data-price="90000">
+        <div class="nft-card__media media-6">
+          <span class="nft-card__badge badge-hot">HOT</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">서울 뮤직 페스티벌</div>
+          <div class="nft-card__subtitle">SEOUL 2025</div>
+          <div class="nft-card__stats">한정 수량 2,500개 · 소유자 1,024명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 90,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=7" class="nft-card" data-category="콘서트" data-artist="NCT" data-price="110000">
+        <div class="nft-card__media media-7">
+          <span class="nft-card__badge badge-limited">LIMITED</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">NCT DREAM</div>
+          <div class="nft-card__subtitle">THE DREAM SHOW 3</div>
+          <div class="nft-card__stats">한정 수량 1,500개 · 소유자 658명</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">₩ 110,000</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+      
+      <a href="{% url 'ui:nft-payment' %}?id=8" class="nft-card" data-category="기타" data-artist="기타" data-price="0">
+        <div class="nft-card__media media-8">
+          <span class="nft-card__badge badge-new">NEW</span>
+          <span class="nft-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+          <span style="font-size:28px;">?</span>
+        </div>
+        <div class="nft-card__body">
+          <div class="nft-card__title">스페셜 컬렉션</div>
+          <div class="nft-card__subtitle">COMING SOON</div>
+          <div class="nft-card__stats">한정 수량 미정 · 소유자 -</div>
+          <div class="nft-card__footer">
+            <span class="nft-card__price">추후 공개</span>
+            <span class="nft-card__cart">🛒</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+    
+
+  </div>
+
+  
+  <aside class="side-col">
+    <div class="side-box">
+      <div class="side-box__head">
+        <h3>인기 NFT 컬렉션</h3>
+        <a href="{% url 'ui:nft' %}">전체보기 ›</a>
+      </div>
+      <div class="rank-list">
+        <a href="{% url 'ui:nft-payment' %}?id=1" class="rank-item">
+          <span class="rank-item__num">1</span>
+          <div><div class="rank-item__title">IU</div><div class="rank-item__sub">THE WINNING NFT</div></div>
+        </a>
+        <a href="{% url 'ui:nft-payment' %}?id=2" class="rank-item">
+          <span class="rank-item__num">2</span>
+          <div><div class="rank-item__title">SEVENTEEN</div><div class="rank-item__sub">RIGHT HERE WORLD TOUR</div></div>
+        </a>
+        <a href="{% url 'ui:nft-payment' %}?id=3" class="rank-item">
+          <span class="rank-item__num">3</span>
+          <div><div class="rank-item__title">aespa</div><div class="rank-item__sub">SYNK : PARALLEL LINE</div></div>
+        </a>
+        <a href="{% url 'ui:nft-payment' %}?id=4" class="rank-item">
+          <span class="rank-item__num">4</span>
+          <div><div class="rank-item__title">임영웅</div><div class="rank-item__sub">IM HERO TOUR 2025</div></div>
+        </a>
+        <a href="{% url 'ui:nft-payment' %}?id=7" class="rank-item">
+          <span class="rank-item__num">5</span>
+          <div><div class="rank-item__title">NCT DREAM</div><div class="rank-item__sub">THE DREAM SHOW 3</div></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="side-box info-box">
+      <h3>💎 NFT란?</h3>
+      <p>공연의 기억을 블록체인 기반으로 소장할 수 있는 디지털 티켓입니다. 단순한 티켓을 넘어, 특별한 가치를 경험하세요.</p>
+      <span class="info-box__btn" onclick="window.location.href='{% url 'ui:nft-guide' %}'">NFT 가이드 보기 →</span>
+    </div>
+
+    <div class="cta-banner" onclick="window.location.href='{% url 'ui:nft' %}'">
+      <div class="cta-banner__text">지금, 당신의 특별한 순간을<br>NFT로 소장하세요.</div>
+      <span>🎫</span>
+    </div>
+  </aside>
+</div>
+
+
+
+
+
+
+</div>{% endblock %}{% block scripts %}<script id="ui-routes" type="application/json">{"performances":"{% url 'ui:performances' %}","nftPayment":"{% url 'ui:nft-payment' %}","nftComplete":"{% url 'ui:nft-complete' %}"}</script><script src="{% static 'linkticket/collected/nft_list.js' %}"></script>{% endblock %}

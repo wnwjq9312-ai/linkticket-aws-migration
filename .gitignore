@@ -1,0 +1,22 @@
+# 로컬 개발/테스트 산출물 — 커밋하지 않는다
+.venv/
+__pycache__/
+*.pyc
+*.log
+
+# 팀 확정 DB는 MariaDB다(config/settings.py 기본값도 mysql). db.sqlite3는 DB 서버 없이
+# 화면 UI만 잠깐 보고 싶을 때(.env에 DB_ENGINE=sqlite로 명시한 예외 경로)만 생기는
+# 개인 로컬 파일이라 커밋 대상에서 제외한다 — 이 프로젝트의 DB가 SQLite라는 뜻이 아니다.
+db.sqlite3
+
+# 운영 시크릿(Ansible Vault로 관리) — 실수로도 커밋 금지
+*.env
+secrets.yml
+vault_pass.txt
+staticfiles/
+
+media/
+
+venv/
+.env.*
+!.env.example

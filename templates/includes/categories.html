@@ -1,0 +1,1 @@
+<nav class="categories panel" aria-label="공연 장르">{% for key,label,icon in genres %}<a href="{% url 'ui:performances' %}?genre={{ key }}" class="{% if genre == key or not genre and forloop.first %}selected{% endif %}"><b>{{ icon }}</b><span>{{ label }}</span></a>{% endfor %}</nav>

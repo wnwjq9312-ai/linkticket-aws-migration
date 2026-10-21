@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공연 상세 - LINKTICKET</title>
+<style>
+  :root {
+    --bg: #f5f7fb; --white: #ffffff; --panel-2: #eef4ff;
+    --line: #e6e8ee; --ink: #14161f; --muted: #6b7280;
+    --blue: #2563eb; --blue-dark: #1d4ed8; --blue-light: #eef4ff; --red: #ef4444;
+    --vip: #ec4899; --r: #2563eb; --s: #22c55e; --a: #9aa0b0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    line-height: 1.5;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ── 헤더 (다른 페이지와 동일) ───────────────────────── */
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 68px; background: var(--white); border-bottom: 1px solid var(--line);
+  }
+  .left-group { display: flex; align-items: center; height: 100%; }
+  .left-group > * + * { margin-left: 32px; }
+  .logo { font-size: 21px; font-weight: 900; letter-spacing: .5px; color: var(--ink); }
+  .logo span { color: var(--blue); }
+  .main-nav { display: flex; align-items: center; height: 100%; font-size: 14px; font-weight: 600; flex: none; }
+  .main-nav > * + * { margin-left: 40px; }
+  .main-nav a { color: #4b5163; position: relative; display: flex; align-items: center; height: 100%; }
+  .main-nav a:hover { color: var(--ink); }
+  .main-nav .active { color: var(--ink); }
+  .main-nav .active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 2px; background: var(--blue);
+  }
+  .right-group { display: flex; align-items: center; }
+  .right-group > * + * { margin-left: 18px; }
+  .search-bar {
+    flex: none; width: 240px; display: flex; align-items: center;
+    background: #f1f3f8; border: 1px solid var(--line);
+    border-radius: 999px; padding: 10px 18px; color: var(--muted);
+  }
+  .search-bar > * + * { margin-left: 10px; }
+  .search-bar svg { flex: none; opacity: .6; }
+  .search-bar input { flex: 1; background: none; border: none; outline: none; color: var(--ink); font-size: 13px; font-family: inherit; }
+  .search-bar input::placeholder { color: #9aa0b0; }
+  .head-right { display: flex; align-items: center; font-size: 14px; flex: none; }
+  #auth-area { display: flex; align-items: center; color: #4b5163; font-weight: 600; }
+  #auth-area > * + * { margin-left: 8px; }
+  #auth-area a:hover { color: var(--ink); }
+  #auth-area .sep { color: var(--line); }
+  @media (max-width: 980px) { .main-nav, header .search-bar { display: none; } }
+
+  /* ── 페이지 히어로 (사진 위라 어둡게 유지) ──────────────────────── */
+  .page-hero {
+    position: relative; overflow: hidden; padding: 40px 40px 36px; min-height: 250px;
+    background: linear-gradient(180deg, rgba(5,5,10,.4), rgba(11,10,21,.72)), url('assets/hero-bg.jpg') center 35% / cover no-repeat;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .page-hero .tag { font-size: 12px; letter-spacing: 3px; color: #cfe0ff; font-weight: 700; margin-bottom: 12px; }
+  .page-hero h1 { font-size: 30px; margin: 0 0 10px; font-weight: 800; color: #fff; }
+  .page-hero p { color: #e6e9f3; font-size: 14px; margin: 0; }
+  .page-hero-side { text-align: right; font-style: italic; font-size: 22px; line-height: 1.3; color: rgba(255,255,255,.9); }
+  @media (max-width: 900px) { .page-hero-side { display: none; } }
+
+  /* ── 브레드크럼 ─────────────────────────────────────── */
+  .breadcrumb { padding: 16px 40px 0; font-size: 13px; color: var(--muted); display: flex; align-items: center; }
+  .breadcrumb > * + * { margin-left: 8px; }
+  .breadcrumb a:hover { color: var(--ink); }
+  .breadcrumb .current { color: var(--ink); }
+
+  /* ── 본문 레이아웃 ──────────────────────────────────── */
+  .layout { display: flex; align-items: flex-start; padding: 18px 40px 60px; }
+  .layout > * + * { margin-left: 28px; }
+
+  /* 좌측 사이드바 (검색/카테고리/지역/기간) — 카드로 감싸서 더 정돈된 느낌 */
+  .side {
+    flex: none; width: 250px;
+    background: var(--white); border: 1px solid var(--line); border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 2px 10px rgba(20,22,40,.04);
+  }
+  .side .sd-search {
+    display: flex; align-items: center; background: #f1f3f8; border: 1px solid var(--line);
+    border-radius: 10px; padding: 11px 14px; margin-bottom: 22px; color: var(--muted);
+  }
+  .side .sd-search > * + * { margin-left: 8px; }
+  .side .sd-search input { flex: 1; background: none; border: none; outline: none; color: var(--ink); font-size: 13px; font-family: inherit; }
+  .side .sd-search input::placeholder { color: #9aa0b0; }
+  .side h4 { font-size: 14px; margin: 0 0 12px; color: var(--ink); font-weight: 800; }
+  .side .cat-list { margin: 0 0 26px; padding: 0; list-style: none; }
+  .side .cat-list li + li { margin-top: 3px; }
+  .side .cat-list li a {
+    display: flex; align-items: center; padding: 9px 10px; border-radius: 10px; font-size: 13px; color: var(--muted);
+    transition: background .12s ease;
+  }
+  .side .cat-list li a > * + * { margin-left: 10px; }
+  .side .cat-list li a:hover { color: var(--ink); background: #f6f7fa; }
+  .side .cat-list li a.active {
+    background: linear-gradient(90deg, var(--blue), #4f7df0); color: #fff; font-weight: 700;
+    box-shadow: 0 4px 12px rgba(37,99,235,.25);
+  }
+  .side .cat-list .ico {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--blue-light); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; flex: none;
+  }
+  .side .cat-list li a.active .ico { background: rgba(255,255,255,.25); border-color: transparent; }
+
+  .filter-group { margin-bottom: 22px; }
+  .filter-group:last-child { margin-bottom: 0; }
+  .filter-group .fg-title { display: flex; align-items: center; font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 10px; }
+  .filter-group .fg-title > * + * { margin-left: 6px; }
+  .filter-group label { display: flex; align-items: center; font-size: 13px; color: var(--muted); padding: 5px 0; cursor: pointer; }
+  .filter-group label > * + * { margin-left: 8px; }
+  .filter-group label:hover { color: var(--ink); }
+  .filter-group input[type="checkbox"] { accent-color: var(--blue); width: 14px; height: 14px; }
+
+  .side .apply-btn {
+    display: block; width: 100%; padding: 13px; border: none; border-radius: 10px; margin-top: 4px;
+    background: linear-gradient(90deg, var(--blue), #4f7df0); color: #fff; font-weight: 700; font-size: 14px;
+  }
+  .side .apply-btn:hover { filter: brightness(1.05); }
+
+  /* 커스텀 달력 위젯 (메인 페이지 "빠른 예매"와 동일한 방식) */
+  .side .date-field {
+    position: relative; display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px;
+    padding: 9px 10px; margin-top: 8px; font-size: 12px; color: var(--ink); cursor: pointer; background: var(--white);
+  }
+  .side .date-field > * + * { margin-left: 6px; }
+  .side .date-field input {
+    flex: 1; border: none; outline: none; font-size: 12px; font-family: inherit; background: none; color: var(--ink); cursor: pointer;
+  }
+  .side-date-picker {
+    display: none; position: absolute; left: 0; top: calc(100% + 8px); z-index: 60;
+    width: 300px; background: #fff; border: 1px solid var(--line); border-radius: 16px;
+    padding: 18px; box-shadow: 0 16px 40px rgba(20,22,40,.16);
+  }
+  .side-date-picker.open { display: block; }
+  .sdp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .sdp-header button {
+    width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: #fff; font-size: 15px; color: var(--ink);
+  }
+  .sdp-header button:hover { background: var(--blue-light); border-color: var(--blue); }
+  .sdp-title { display: flex; align-items: baseline; }
+  .sdp-title > * + * { margin-left: 8px; }
+  .sdp-year, .sdp-month {
+    font-size: 16px; font-weight: 800; color: var(--ink); cursor: pointer; padding: 4px 7px; border-radius: 8px;
+  }
+  .sdp-year:hover, .sdp-month:hover { background: var(--blue-light); color: var(--blue); }
+  .sdp-title input[type="number"] {
+    font-size: 16px; font-weight: 800; border: 1.5px solid var(--blue); border-radius: 8px; padding: 3px 6px;
+    font-family: inherit; color: var(--ink); outline: none;
+  }
+  #sdp-year-input { width: 70px; }
+  #sdp-month-input { width: 48px; }
+  .sdp-weekdays {
+    display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+    font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 6px;
+  }
+  .sdp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .sdp-grid button {
+    width: 100%; aspect-ratio: 1; border: none; background: none; border-radius: 8px;
+    font-size: 13px; color: var(--ink); font-family: inherit;
+  }
+  .sdp-grid button:hover:not(:disabled) { background: var(--blue-light); }
+  .sdp-grid button.other-month { color: #d5d8e5; }
+  .sdp-grid button.today { border: 1.5px solid var(--blue); font-weight: 700; }
+  .sdp-grid button.selected { background: var(--blue); color: #fff; font-weight: 800; }
+  @media (max-width: 1080px) { .side { display: none; } }
+
+  /* 메인 콘텐츠 */
+  .main-col { flex: 1; min-width: 0; }
+
+  .info-row { display: flex; align-items: stretch; margin-bottom: 26px; }
+  .info-row > * + * { margin-left: 22px; }
+  .poster {
+    flex: none; width: 260px; border-radius: 14px; overflow: hidden;
+    background: linear-gradient(150deg, #dfe6f7, #c7d3ef);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    color: #6b7280; font-size: 13px; padding: 16px;
+  }
+  .info-card { flex: 1; min-width: 0; }
+  .info-card .cat-badge {
+    display: inline-block; background: var(--blue); color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 12px; border-radius: 6px; margin-bottom: 12px;
+  }
+  .info-card h1 { font-size: 26px; margin: 0 0 10px; color: var(--ink); }
+  .info-card .sub { font-size: 14px; color: #4b5163; margin: 0 0 18px; }
+  .info-card .meta-list { list-style: none; margin: 0 0 16px; padding: 0; font-size: 13px; color: var(--muted); }
+  .info-card .meta-list li { display: flex; align-items: center; padding: 5px 0; }
+  .info-card .meta-list li > * + * { margin-left: 8px; }
+  .map-btn {
+    background: var(--blue-light); border: 1px solid var(--line); color: #4b5163;
+    border-radius: 999px; padding: 3px 12px; font-size: 11px; margin-left: 10px !important;
+  }
+  .map-btn:hover { color: var(--ink); border-color: var(--blue); }
+  .map-embed-wrap {
+    display: none; margin: 10px 0 16px; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .map-embed-wrap.open { display: block; }
+  .map-embed-wrap iframe { display: block; width: 100%; height: 260px; border: none; }
+  .info-card .tags { display: flex; flex-wrap: wrap; }
+  .info-card .tags > * + * { margin-left: 8px; }
+  .info-card .tags span { font-size: 12px; color: var(--blue); }
+
+  /* 탭 */
+  .tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .tabs button {
+    background: none; border: none; color: var(--muted); font-size: 14px; font-weight: 600;
+    padding: 14px 20px; position: relative; flex: none;
+  }
+  .tabs button:hover { color: var(--ink); }
+  .tabs button.active { color: var(--ink); }
+  .tabs button.active::after {
+    content: ""; position: absolute; left: 14px; right: 14px; bottom: -1px; height: 2px; background: var(--blue);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .placeholder-panel { color: var(--muted); font-size: 13px; padding: 40px 0; text-align: center; }
+
+  /* 예매 영역 */
+  .booking { display: flex; align-items: flex-start; }
+  .booking > * + * { margin-left: 22px; }
+  .seat-panel {
+    flex: 1; min-width: 0; background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 24px;
+  }
+  .seat-panel h3 { font-size: 15px; margin: 0 0 18px; color: var(--ink); }
+  .stage-lbl {
+    text-align: center; background: #2b3242; color: #cfd3e0; font-size: 12px; font-weight: 700;
+    letter-spacing: 3px; padding: 10px; border-radius: 10px; margin-bottom: 22px;
+  }
+  .seat-map { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; padding: 8px 0; }
+  .seat-block {
+    border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 700;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 18px 10px; gap: 4px; text-align: center;
+  }
+  .seat-block .price { font-size: 11px; font-weight: 600; opacity: .9; }
+  .seat-block.selected { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .seat-block:disabled { opacity: .4; cursor: default; }
+  .floor-row { display: flex; align-items: center; width: 100%; justify-content: center; }
+  .floor-lbl { font-size: 12px; color: var(--muted); font-weight: 700; margin-right: 14px; width: 22px; text-align: right; }
+  .seat-legend { display: flex; flex-wrap: wrap; margin-top: 24px; border-top: 1px solid var(--line); padding-top: 18px; }
+  .seat-legend > * + * { margin-left: 20px; }
+  .seat-legend .item { display: flex; align-items: center; font-size: 12px; color: var(--muted); }
+  .seat-legend .item > * + * { margin-left: 6px; }
+  .seat-legend .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+  .booking-side { flex: none; width: 320px; }
+  .booking-side .blk { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+  .booking-side h4 { font-size: 14px; margin: 0 0 14px; color: var(--ink); }
+  .date-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .date-grid > * + * { margin-left: 8px; }
+  .date-btn {
+    background: #f1f3f8; border: 1px solid var(--line); color: #4b5163; border-radius: 10px;
+    padding: 10px 4px; font-size: 12px; text-align: center; line-height: 1.4;
+  }
+  .date-btn:hover { border-color: var(--blue); }
+  .date-btn.active { background: var(--blue); border-color: transparent; color: #fff; font-weight: 700; }
+
+  .grade-list { list-style: none; margin: 0; padding: 0; }
+  .grade-item {
+    display: flex; align-items: center; justify-content: space-between; padding: 11px 10px;
+    border-radius: 10px; margin-bottom: 6px; border: 1px solid transparent;
+  }
+  .grade-item.active { background: var(--blue-light); border-color: var(--blue); }
+  .grade-item .left { display: flex; align-items: center; font-size: 13px; }
+  .grade-item .left > * + * { margin-left: 8px; }
+  .grade-item .chk {
+    width: 16px; height: 16px; border-radius: 50%; border: 2px solid #c7cbd6; flex: none;
+  }
+  .grade-item.active .chk { border-color: var(--blue); background: var(--blue); }
+  .grade-item .price { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .grade-item .remain { font-size: 11px; color: var(--muted); margin-left: 8px; }
+
+  .selected-seat-box {
+    background: #f1f3f8; border: 1px dashed var(--line); border-radius: 10px;
+    padding: 16px; text-align: center; font-size: 12px; color: var(--muted);
+  }
+  .selected-seat-box.has-selection { color: var(--ink); text-align: left; }
+  .selected-seat-box .row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+  .selected-seat-box .total { display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; border-top: 1px solid var(--line); margin-top: 8px; padding-top: 8px; }
+
+  .buy-btn {
+    display: block; width: 100%; border: none; border-radius: 10px; padding: 15px;
+    background: var(--blue); color: #fff; font-size: 15px; font-weight: 800;
+  }
+  .buy-btn:hover { background: var(--blue-dark); }
+  .buy-btn:disabled { opacity: .45; cursor: default; background: var(--blue); }
+  .side-actions { display: flex; margin-top: 10px; }
+  .side-actions > * + * { margin-left: 8px; }
+  .side-actions button {
+    flex: 1; background: #f1f3f8; border: 1px solid var(--line); color: #4b5163;
+    border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 600;
+  }
+  .side-actions button:hover { border-color: var(--blue); color: var(--ink); }
+  .side-actions button.on { color: var(--red); border-color: var(--red); }
+
+  @media (max-width: 1200px) { .booking { flex-direction: column; } .booking > * + * { margin-left: 0; margin-top: 20px; } .booking-side { width: 100%; } }
+  @media (max-width: 760px) { .info-row { flex-direction: column; } .info-row > * + * { margin-left: 0; margin-top: 16px; } .poster { width: 100%; aspect-ratio: 3/4; } }
+
+  /* ── 토스트 ─────────────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); border: 1px solid var(--line); color: #fff;
+    padding: 12px 24px; border-radius: 999px; font-size: 13px; font-weight: 600;
+    box-shadow: 0 14px 34px rgba(0,0,0,.25); z-index: 100;
+    opacity: 0; transition: opacity .2s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10,12,20,.5); display: none; align-items: center; justify-content: center; z-index: 50; }
+  .modal-overlay.open { display: flex; }
+  .modal { width: min(420px, 90vw); padding: 30px; border-radius: 16px; background: #fff; border: 1px solid var(--line); position: relative; }
+  .modal h2 { font-size: 18px; margin: 0 0 12px; color: var(--ink); }
+  .modal p { font-size: 14px; color: var(--muted); margin: 0 0 20px; }
+  .modal .close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 18px; color: var(--muted); }
+  .modal .close:hover { color: var(--ink); }
+  .modal .modal-login-btn {
+    display: block; width: 100%; box-sizing: border-box; text-align: center; padding: 13px; border-radius: 8px;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 14px; text-decoration: none;
+  }
+  .modal .modal-login-btn:hover { background: var(--blue-dark); }
+
+  /* ── 푸터 ───────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--line); background: var(--white); padding: 30px 40px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  }
+  footer .tagline { font-size: 11px; letter-spacing: 2px; color: var(--muted); }
+  .feat-row { display: flex; flex-wrap: wrap; margin: 6px 0; }
+  .feat-row > * { margin: 0 17px; }
+  .feat { display: flex; align-items: center; }
+  .feat > * + * { margin-left: 10px; }
+  .feat .ico { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-light); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; color: var(--blue); flex: none; }
+  .feat h5 { margin: 0; font-size: 13px; color: var(--ink); }
+  .feat p { margin: 0; font-size: 11px; color: var(--muted); }
+  .footer-cta { font-size: 13px; color: var(--muted); text-align: right; }
+  .footer-cta .brand { font-weight: 800; color: var(--ink); }
+  .footer-cta .brand span { color: var(--blue); }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="left-group">
+      <a href="/" class="logo">LINK<span>TICKET</span></a>
+      <nav class="main-nav">
+        <a href="/">홈</a>
+        <a href="/performances/">공연</a>
+        <a href="/tickets/" class="active">티켓예매</a>
+        <a href="/events">이벤트</a>
+        <a href="/nft">NFT</a>
+      </nav>
+    </div>
+    <div class="right-group">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" placeholder="공연, 아티스트를 검색하세요...">
+      </div>
+      <div class="head-right">
+        <div id="auth-area">
+          <a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div>
+      <div class="tag">TICKET BOOKING</div>
+      <h1>티켓예매</h1>
+      <p>특별한 순간을 가장 가까이에서 만나는 방법, LINK TICKET</p>
+    </div>
+    <div class="page-hero-side">Your Stage<br>Your Ticket</div>
+  </section>
+
+  <div class="breadcrumb">
+    <a href="/">🏠 홈</a><span>›</span><a href="/tickets/">티켓예매</a><span>›</span><span class="current">공연 상세</span>
+  </div>
+
+  <div class="layout">
+    <aside class="side">
+      <div class="sd-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="side-search" placeholder="공연명, 아티스트 검색">
+      </div>
+
+      <h4>카테고리</h4>
+      <ul class="cat-list" id="side-cat-list">
+        <li><a href="/performances/" class="active" data-genre="all"><span class="ico">★</span>전체</a></li>
+        <li><a href="/performances/?genre=콘서트" data-genre="콘서트"><span class="ico">🎤</span>콘서트</a></li>
+        <li><a href="/performances/?genre=뮤지컬" data-genre="뮤지컬"><span class="ico">🎵</span>뮤지컬</a></li>
+        <li><a href="/performances/?genre=페스티벌" data-genre="페스티벌"><span class="ico">🎉</span>페스티벌</a></li>
+        <li><a href="/performances/?genre=연극" data-genre="연극"><span class="ico">🎭</span>연극</a></li>
+        <li><a href="/performances/?genre=클래식" data-genre="클래식"><span class="ico">🎻</span>클래식</a></li>
+        <li><a href="/performances/?genre=팬미팅" data-genre="팬미팅"><span class="ico">💎</span>팬미팅</a></li>
+        <li><a href="/performances/?genre=기타" data-genre="기타"><span class="ico">✨</span>기타</a></li>
+      </ul>
+
+      <div class="filter-group">
+        <div class="fg-title"><span>📍</span><span>지역</span></div>
+        <label><input type="checkbox" name="region" value="all" checked>전체</label>
+        <label><input type="checkbox" name="region" value="서울">서울</label>
+        <label><input type="checkbox" name="region" value="부산">부산</label>
+        <label><input type="checkbox" name="region" value="대구">대구</label>
+        <label><input type="checkbox" name="region" value="인천">인천</label>
+        <label><input type="checkbox" name="region" value="광주">광주</label>
+        <label><input type="checkbox" name="region" value="대전">대전</label>
+        <label><input type="checkbox" name="region" value="기타">기타</label>
+      </div>
+
+      <div class="filter-group">
+        <div class="fg-title"><span>📅</span><span>기간</span></div>
+        <label><input type="checkbox" name="period" value="all" checked>전체</label>
+        <label><input type="checkbox" name="period" value="week">이번 주</label>
+        <label><input type="checkbox" name="period" value="month">이번 달</label>
+        <label><input type="checkbox" name="period" value="next-month">다음 달</label>
+        <div class="date-field" id="side-date-field">
+          <span>📅</span><input type="text" id="side-date" placeholder="날짜를 선택하세요" readonly>
+          <div class="side-date-picker" id="side-date-picker">
+            <div class="sdp-header">
+              <button type="button" id="sdp-prev">‹</button>
+              <div class="sdp-title">
+                <span class="sdp-year" id="sdp-year-label"></span>
+                <span class="sdp-month" id="sdp-month-label"></span>
+              </div>
+              <button type="button" id="sdp-next">›</button>
+            </div>
+            <div class="sdp-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+            <div class="sdp-grid" id="sdp-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="apply-btn" id="side-apply-btn">🔍 검색하기</button>
+    </aside>
+
+    <main class="main-col">
+      <div class="info-row">
+        <div class="poster" id="poster"><span id="poster-fallback">공연 이미지</span></div>
+        <div class="info-card">
+          <div class="cat-badge" id="perf-cat">콘서트</div>
+          <h1 id="perf-title">공연 정보를 불러오는 중…</h1>
+          <p class="sub" id="perf-sub"></p>
+          <ul class="meta-list">
+            <li>📅 <span id="perf-date">-</span></li>
+            <li>📍 <span id="perf-venue">-</span> <button class="map-btn" id="map-btn">지도보기</button></li>
+            <li id="perf-duration-li">🕐 <span id="perf-duration">-</span></li>
+            <li id="perf-age-li">🔞 <span id="perf-age">-</span></li>
+          </ul>
+          <div class="map-embed-wrap" id="map-embed-wrap"></div>
+          <div class="tags" id="perf-tags"></div>
+        </div>
+      </div>
+
+      <nav class="tabs" id="tabs">
+        <button class="active" data-tab="booking">예매하기</button>
+        <button data-tab="info">공연정보</button>
+        <button data-tab="cast">출연진</button>
+        <button data-tab="notice">공지사항</button>
+        <button data-tab="review">관람후기 (<span id="review-count">0</span>)</button>
+        <button data-tab="qna">Q&amp;A</button>
+      </nav>
+
+      <div class="tab-panel active" data-panel="booking">
+        <div class="booking">
+          <div class="seat-panel">
+            <h3>좌석 선택</h3>
+            <p style="font-size:12px; color:var(--muted); margin:-10px 0 16px;">
+              실제 좌석 배치는 회차마다 다를 수 있어, 등급별 구역으로 표시하고 있어요.
+            </p>
+            <div class="stage-lbl">STAGE</div>
+            <div class="seat-map" id="seat-map">
+              <div class="skeleton" style="color:var(--muted); font-size:13px; padding:20px 0;">관람일을 선택하면 좌석 등급이 표시됩니다.</div>
+            </div>
+            <div class="seat-legend" id="seat-legend"></div>
+          </div>
+
+          <div class="booking-side">
+            <div class="blk">
+              <h4>관람일 선택</h4>
+              <div class="date-grid" id="date-grid"></div>
+            </div>
+            <div class="blk">
+              <h4>좌석등급 선택</h4>
+              <ul class="grade-list" id="grade-list"></ul>
+            </div>
+            <div class="blk">
+              <h4>선택 좌석</h4>
+              <div class="selected-seat-box" id="selected-box">선택된 좌석이 없습니다.</div>
+            </div>
+            <button class="buy-btn" id="buy-btn" disabled>좌석을 선택해주세요</button>
+            <div class="side-actions">
+              <button id="fav-btn">♡ 찜하기</button>
+              <button id="share-btn">🔗 공유하기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="info"><div class="placeholder-panel">공연 상세 정보는 준비 중입니다.</div></div>
+      <div class="tab-panel" data-panel="cast"><div class="placeholder-panel">출연진 정보는 준비 중입니다.</div></div>
+      <div class="tab-panel" data-panel="notice"><div class="placeholder-panel">등록된 공지사항이 없습니다.</div></div>
+      <div class="tab-panel" data-panel="review"><div class="placeholder-panel">관람후기 기능은 준비 중입니다.</div></div>
+      <div class="tab-panel" data-panel="qna"><div class="placeholder-panel">Q&amp;A 기능은 준비 중입니다.</div></div>
+    </main>
+  </div>
+
+  <footer>
+    <div class="brand-col">
+      <div class="logo">LINK<span style="color:#2563eb">TICKET</span></div>
+      <div class="tagline">MUSIC CONNECTS US</div>
+    </div>
+    <div class="feat-row">
+      <div class="feat"><span class="ico">🎧</span><div><h5>다양한 공연</h5><p>콘서트, 뮤지컬, 페스티벌까지</p></div></div>
+      <div class="feat"><span class="ico">⚡</span><div><h5>빠른 예매</h5><p>안정적이고 빠른 예매 시스템</p></div></div>
+      <div class="feat"><span class="ico">🛡️</span><div><h5>안전한 결제</h5><p>안심하고 이용하세요</p></div></div>
+      <div class="feat"><span class="ico">🤝</span><div><h5>특별한 경험</h5><p>LINK TICKET만의 이벤트</p></div></div>
+    </div>
+    <div class="footer-cta">
+      지금, 당신의 특별한 순간을<br>
+      <span class="brand">LINK<span>TICKET</span></span>과 함께하세요.
+    </div>
+  </footer>
+
+  <div class="modal-overlay" id="session-modal">
+    <div class="modal">
+      <button class="close" id="session-modal-close">&times;</button>
+      <h2>로그인이 필요합니다</h2>
+      <p>세션이 만료되어 로그인이 해제되었습니다. 계속 이용하시려면 다시 로그인해주세요.</p>
+      <a href="/login/" class="modal-login-btn">로그인하기</a>
+    </div>
+  </div>
+
+<script>
+/*
+ * URL 예: /performance/12  → location.pathname에서 마지막 segment(12)를 공연 id로 사용.
+ * 이 파일 하나가 모든 공연의 상세 페이지 역할을 하므로,
+ * nginx에 `location ~ ^/performance/ { try_files /performance/index.html =404; }` 같은
+ * 규칙이 하나 필요합니다 (다른 페이지들의 location 설정과 같은 패턴).
+ *
+ * GET /api/performances/<id> 엔드포인트가 아직 WAS에 없다면 아래 더미 데이터로 대체됩니다.
+ */
+
+const GENRE_KO = { CONCERT: "콘서트", MUSICAL: "뮤지컬", FESTIVAL: "페스티벌", PLAY: "연극", CLASSICAL: "클래식", FANMEETING: "팬미팅", EXHIBITION_ETC: "전시/기타" };
+const SEAT_PALETTE = ["#ec4899", "#2563eb", "#22c55e", "#f59e0b", "#7c3aed", "#0ea5e9"];
+const WEEKDAYS_KO = ["일", "월", "화", "수", "목", "금", "토"]; // Date.getDay() 순서
+
+const FALLBACK_DETAIL = {
+  id: 1,
+  title: "2025 IU CONCERT THE WINNING",
+  category: "콘서트",
+  subtitle: "지금, 가장 빛나는 아이유의 무대",
+  venue: "KSPO DOME (올림픽체조경기장)",
+};
+const FALLBACK_SCHEDULES = [
+  { id: "d1", label: "04.12(토)", time: "19:00" },
+  { id: "d2", label: "04.13(일)", time: "17:00" },
+  { id: "d3", label: "04.14(월)", time: "17:00" },
+];
+const FALLBACK_GRADES = [
+  { id: "vip", name: "VIP석", price: 154000, remain: 125 },
+  { id: "r", name: "R석", price: 132000, remain: 312 },
+  { id: "s", name: "S석", price: 110000, remain: 487 },
+  { id: "a", name: "A석", price: 99000, remain: 623 },
+];
+
+let sessionKnownLoggedIn = null;
+const SESSION_CHECK_INTERVAL_MS = 5 * 60 * 1000;
+let sessionCheckTimer = null;
+let selectedDate = null;
+let selectedGrade = null;
+let selectedSeatLabel = null;
+let ALL_GRADES = [];
+
+function getPerformanceId() {
+  const parts = location.pathname.split("/").filter(Boolean);
+  return parts[parts.length - 1] || "1";
+}
+
+async function fetchJSON(path, fallback) {
+  try {
+    const res = await fetch(path, { headers: { Accept: "application/json" }, credentials: "include" });
+    if (!res.ok) throw new Error(res.status);
+    return await res.json();
+  } catch (err) {
+    console.warn(`[stub] ${path} 응답 실패, 더미 데이터 사용:`, err.message);
+    return fallback;
+  }
+}
+
+async function fetchAuthMe() {
+  // /api/auth/me/ 는 새 컨벤션(DRF)에서 200+{success,data:{회원정보}} 또는 401로 응답합니다.
+  // fetchJSON의 "실패하면 그냥 fallback" 방식과 달리, 401은 "확실히 로그아웃 상태"로
+  // 구분해서 처리해야 해서 별도 함수로 뺐습니다.
+  try {
+    const res = await fetch("/api/auth/me/", { headers: { Accept: "application/json" }, credentials: "include" });
+    if (!res.ok) return { logged_in: false };
+    const body = await res.json();
+    return { logged_in: true, ...(body.data || {}) };
+  } catch (err) {
+    console.warn("[stub] /api/auth/me/ 응답 실패, 더미 데이터 사용:", err.message);
+    return { logged_in: false };
+  }
+}
+
+function showToast(text) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = text;
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+  setTimeout(() => { toast.classList.remove("show"); setTimeout(() => toast.remove(), 300); }, 2200);
+  return toast;
+}
+
+function renderAuth(user) {
+  const area = document.getElementById("auth-area");
+  if (user && user.logged_in) {
+    area.innerHTML = `<a href="/mypage/">${user.name}님</a><span class="sep">|</span><a href="#" id="logout-link">로그아웃</a>`;
+    document.getElementById("logout-link").addEventListener("click", async (e) => {
+      e.preventDefault();
+      let message = "로그아웃 되었습니다.";
+      try {
+        const res = await fetch("/api/auth/logout/", { method: "POST", credentials: "include" });
+        const data = await res.json();
+        message = data.message || message;
+      } catch (err) { message = "로그아웃 요청에 실패했습니다."; }
+      showToast(message);
+      setTimeout(() => { location.href = "/"; }, 600);
+    });
+  } else {
+    area.innerHTML = `<a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>`;
+  }
+}
+
+function openSessionExpiredModal() { document.getElementById("session-modal").classList.add("open"); }
+function setupSessionModal() {
+  const overlay = document.getElementById("session-modal");
+  document.getElementById("session-modal-close").addEventListener("click", () => overlay.classList.remove("open"));
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.classList.remove("open"); });
+}
+function startSessionCheckTimer() {
+  if (sessionCheckTimer) return;
+  sessionCheckTimer = setInterval(checkSessionStatus, SESSION_CHECK_INTERVAL_MS);
+}
+function stopSessionCheckTimer() { if (sessionCheckTimer) { clearInterval(sessionCheckTimer); sessionCheckTimer = null; } }
+function setupSessionVisibilityWatcher() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") { checkSessionStatus(); startSessionCheckTimer(); }
+    else { stopSessionCheckTimer(); }
+  });
+}
+async function checkSessionStatus() {
+  try {
+    const res = await fetch("/api/auth/me/", { headers: { Accept: "application/json" }, credentials: "include" });
+    // 새 방식: 로그인 상태면 200, 아니면 401 — 상태코드 자체로 판단 (본문 파싱 불필요)
+    const nowLoggedIn = res.ok;
+    const user = { logged_in: nowLoggedIn };
+    if (sessionKnownLoggedIn === true && nowLoggedIn === false) { renderAuth(user); openSessionExpiredModal(); }
+    sessionKnownLoggedIn = nowLoggedIn;
+  } catch (err) { console.warn("세션 상태 확인 실패(다음 주기에 재시도):", err.message); }
+}
+
+/* ── 공연 정보 렌더링 ── */
+/* ── 데이터 조회 + 변환 (공연정보/회차목록/좌석목록 3개 API를 조합) ── */
+
+async function loadPerformanceDetail(perfId) {
+  const raw = await fetchJSON(`/api/performances/${perfId}/`, null);
+  if (raw && raw.performance_id !== undefined) {
+    return {
+      id: raw.performance_id,
+      title: raw.performance_name,
+      category: GENRE_KO[raw.genre] || raw.genre,
+      subtitle: raw.description || "",
+      venue: raw.venue_name,
+    };
+  }
+  return { ...FALLBACK_DETAIL, id: perfId };
+}
+
+async function loadSchedules(perfId) {
+  const raw = await fetchJSON(`/api/performances/${perfId}/schedules/`, null);
+  const list = Array.isArray(raw) ? raw : raw && raw.results;
+  if (!list) return FALLBACK_SCHEDULES; // 조회 자체가 실패했을 때만 더미로 대체 (빈 배열은 "회차 없음"으로 그대로 둠)
+  return list
+    .filter((s) => s.sale_status !== "CANCELLED")
+    .sort((a, b) => (a.performance_date + a.start_time).localeCompare(b.performance_date + b.start_time))
+    .map((s) => {
+      const d = new Date(`${s.performance_date}T00:00:00`);
+      return {
+        id: s.schedule_id,
+        label: `${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}(${WEEKDAYS_KO[d.getDay()]})`,
+        time: (s.start_time || "").slice(0, 5),
+      };
+    });
+}
+
+async function loadGradesForSchedule(scheduleId) {
+  const raw = await fetchJSON(`/api/schedules/${scheduleId}/seats/`, null);
+  const list = Array.isArray(raw) ? raw : raw && raw.results;
+  if (!list) return FALLBACK_GRADES;
+  const map = {};
+  list.forEach((s) => {
+    if (!map[s.seat_grade]) {
+      map[s.seat_grade] = { id: s.seat_grade, name: `${s.seat_grade}석`, price: s.seat_price, remain: 0 };
+    }
+    if (s.seat_status === "AVAILABLE") map[s.seat_grade].remain++;
+  });
+  return Object.values(map).sort((a, b) => b.price - a.price);
+}
+
+/* ── 렌더링 ── */
+
+function renderDetail(p) {
+  document.getElementById("perf-cat").textContent = p.category;
+  document.getElementById("perf-title").textContent = p.title;
+  document.getElementById("perf-sub").textContent = p.subtitle || "";
+  document.getElementById("perf-venue").textContent = p.venue || "-";
+  document.title = `${p.title} - LINKTICKET`;
+
+  // 상영시간/관람등급/해시태그는 실제 API에 아직 없는 필드라, 값이 없으면 그 줄 자체를 숨깁니다.
+  const durationLi = document.getElementById("perf-duration-li");
+  durationLi.style.display = p.duration ? "" : "none";
+  document.getElementById("perf-duration").textContent = p.duration || "";
+  const ageLi = document.getElementById("perf-age-li");
+  ageLi.style.display = p.age ? "" : "none";
+  document.getElementById("perf-age").textContent = p.age || "";
+  document.getElementById("perf-tags").innerHTML = (p.tags || []).map((t) => `<span>#${t}</span>`).join("");
+
+  const poster = document.getElementById("poster");
+  const imgUrl = `/static/performances/${p.id}.jpg`;
+  const preload = new Image();
+  preload.onload = function () {
+    poster.style.backgroundImage = `url('${imgUrl}')`;
+    poster.style.backgroundSize = "cover";
+    poster.style.backgroundPosition = "center";
+    document.getElementById("poster-fallback").style.display = "none";
+  };
+  preload.src = imgUrl;
+
+  document.getElementById("map-btn").addEventListener("click", async () => {
+    const wrap = document.getElementById("map-embed-wrap");
+    const btn = document.getElementById("map-btn");
+    const isOpen = wrap.classList.toggle("open");
+    btn.textContent = isOpen ? "지도 닫기" : "지도보기";
+    if (!isOpen) return;
+
+    if (wrap.dataset.loaded) return;
+    wrap.innerHTML = `<div style="padding:40px; text-align:center; color:var(--muted); font-size:13px;">위치를 찾는 중…</div>`;
+
+    try {
+      const query = encodeURIComponent(p.venue || p.title);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${query}`, {
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) throw new Error(`Nominatim 응답 오류: ${res.status}`);
+      const results = await res.json();
+
+      if (!results.length) {
+        wrap.innerHTML = `<div style="padding:40px; text-align:center; color:var(--muted); font-size:13px;">지도에서 이 장소를 찾지 못했습니다.</div>`;
+        return;
+      }
+
+      const { lat, lon } = results[0];
+      const d = 0.008;
+      const bbox = `${lon - d}%2C${lat - d}%2C${lon + d}%2C${lat + d}`;
+      wrap.innerHTML = `<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lon}" loading="lazy"></iframe>`;
+      wrap.dataset.loaded = "true";
+    } catch (err) {
+      console.error("지도 로딩 실패:", err);
+      const query = encodeURIComponent(p.venue || p.title);
+      wrap.innerHTML = `
+        <div style="padding:32px; text-align:center; color:var(--muted); font-size:13px;">
+          지도를 페이지 안에서 불러오지 못했습니다.<br>
+          <a href="https://www.openstreetmap.org/search?query=${query}" target="_blank" style="color:var(--blue); font-weight:700;">새 탭에서 지도 보기 →</a>
+        </div>`;
+    }
+  });
+}
+
+function renderDateSummary(schedules) {
+  const el = document.getElementById("perf-date");
+  if (!schedules.length) { el.textContent = "-"; return; }
+  el.textContent = schedules.length === 1
+    ? `${schedules[0].label} ${schedules[0].time}`
+    : `${schedules[0].label} ~ ${schedules[schedules.length - 1].label}`;
+}
+
+async function renderDateGrid(dates) {
+  const grid = document.getElementById("date-grid");
+  grid.innerHTML = "";
+  if (!dates.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1; font-size:12px; color:var(--muted);">예정된 회차가 없습니다.</div>`;
+    renderGradeList([]);
+    return;
+  }
+  dates.forEach((d, i) => {
+    const btn = document.createElement("button");
+    btn.className = "date-btn" + (i === 0 ? " active" : "");
+    btn.innerHTML = `${d.label}<br>${d.time}`;
+    btn.addEventListener("click", async () => {
+      document.querySelectorAll(".date-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedDate = d;
+      selectedGrade = null;
+      selectedSeatLabel = null;
+      updateSelectedBox();
+      renderGradeList(await loadGradesForSchedule(d.id));
+    });
+    grid.appendChild(btn);
+  });
+  selectedDate = dates[0];
+  renderGradeList(await loadGradesForSchedule(dates[0].id));
+}
+
+function renderGradeList(grades) {
+  ALL_GRADES = grades;
+  const list = document.getElementById("grade-list");
+  list.innerHTML = "";
+  grades.forEach((g) => {
+    const li = document.createElement("li");
+    li.className = "grade-item";
+    li.dataset.gradeId = g.id;
+    li.innerHTML = `
+      <div class="left"><span class="chk"></span><span>${g.name}</span></div>
+      <div><span class="price">${g.price.toLocaleString()}원</span><span class="remain">잔여 ${g.remain}석</span></div>
+    `;
+    // 이 목록은 클릭으로 선택할 수 없습니다 — 좌석을 클릭했을 때 해당 등급을 "표시"만 해줍니다.
+    list.appendChild(li);
+  });
+
+  // 실제 좌석 배치도 데이터는 없어서, 등급별로 큰 구역 하나씩으로 단순화해서 보여줍니다.
+  const seatMap = document.getElementById("seat-map");
+  const legend = document.getElementById("seat-legend");
+  seatMap.innerHTML = "";
+  legend.innerHTML = "";
+  if (!grades.length) {
+    seatMap.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--muted); font-size:13px; padding:20px 0;">좌석 정보가 없습니다.</div>`;
+    wireSeatBlocks();
+    return;
+  }
+  grades.forEach((g, i) => {
+    const color = SEAT_PALETTE[i % SEAT_PALETTE.length];
+    const btn = document.createElement("button");
+    btn.className = "seat-block";
+    btn.type = "button";
+    btn.style.background = color;
+    btn.disabled = g.remain === 0;
+    btn.dataset.grade = g.id;
+    btn.dataset.label = g.name;
+    btn.innerHTML = `<span>${g.name}</span><span class="price">${g.price.toLocaleString()}원</span>`;
+    seatMap.appendChild(btn);
+
+    const item = document.createElement("div");
+    item.className = "item";
+    item.innerHTML = `<span class="dot" style="background:${color}"></span><span>${g.name} ${g.price.toLocaleString()}원</span>`;
+    legend.appendChild(item);
+  });
+  wireSeatBlocks();
+}
+
+// 좌석 클릭으로만 호출됩니다 — 등급 목록을 직접 눌러서는 선택할 수 없습니다.
+function selectGradeById(gradeId) {
+  const g = ALL_GRADES.find((x) => x.id === gradeId);
+  if (!g) return;
+  document.querySelectorAll(".grade-item").forEach((n) => n.classList.remove("active"));
+  const el = document.querySelector(`.grade-item[data-grade-id="${gradeId}"]`);
+  if (el) el.classList.add("active");
+  selectedGrade = g;
+  updateSelectedBox();
+}
+
+function wireSeatBlocks() {
+  document.querySelectorAll(".seat-block").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".seat-block").forEach((b) => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      selectedSeatLabel = btn.dataset.label;
+      selectGradeById(btn.dataset.grade);
+    });
+  });
+}
+
+function updateSelectedBox() {
+  const box = document.getElementById("selected-box");
+  const buyBtn = document.getElementById("buy-btn");
+  if (!selectedGrade) {
+    box.className = "selected-seat-box";
+    box.textContent = "선택된 좌석이 없습니다.";
+    buyBtn.disabled = true;
+    buyBtn.textContent = "좌석을 선택해주세요";
+    return;
+  }
+  box.className = "selected-seat-box has-selection";
+  box.innerHTML = `
+    <div class="row"><span>${selectedSeatLabel || selectedGrade.name + " (구역 선택)"}</span><span>${selectedGrade.price.toLocaleString()}원</span></div>
+    <div class="row"><span>관람일</span><span>${selectedDate ? selectedDate.label + " " + selectedDate.time : "-"}</span></div>
+    <div class="total"><span>총 결제금액</span><span>${selectedGrade.price.toLocaleString()}원</span></div>
+  `;
+  buyBtn.disabled = false;
+  buyBtn.textContent = "예매하기 →";
+}
+
+function setupBuyButton() {
+  document.getElementById("buy-btn").addEventListener("click", () => {
+    // TODO: 실제 결제/예매 API(/api/bookings 등)는 아직 WAS에 없어 지금은 안내만 표시합니다.
+    showToast("예매 기능은 준비 중입니다.");
+  });
+}
+
+function setupFavShare(perfId) {
+  document.getElementById("fav-btn").addEventListener("click", (e) => {
+    const btn = e.currentTarget;
+    btn.classList.toggle("on");
+    btn.textContent = btn.classList.contains("on") ? "♥ 찜완료" : "♡ 찜하기";
+  });
+  document.getElementById("share-btn").addEventListener("click", async () => {
+    const url = location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: document.title, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        showToast("링크가 복사되었습니다.");
+      }
+    } catch (err) { /* 사용자가 공유 취소한 경우 등은 무시 */ }
+  });
+}
+
+function setupTabs() {
+  document.getElementById("tabs").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-tab]");
+    if (!btn) return;
+    document.querySelectorAll("#tabs button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+    document.querySelector(`.tab-panel[data-panel="${btn.dataset.tab}"]`).classList.add("active");
+  });
+}
+
+function setupSideSearch() {
+  document.getElementById("side-search").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && e.target.value.trim()) {
+      location.href = `/performances/?q=${encodeURIComponent(e.target.value.trim())}`;
+    }
+  });
+}
+
+/* ── 사이드바 커스텀 달력 (메인 페이지 "빠른 예매" 달력과 동일한 방식) ── */
+let sdpYear, sdpMonth; // sdpMonth는 0부터 시작(1월=0)
+let sdpSelected = null;
+
+function setupSideDatePicker() {
+  const today = new Date();
+  sdpYear = today.getFullYear();
+  sdpMonth = today.getMonth();
+
+  const input = document.getElementById("side-date");
+  const picker = document.getElementById("side-date-picker");
+
+  input.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const willOpen = !picker.classList.contains("open");
+    picker.classList.toggle("open", willOpen);
+    if (willOpen) renderSideDatePicker();
+  });
+  document.addEventListener("click", (e) => {
+    if (!picker.contains(e.target) && e.target !== input) picker.classList.remove("open");
+  });
+  picker.addEventListener("click", (e) => e.stopPropagation());
+
+  document.getElementById("sdp-prev").addEventListener("click", () => shiftSdpMonth(-1));
+  document.getElementById("sdp-next").addEventListener("click", () => shiftSdpMonth(1));
+}
+
+function shiftSdpMonth(delta) {
+  sdpMonth += delta;
+  if (sdpMonth < 0) { sdpMonth = 11; sdpYear--; }
+  if (sdpMonth > 11) { sdpMonth = 0; sdpYear++; }
+  renderSideDatePicker();
+}
+
+// 연도를 클릭하면 숫자 입력창으로 바뀌어, 연도를 직접 타이핑해서 그 해로 바로 이동할 수 있습니다.
+function editSdpYear() {
+  const label = document.getElementById("sdp-year-label");
+  const wrap = label.parentElement;
+  const input = document.createElement("input");
+  input.type = "number";
+  input.id = "sdp-year-input";
+  input.value = sdpYear;
+  input.min = 2000; input.max = 2100;
+  wrap.replaceChild(input, label);
+  input.focus();
+  input.select();
+  const commit = () => {
+    const v = parseInt(input.value, 10);
+    if (!isNaN(v) && v >= 2000 && v <= 2100) sdpYear = v;
+    renderSideDatePicker();
+  };
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") commit(); });
+  input.addEventListener("blur", commit);
+}
+
+// 월을 클릭하면 숫자 입력창으로 바뀌어, 월을 직접 타이핑해서 바로 이동할 수 있습니다.
+function editSdpMonth() {
+  const label = document.getElementById("sdp-month-label");
+  const wrap = label.parentElement;
+  const input = document.createElement("input");
+  input.type = "number";
+  input.id = "sdp-month-input";
+  input.value = sdpMonth + 1;
+  input.min = 1; input.max = 12;
+  wrap.replaceChild(input, label);
+  input.focus();
+  input.select();
+  const commit = () => {
+    const v = parseInt(input.value, 10);
+    if (!isNaN(v) && v >= 1 && v <= 12) sdpMonth = v - 1;
+    renderSideDatePicker();
+  };
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") commit(); });
+  input.addEventListener("blur", commit);
+}
+
+function renderSideDatePicker() {
+  const titleWrap = document.querySelector(".sdp-title");
+  titleWrap.innerHTML = `<span class="sdp-year" id="sdp-year-label">${sdpYear}년</span><span class="sdp-month" id="sdp-month-label">${sdpMonth + 1}월</span>`;
+  document.getElementById("sdp-year-label").addEventListener("click", editSdpYear);
+  document.getElementById("sdp-month-label").addEventListener("click", editSdpMonth);
+
+  const grid = document.getElementById("sdp-grid");
+  grid.innerHTML = "";
+  const firstWeekday = new Date(sdpYear, sdpMonth, 1).getDay();
+  const daysInMonth = new Date(sdpYear, sdpMonth + 1, 0).getDate();
+  const daysInPrevMonth = new Date(sdpYear, sdpMonth, 0).getDate();
+  const today = new Date();
+
+  for (let i = firstWeekday - 1; i >= 0; i--) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = daysInPrevMonth - i;
+    btn.className = "other-month";
+    btn.disabled = true;
+    grid.appendChild(btn);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = d;
+    if (sdpYear === today.getFullYear() && sdpMonth === today.getMonth() && d === today.getDate()) btn.classList.add("today");
+    if (sdpSelected && sdpSelected.year === sdpYear && sdpSelected.month === sdpMonth && sdpSelected.day === d) btn.classList.add("selected");
+    btn.addEventListener("click", () => selectSdpDate(d));
+    grid.appendChild(btn);
+  }
+}
+
+function selectSdpDate(d) {
+  sdpSelected = { year: sdpYear, month: sdpMonth, day: d };
+  const iso = `${sdpYear}-${String(sdpMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const input = document.getElementById("side-date");
+  input.value = `${sdpYear}.${String(sdpMonth + 1).padStart(2, "0")}.${String(d).padStart(2, "0")}`;
+  input.dataset.iso = iso;
+  document.getElementById("side-date-picker").classList.remove("open");
+  renderSideDatePicker();
+}
+
+function setupSideApplyBtn() {
+  document.getElementById("side-apply-btn").addEventListener("click", () => {
+    const params = new URLSearchParams();
+    const q = document.getElementById("side-search").value.trim();
+    const dateIso = document.getElementById("side-date").dataset.iso || "";
+    const regions = Array.from(document.querySelectorAll('input[name="region"]:checked'))
+      .map((b) => b.value).filter((v) => v !== "all");
+    if (q) params.set("q", q);
+    if (dateIso) params.set("date", dateIso);
+    if (regions.length) params.set("region", regions[0]);
+    location.href = `/performances/?${params.toString()}`;
+  });
+}
+
+async function init() {
+  setupSessionModal();
+  setupTabs();
+  setupBuyButton();
+  setupSideSearch();
+  setupSideDatePicker();
+  setupSideApplyBtn();
+
+  const perfId = getPerformanceId();
+  const [user, detail, schedules] = await Promise.all([
+    fetchAuthMe(),
+    loadPerformanceDetail(perfId),
+    loadSchedules(perfId),
+  ]);
+
+  sessionKnownLoggedIn = !!user.logged_in;
+  renderAuth(user);
+  renderDetail(detail);
+  renderDateSummary(schedules);
+  await renderDateGrid(schedules); // 회차 버튼 렌더 + 첫 회차 자동 선택 + 그 회차 좌석 등급까지 로드
+  setupFavShare(perfId);
+  updateSelectedBox();
+
+  setupSessionVisibilityWatcher();
+  startSessionCheckTimer();
+}
+
+init();
+</script>
+</body>
+</html>

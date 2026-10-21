@@ -1,0 +1,203 @@
+@scope (.collected-page) {
+
+  :root{
+    --navy:#1a2144;--blue:#2563eb;--pink:#ec4899;--purple:#7c3aed;
+    --text-dark:#1f2333;--text-gray:#6b7280;--border:#e5e7eb;--bg-light:#f7f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--text-dark);background:#fff;}
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  .wrap{max-width:1536px;margin:0 auto;padding:0 32px;}
+
+  /* ===== Header (이벤트 페이지와 동일 구조) ===== */
+  header{border-bottom:1px solid var(--border);}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  header .wrap{padding-left:12px;}
+  .header-left{display:flex;align-items:center;gap:36px;}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+  .logo span{color:var(--blue);}
+  nav.main-nav{display:flex;gap:32px;}
+  nav.main-nav a{font-size:15px;font-weight:600;color:#333;padding:4px 0;}
+  nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .search-box{display:flex;align-items:center;gap:8px;background:var(--bg-light);border-radius:20px;padding:8px 16px;width:280px;}
+  .search-box input{border:none;background:transparent;outline:none;font-size:13px;width:100%;}
+  #auth-area{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  #auth-area .sep{color:var(--border);}
+
+  /* ===== Hero Banner (고정 영역) ===== */
+  .hero{
+    background:linear-gradient(115deg,#120d24 0%,#2a1a40 40%,#4a1f4f 75%,#5c2050 100%);
+    color:#fff;position:relative;overflow:hidden;padding:52px 0;cursor:pointer;
+  }
+  .hero-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    max-width:1536px;margin:0 auto;padding:0 32px;position:relative;z-index:2;gap:24px;
+  }
+  .hero-tag{
+    display:inline-block;font-size:12px;letter-spacing:4px;font-weight:700;
+    color:#ff8fd6;margin-bottom:14px;
+  }
+  .hero h1{font-size:32px;font-weight:800;line-height:1.35;}
+  .hero p{margin-top:14px;color:#d8cdea;font-size:13px;line-height:1.6;}
+  .hero-cta{
+    display:inline-flex;align-items:center;gap:8px;margin-top:20px;
+    background:linear-gradient(120deg,#ec4899,#a855f7);
+    color:#fff;font-size:13px;font-weight:700;padding:12px 22px;border-radius:24px;
+    cursor:pointer;
+  }
+  .hero-mid{flex-shrink:0;width:260px;text-align:center;}
+  .hero-mid .phone{
+    display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);
+    border-radius:16px;padding:18px 22px;font-size:12px;color:#e8d9f5;line-height:1.6;
+  }
+  .hero-script{font-family:"Brush Script MT",cursive;font-size:19px;color:#e7b7ea;line-height:1.5;text-align:right;}
+  .hero-vertical{
+    writing-mode:vertical-rl;font-size:11px;letter-spacing:3px;color:#c9a8ff;font-weight:700;margin-left:8px;
+  }
+
+  /* ===== Feature strip (고정 영역) ===== */
+  .feature-strip{
+    display:grid;grid-template-columns:repeat(4,1fr) 1.6fr;gap:16px;padding:24px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .feature-item{
+    display:flex;align-items:center;gap:12px;font-size:12px;font-weight:700;color:#333;
+  }
+  .feature-item .ic{font-size:20px;}
+  .feature-item small{display:block;font-weight:400;color:var(--text-gray);font-size:11px;margin-top:2px;}
+  .feature-highlight{
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(120deg,#fdf0ff,#f3e8ff);
+    border-radius:12px;padding:14px 18px;
+  }
+  .feature-highlight__text{font-size:13px;font-weight:800;color:var(--navy);}
+  .feature-highlight__text small{display:block;font-weight:400;color:var(--text-gray);font-size:11px;margin-top:2px;}
+
+  /* ===== Layout: 필터 사이드바 + 메인 그리드 + 우측 사이드바 ===== */
+  .content{display:flex;gap:28px;padding:32px 0 64px;align-items:flex-start;}
+  .filter-col{width:260px;flex-shrink:0;}
+  .main-col{flex:1;min-width:0;}
+  .side-col{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:20px;}
+
+  .filter-box{border:1px solid var(--border);border-radius:14px;padding:20px;}
+  .filter-box h3{font-size:15px;font-weight:800;margin-bottom:14px;}
+  .filter-search{
+    display:flex;align-items:center;gap:8px;background:var(--bg-light);
+    border-radius:10px;padding:9px 12px;margin-bottom:18px;
+  }
+  .filter-search input{border:none;background:transparent;outline:none;font-size:12px;width:100%;}
+  .filter-group{margin-bottom:20px;}
+  .filter-group__title{font-size:13px;font-weight:800;margin-bottom:10px;}
+  .filter-check{
+    display:flex;align-items:center;gap:8px;font-size:13px;color:#444;
+    padding:5px 0;cursor:pointer;
+  }
+  .filter-check input{width:14px;height:14px;}
+  .filter-submit{
+    width:100%;border:none;border-radius:10px;padding:13px;
+    background:linear-gradient(120deg,#ec4899,#a855f7);color:#fff;
+    font-size:13px;font-weight:700;cursor:pointer;
+  }
+
+  .section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  .section-head h2{font-size:20px;font-weight:800;}
+  .section-head h2 .count{color:var(--purple);}
+  .sort-select{font-size:13px;color:#555;border:1px solid var(--border);border-radius:8px;padding:8px 12px;background:#fff;}
+
+  /* ===== NFT Card Grid (반복 영역) ===== */
+  .nft-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+
+  /* nft-card: 이 블록 전체가 Django에서 {% for nft in nfts %} ... {% endfor %} 로 반복될 단위 */
+  .nft-card{
+    display:block;border:1px solid var(--border);border-radius:14px;overflow:hidden;
+    background:#fff;cursor:pointer;transition:box-shadow .2s;
+  }
+  .nft-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+  .nft-card__media{
+    position:relative;height:180px;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:800;font-size:15px;text-align:center;
+  }
+  .nft-card__badge{
+    position:absolute;top:10px;left:10px;font-size:10px;font-weight:800;
+    padding:4px 9px;border-radius:6px;color:#fff;letter-spacing:0.5px;
+  }
+  .badge-new{background:#ec4899;}
+  .badge-hot{background:#f97316;}
+  .badge-limited{background:var(--navy);}
+  .nft-card__like{
+    position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;
+    background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;font-size:13px;z-index:2;
+  }
+  .nft-card__body{padding:14px 14px 16px;}
+  .nft-card__title{font-size:15px;font-weight:800;}
+  .nft-card__subtitle{font-size:12px;color:var(--text-gray);margin:2px 0 10px;}
+  .nft-card__stats{font-size:11px;color:var(--text-gray);margin-bottom:10px;}
+  .nft-card__footer{display:flex;align-items:center;justify-content:space-between;}
+  .nft-card__price{font-size:14px;font-weight:800;}
+  .nft-card__cart{
+    width:28px;height:28px;border-radius:8px;background:var(--bg-light);
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+  }
+
+  .media-1{background:linear-gradient(150deg,#3a2a5c,#1c1236);}
+  .media-2{background:linear-gradient(150deg,#1f1f1f,#3a3a3a);}
+  .media-3{background:linear-gradient(150deg,#3d1f4a,#6b2f7a);}
+  .media-4{background:linear-gradient(150deg,#161a33,#2b3166);}
+  .media-5{background:linear-gradient(150deg,#0e3d24,#155c34);}
+  .media-6{background:linear-gradient(150deg,#4a1620,#7a2233);}
+  .media-7{background:linear-gradient(150deg,#241c40,#3c2d6b);}
+  .media-8{background:linear-gradient(150deg,#241033,#3d1a52);}
+
+  /* ===== Sidebar ===== */
+  .side-box{border:1px solid var(--border);border-radius:14px;padding:20px;}
+  .side-box__head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .side-box__head h3{font-size:15px;font-weight:800;}
+  .side-box__head a{font-size:12px;color:var(--purple);font-weight:700;}
+
+  .rank-list{display:flex;flex-direction:column;gap:14px;}
+  .rank-item{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .rank-item:hover .rank-item__title{color:var(--purple);}
+  .rank-item__num{
+    width:22px;height:22px;border-radius:6px;background:var(--navy);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;
+  }
+  .rank-item__title{font-size:13px;font-weight:700;}
+  .rank-item__sub{font-size:11px;color:var(--text-gray);margin-top:2px;}
+
+  .info-box{background:linear-gradient(120deg,#faf5ff,#f3e8ff);}
+  .info-box p{font-size:12px;color:#555;line-height:1.6;margin:8px 0 14px;}
+  .info-box__btn{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--purple);
+    cursor:pointer;
+  }
+  .info-box__btn:hover{text-decoration:underline;}
+
+  .cta-banner{
+    background:linear-gradient(120deg,#3a1f5c,#5c2a6b);border-radius:14px;padding:20px;color:#fff;
+    display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  }
+  .cta-banner__text{font-size:13px;font-weight:800;line-height:1.5;}
+
+  /* ===== Footer (고정 영역) ===== */
+  footer{background:var(--bg-light);border-top:1px solid var(--border);padding:40px 0;}
+  .footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+  .footer-logo{font-size:18px;font-weight:800;margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--text-gray);letter-spacing:1px;margin-bottom:10px;}
+  .footer-desc{font-size:12px;color:var(--text-gray);max-width:260px;line-height:1.5;}
+  .footer-features{display:flex;gap:36px;}
+  .footer-feature{font-size:12px;}
+  .footer-feature__icon{font-size:18px;margin-bottom:6px;}
+  .footer-feature__title{font-weight:700;margin-bottom:2px;}
+  .footer-feature__desc{color:var(--text-gray);font-size:11px;}
+  .footer-quote{font-size:13px;font-weight:700;text-align:right;color:var(--text-dark);line-height:1.6;}
+
+  @media (max-width:1200px){
+    .content{flex-direction:column;}
+    .filter-col,.side-col{width:100%;}
+    .nft-grid{grid-template-columns:repeat(2,1fr);}
+    .feature-strip{grid-template-columns:repeat(2,1fr);}
+  }
+
+}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}{% load static %}{% block extra_css %}<link rel="stylesheet" href="{% static 'linkticket/collected/nft_payment_complete.css' %}">{% endblock %}{% block content %}<div class="collected-page nft_payment_complete"><p class="demo-note container">화면 미리보기 · 이벤트 및 NFT는 예시 데이터이며 실제 구매·발급이 이루어지지 않습니다.</p>
+
+
+
+
+<div class="steps">
+  <div class="steps-track">
+    <div class="step done"><div class="step__num">1</div><div class="step__label">NFT 선택</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step__num">2</div><div class="step__label">결제하기</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step__num">3</div><div class="step__label">결제 완료</div></div>
+  </div>
+</div>
+
+
+<div class="complete-banner">
+  <span class="confetti c1">🎉</span><span class="confetti c2">✨</span><span class="confetti c3">🎊</span>
+  <span class="confetti c4">💜</span><span class="confetti c5">⭐</span><span class="confetti c6">🎈</span>
+  <div class="check-circle">✓</div>
+  <div class="complete-title">Mock 결제 체험이 <b>완료</b>되었습니다!</div>
+  <div class="complete-sub">LINKTICKET을 이용해 주셔서 감사합니다.<br>특별한 순간이 더욱 빛나길 바랍니다.</div>
+</div>
+
+<div class="wrap content">
+
+  
+  <div class="product-col">
+    <div class="product-card">
+      <div class="product-card__media" id="productMedia">
+        <span class="product-card__badge" id="productBadge">LIMITED</span>
+        <div class="product-card__ticket">LINKTICKET NFT</div>
+        <div class="product-card__name" id="productMediaName">NCT DREAM</div>
+      </div>
+      <div class="product-card__body">
+        <div class="product-card__title" id="productTitle">NCT DREAM</div>
+        <div class="product-card__subtitle" id="productSubtitle">THE DREAM SHOW 3</div>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="info-col">
+    <div class="info-box">
+      <h3>예매 정보</h3>
+      <table class="info-table">
+        <tr><td class="k">예매번호</td><td class="v" id="rsvId">RSV-00000000-000000<span class="copy-ic" onclick="copyRsvId()">⧉</span></td></tr>
+        <tr><td class="k">공연명</td><td class="v" id="rsvTitle">NCT DREAM THE DREAM SHOW 3</td></tr>
+        <tr><td class="k">공연일시</td><td class="v" id="rsvDate">2026.10.15 (목) 19:00</td></tr>
+        <tr><td class="k">공연장</td><td class="v" id="rsvVenue">서울 월드컵 경기장</td></tr>
+        <tr><td class="k">좌석정보</td><td class="v" id="rsvSeat">스탠딩 A구역</td></tr>
+        <tr><td class="k">티켓수량</td><td class="v">1매</td></tr>
+        <tr><td class="k">예매자명</td><td class="v" id="rsvBuyer">홍길동</td></tr>
+        <tr><td class="k">결제수단</td><td class="v" id="rsvMethod">신한카드 (일반결제)</td></tr>
+        <tr><td class="k">결제일시</td><td class="v" id="rsvPaidAt">2026.09.22 (화) 16:25:18</td></tr>
+      </table>
+      <div class="final-box">
+        <span class="label">최종 결제금액</span>
+        <span class="amount" id="rsvFinal">₩110,000</span>
+      </div>
+
+      <div class="action-row">
+        <a href="{% url 'ui:home' %}" class="action-btn">🏠 홈으로 가기</a>
+        <a href="{% url 'ui:tickets' %}" class="action-btn">📋 예매내역 보기</a>
+        <a href="{% url 'ui:nft' %}" class="action-btn">📅 다른 공연 예매하기</a>
+        <a href="#" class="action-btn primary" onclick="event.preventDefault();shareRsv();">🔗 예매 공유하기</a>
+      </div>
+    </div>
+  </div>
+
+  
+  <aside class="aside-col">
+    <div class="notice-card">
+      <span class="ic">🎫</span>
+      <div>
+        <h4>모바일 티켓 화면 미리보기</h4>
+        <p>마이페이지 &gt; 예매내역에서 모바일 티켓을 확인하실 수 있습니다.</p>
+        <a href="{% url 'ui:tickets' %}" class="link-btn">모바일 티켓 확인하기 →</a>
+      </div>
+    </div>
+    <div class="notice-card">
+      <span class="ic">✉️</span>
+      <div>
+        <h4>이메일 발송은 연결 예정입니다.</h4>
+        <p>현재 데모에서는 이메일을 발송하지 않습니다.</p>
+      </div>
+    </div>
+    <div class="notice-card">
+      <span class="ic">📅</span>
+      <div>
+        <h4>공연 전 꼭 확인하세요!</h4>
+        <ul>
+          <li>✔ 공연 시작 1시간 전까지 입장해주세요.</li>
+          <li>✔ 현재 화면의 티켓으로 입장할 수 없습니다.</li>
+          <li>✔ 취소·환불은 공연별 확정 정책을 확인해주세요.</li>
+          <li>✔ 공연장 규정을 반드시 확인해주세요.</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+</div>
+
+
+<div class="wrap rec-section">
+  <div class="rec-head">
+    <h2>이런 공연은 어떠세요?</h2>
+    <a href="{% url 'ui:nft' %}">전체보기 ›</a>
+  </div>
+  <div class="rec-grid" id="recGrid"></div>
+</div>
+
+
+
+
+
+</div>{% endblock %}{% block scripts %}<script id="ui-routes" type="application/json">{"performances":"{% url 'ui:performances' %}","nftPayment":"{% url 'ui:nft-payment' %}","nftComplete":"{% url 'ui:nft-complete' %}"}</script><script src="{% static 'linkticket/collected/nft_payment_complete.js' %}"></script>{% endblock %}

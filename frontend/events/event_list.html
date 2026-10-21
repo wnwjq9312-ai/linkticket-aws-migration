@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LINKTICKET - 이벤트</title>
+<style>
+  :root{
+    --navy:#1a2144;
+    --blue:#2563eb;
+    --pink:#ec4899;
+    --purple:#7c3aed;
+    --text-dark:#1f2333;
+    --text-gray:#6b7280;
+    --border:#e5e7eb;
+    --bg-light:#f7f8fa;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    color:var(--text-dark);
+    background:#fff;
+  }
+  a{text-decoration:none;color:inherit;}
+  ul{list-style:none;}
+  img,svg{display:block;}
+
+  .wrap{max-width:1536px;margin:0 auto;padding:0 32px;}
+
+  /* ===== Header ===== */
+  header{
+    border-bottom:1px solid var(--border);
+  }
+  .header-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    height:72px;
+  }
+  header .wrap{padding-left:12px;}
+  .header-left{display:flex;align-items:center;gap:36px;}
+  .logo{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+  .logo span{color:var(--blue);}
+  nav.main-nav{display:flex;gap:32px;}
+  nav.main-nav a{font-size:15px;font-weight:600;color:#333;padding:4px 0;}
+  nav.main-nav a.active{color:var(--blue);border-bottom:2px solid var(--blue);}
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .search-box{
+    display:flex;align-items:center;gap:8px;
+    background:var(--bg-light);border-radius:20px;
+    padding:8px 16px;width:280px;
+  }
+  .search-box input{
+    border:none;background:transparent;outline:none;font-size:13px;width:100%;
+  }
+  .auth-links{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  .auth-links .divider{color:var(--border);}
+  /* 웹서버 담당자가 준 실제 로그인/회원가입 마크업(id="auth-area")에 맞춘 스타일 */
+  #auth-area{display:flex;align-items:center;gap:10px;font-size:14px;white-space:nowrap;}
+  #auth-area .sep{color:var(--border);}
+
+  /* ===== Hero Banner (고정 영역) ===== */
+  .hero{
+    background:linear-gradient(120deg,#241a3d 0%,#3b1f5c 45%,#5c2a6b 100%);
+    color:#fff;position:relative;overflow:hidden;
+    padding:56px 0;cursor:pointer;
+  }
+  .hero-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    max-width:1536px;margin:0 auto;padding:0 32px;position:relative;z-index:2;
+  }
+  .hero-tag{
+    display:inline-block;font-size:12px;letter-spacing:3px;font-weight:700;
+    color:#c9a8ff;margin-bottom:14px;
+  }
+  .hero h1{font-size:36px;font-weight:800;line-height:1.35;}
+  .hero p{margin-top:14px;color:#d8cdea;font-size:14px;line-height:1.6;}
+  .hero-script{
+    font-family:"Brush Script MT",cursive;font-size:20px;color:#e7b7ea;
+    text-align:right;line-height:1.5;
+  }
+
+  /* ===== Filter Tab Bar (고정 영역) ===== */
+  .filter-bar{border-bottom:1px solid var(--border);}
+  .filter-tabs{
+    display:flex;align-items:center;gap:8px;padding:20px 0;
+  }
+  .filter-tab{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:14px 22px;border-radius:10px;font-size:13px;font-weight:600;color:#555;
+    cursor:pointer;min-width:96px;
+  }
+  .filter-tab .icon{font-size:18px;}
+  .filter-tab.active{background:var(--blue);color:#fff;}
+
+  /* ===== Layout ===== */
+  .content{display:flex;gap:32px;padding:32px 0 64px;align-items:flex-start;}
+  .main-col{flex:1;min-width:0;}
+  .side-col{width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:20px;}
+
+  .section-head{
+    display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;
+  }
+  .section-head h2{font-size:20px;font-weight:800;}
+  .section-head h2 .count{color:var(--blue);}
+  .sort-select{
+    font-size:13px;color:#555;border:1px solid var(--border);
+    border-radius:8px;padding:8px 12px;background:#fff;
+  }
+
+  /* ===== Event Card Grid (반복 영역) ===== */
+  .event-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  }
+
+  /* 카드 컴포넌트: 이 블록 전체가 Django에서 {% for event in events %} ... {% endfor %} 로 반복될 단위 */
+  /* .event-card 자체가 <a> 태그 -> 카드 박스 어디를 눌러도 상세페이지로 이동 */
+  .event-card{
+    display:block;
+    border:1px solid var(--border);border-radius:14px;overflow:hidden;
+    background:#fff;transition:box-shadow .2s;cursor:pointer;
+  }
+  .event-card:hover{box-shadow:0 8px 24px rgba(0,0,0,0.08);}
+
+  .event-card__media{
+    position:relative;height:160px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:14px;text-align:center;
+  }
+  .event-card__tag{
+    position:absolute;top:12px;left:12px;
+    font-size:11px;font-weight:700;padding:5px 10px;border-radius:6px;color:#fff;
+    pointer-events:none;
+  }
+  .event-card__like{
+    position:absolute;top:12px;right:12px;
+    width:28px;height:28px;border-radius:50%;
+    background:rgba(255,255,255,0.9);
+    display:flex;align-items:center;justify-content:center;font-size:14px;
+    z-index:2;cursor:pointer;
+  }
+
+  .event-card__body{padding:16px 16px 18px;}
+  .event-card__title{font-size:16px;font-weight:800;margin-bottom:8px;line-height:1.35;}
+  .event-card__title a{cursor:pointer;}
+  .event-card__title a:hover{text-decoration:underline;}
+  .event-card__desc{font-size:13px;color:var(--text-gray);line-height:1.5;margin-bottom:12px;min-height:38px;}
+  .event-card__date{
+    display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-gray);margin-bottom:14px;
+  }
+  .event-card__btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:700;color:var(--blue);
+  }
+
+  /* 카드별 미디어 배경(현재는 고정 색상 - 실제 서비스에선 event.image_url 로 교체) */
+  .media-1{background:linear-gradient(135deg,#3a3f6b,#1c2140);}
+  .media-2{background:linear-gradient(135deg,#2b2b2b,#4a4a4a);}
+  .media-3{background:linear-gradient(135deg,#6b2fb3,#a24bd6);}
+  .media-4{background:linear-gradient(135deg,#4776E6,#8E54E9);}
+  .media-5{background:linear-gradient(135deg,#8a2b6b,#c23c8f);}
+  .media-6{
+    background:#fff;color:var(--text-dark);
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;padding:16px;
+  }
+  .partner-badge{
+    font-size:11px;font-weight:700;padding:6px 10px;border:1px solid var(--border);border-radius:6px;
+    pointer-events:none;
+  }
+
+  .tag-preorder{background:#ec4899;}
+  .tag-membership{background:var(--navy);}
+  .tag-sns{background:#7c3aed;}
+  .tag-promo{background:#2563eb;}
+  .tag-fan{background:#d6336c;}
+  .tag-partner{background:var(--navy);}
+
+  /* ===== Sidebar ===== */
+  .side-box{
+    border:1px solid var(--border);border-radius:14px;padding:20px;
+  }
+  .side-box h3{font-size:15px;font-weight:800;margin-bottom:6px;}
+  .side-box p{font-size:12px;color:var(--text-gray);line-height:1.5;margin-bottom:14px;}
+  .subscribe-input{
+    display:flex;gap:0;margin-bottom:0;
+  }
+  .subscribe-input input{
+    flex:1;border:1px solid var(--border);border-right:none;
+    border-radius:8px 0 0 8px;padding:10px 12px;font-size:12px;outline:none;
+  }
+  .subscribe-input button{
+    border:none;background:var(--blue);color:#fff;font-size:12px;font-weight:700;
+    padding:0 16px;border-radius:0 8px 8px 0;cursor:pointer;
+  }
+  .subscribe-success{
+    display:none;align-items:center;gap:8px;
+    background:#f0fdf4;color:#16a34a;font-size:12px;font-weight:700;
+    border-radius:8px;padding:12px;
+  }
+  .subscribe-success.show{display:flex;}
+
+  .popular-list{display:flex;flex-direction:column;gap:14px;}
+  .popular-item{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .popular-item:hover .popular-item__title{color:var(--blue);}
+  .popular-item__rank{
+    width:22px;height:22px;border-radius:50%;background:var(--bg-light);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text-gray);
+    flex-shrink:0;
+  }
+  .popular-item__title{font-size:13px;font-weight:700;}
+  .popular-item__date{font-size:11px;color:var(--text-gray);margin-top:2px;}
+
+  .gift-banner{
+    background:linear-gradient(120deg,#3a2e6d,#5b3a8f);
+    border-radius:14px;padding:20px;color:#fff;
+    display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;
+  }
+  .gift-banner__text{font-size:14px;font-weight:800;line-height:1.5;}
+  .gift-banner__text small{display:block;font-size:12px;font-weight:400;color:#d8cdea;margin-top:6px;}
+
+  /* ===== Footer (고정 영역) ===== */
+  footer{background:var(--bg-light);border-top:1px solid var(--border);padding:40px 0;}
+  .footer-inner{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:32px;flex-wrap:wrap;
+  }
+  .footer-logo{font-size:18px;font-weight:800;margin-bottom:4px;}
+  .footer-sub{font-size:11px;color:var(--text-gray);letter-spacing:1px;margin-bottom:10px;}
+  .footer-desc{font-size:12px;color:var(--text-gray);max-width:260px;line-height:1.5;}
+
+  .footer-features{display:flex;gap:36px;}
+  .footer-feature{font-size:12px;}
+  .footer-feature__icon{font-size:18px;margin-bottom:6px;}
+  .footer-feature__title{font-weight:700;margin-bottom:2px;}
+  .footer-feature__desc{color:var(--text-gray);font-size:11px;}
+
+  .footer-quote{font-size:13px;font-weight:700;text-align:right;color:var(--text-dark);line-height:1.6;}
+
+  @media (max-width:1100px){
+    .content{flex-direction:column;}
+    .side-col{width:100%;flex-direction:row;flex-wrap:wrap;}
+    .event-grid{grid-template-columns:repeat(2,1fr);}
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ============ Header (고정 영역) ============ -->
+<header>
+  <div class="wrap header-inner">
+    <div class="header-left">
+      <a href="https://www.linkticket.com" class="logo">LINK<span>TICKET</span></a>
+      <nav class="main-nav">
+        <a href="https://www.linkticket.com">홈</a>
+        <a href="https://www.linkticket.com/performance">공연</a>
+        <a href="#">티켓예매</a>
+        <a href="#" class="active">이벤트</a>
+        <a href="nft_list.html">NFT</a>
+        <a href="#">공지사항</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <div class="search-box">
+        <span onclick="doSearch()" style="cursor:pointer;">🔍</span>
+        <input type="text" id="searchInput" placeholder="공연, 아티스트를 검색하세요..." onkeydown="if(event.key==='Enter') doSearch();">
+      </div>
+      <span>👤</span>
+      <div id="auth-area">
+        <a href="/login/">로그인</a><span class="sep">|</span><a href="/login/?tab=signup">회원가입</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ Hero Banner (고정 영역) ============ -->
+<!-- 이벤트 페이지 안의 배너라 누르면 이벤트 목록(이 페이지)을 새로 불러와 전체 이벤트 상태로 리셋 -->
+<section class="hero" onclick="window.location.href='event_list.html'">
+  <div class="hero-inner">
+    <div>
+      <span class="hero-tag">SPECIAL EVENT</span>
+      <h1>특별한 순간이<br>더 특별해지는 곳</h1>
+      <p>LINK TICKET과 함께하는<br>다양한 이벤트를 만나보세요.</p>
+    </div>
+    <div class="hero-script">More Than Tickets<br>More Memories</div>
+  </div>
+</section>
+
+<!-- ============ Filter Tab Bar (고정 영역) ============ -->
+<div class="filter-bar">
+  <div class="wrap filter-tabs">
+    <div class="filter-tab active" data-filter="all"><span class="icon">⭐</span>전체</div>
+    <div class="filter-tab" data-filter="preorder"><span class="icon">🎁</span>예매 이벤트</div>
+    <div class="filter-tab" data-filter="membership"><span class="icon">👑</span>멤버십 혜택</div>
+    <div class="filter-tab" data-filter="promo"><span class="icon">📢</span>프로모션</div>
+    <div class="filter-tab" data-filter="sns"><span class="icon">📷</span>SNS 이벤트</div>
+    <div class="filter-tab" data-filter="fan"><span class="icon">🤝</span>팬 이벤트</div>
+    <div class="filter-tab" data-filter="partner"><span class="icon">🤝</span>제휴 이벤트</div>
+  </div>
+</div>
+
+<div class="wrap content">
+
+  <!-- ============ Main: Event Grid ============ -->
+  <div class="main-col">
+    <div class="section-head">
+      <h2>진행중인 이벤트 <span class="count">6</span></h2>
+      <select class="sort-select">
+        <option>최신순</option>
+      </select>
+    </div>
+
+    <!-- 반복 시작: Django에서는 아래 .event-grid 안쪽을
+         {% for event in events %} ... {% endfor %} 로 감싸서
+         .event-card 블록 하나를 event 데이터로 채워 반복 출력한다.
+         상세페이지 링크는 event_detail.html?id=1 처럼 Django에서는
+         {% url 'events:detail' event.event_id %} 로 바뀔 자리 -->
+    <div class="event-grid">
+
+      <!-- event-card: 반복 단위 컴포넌트 (1) -->
+      <a href="event_detail.html?id=1" class="event-card" data-category="preorder">
+        <div class="event-card__media media-1">
+          <span class="event-card__tag tag-preorder">예매 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">EARLY BIRD 할인 이벤트</h3>
+          <p class="event-card__desc">지금, 가장 특별한 가격으로 공연을 만나보세요!</p>
+          <div class="event-card__date">📅 2025.04.01(화) ~ 2025.04.30(수)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      <!-- event-card: 반복 단위 컴포넌트 (2) -->
+      <a href="event_detail.html?id=2" class="event-card" data-category="membership">
+        <div class="event-card__media media-2">
+          <span class="event-card__tag tag-membership">멤버십 혜택</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">LINK TICKET 멤버십 특별 혜택</h3>
+          <p class="event-card__desc">멤버십 회원만을 위한 다양한 혜택과 선예매 기회를 드립니다.</p>
+          <div class="event-card__date">📅 2025.04.01(화) ~ 상시 진행</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      <!-- event-card: 반복 단위 컴포넌트 (3) -->
+      <a href="event_detail.html?id=3" class="event-card" data-category="sns">
+        <div class="event-card__media media-3">
+          <span class="event-card__tag tag-sns">SNS 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">공연 인증샷 이벤트</h3>
+          <p class="event-card__desc">공연장의 뜨거운 순간을 공유하고 푸짐한 선물을 받아보세요!</p>
+          <div class="event-card__date">📅 2025.04.05(토) ~ 2025.05.10(토)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      <!-- event-card: 반복 단위 컴포넌트 (4) -->
+      <a href="event_detail.html?id=4" class="event-card" data-category="promo">
+        <div class="event-card__media media-4">
+          <span class="event-card__tag tag-promo">프로모션</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">친구와 함께 예매하면 할인!</h3>
+          <p class="event-card__desc">함께할수록 더 즐거운 공연, 지금 친구를 초대하세요!</p>
+          <div class="event-card__date">📅 2025.04.10(목) ~ 2025.05.15(목)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      <!-- event-card: 반복 단위 컴포넌트 (5) -->
+      <a href="event_detail.html?id=5" class="event-card" data-category="fan">
+        <div class="event-card__media media-5">
+          <span class="event-card__tag tag-fan">팬 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">아티스트 사인회 초대 이벤트</h3>
+          <p class="event-card__desc">공연 티켓 예매하고 아티스트와 가까워질 특별한 기회!</p>
+          <div class="event-card__date">📅 2025.04.15(화) ~ 2025.05.20(화)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+      <!-- event-card: 반복 단위 컴포넌트 (6) -->
+      <a href="event_detail.html?id=6" class="event-card" data-category="partner">
+        <div class="event-card__media media-6">
+          <span class="event-card__tag tag-partner">제휴 이벤트</span>
+          <span class="event-card__like" onclick="event.preventDefault();event.stopPropagation();">♡</span>
+          <span class="partner-badge">STARBUCKS</span>
+          <span class="partner-badge">GS25</span>
+          <span class="partner-badge">배달의민족</span>
+          <span class="partner-badge">toss</span>
+          <span class="partner-badge">CGV</span>
+          <span class="partner-badge">yanolja</span>
+        </div>
+        <div class="event-card__body">
+          <h3 class="event-card__title">제휴사 할인 혜택</h3>
+          <p class="event-card__desc">다양한 제휴사와 함께하는 특별한 할인 혜택을 만나보세요!</p>
+          <div class="event-card__date">📅 2025.04.01(화) ~ 2025.06.30(월)</div>
+          <span class="event-card__btn">자세히 보기 →</span>
+        </div>
+      </a>
+
+    </div>
+    <!-- 반복 끝 -->
+
+  </div>
+
+  <!-- ============ Sidebar (지금은 고정 텍스트) ============ -->
+  <aside class="side-col">
+
+    <div class="side-box">
+      <h3>이벤트 소식을 가장 먼저 받아보세요!</h3>
+      <p>새로운 이벤트, 공연 소식, 할인 정보를<br>이메일로 받아보실 수 있습니다.</p>
+      <div class="subscribe-input" id="subscribeInput">
+        <input type="email" id="subscribeEmail" placeholder="이메일을 입력하세요.">
+        <button type="button" onclick="subscribeEmail()">구독하기 →</button>
+      </div>
+      <div class="subscribe-success" id="subscribeSuccess">✓ 구독 신청이 완료되었습니다!</div>
+    </div>
+
+    <div class="side-box">
+      <h3 style="margin-bottom:14px;">인기 이벤트</h3>
+      <div class="popular-list">
+        <a href="event_detail.html?id=1" class="popular-item">
+          <span class="popular-item__rank">1</span>
+          <div>
+            <div class="popular-item__title">EARLY BIRD 할인 이벤트</div>
+            <div class="popular-item__date">2025.04.01 ~ 2025.04.30</div>
+          </div>
+        </a>
+        <a href="event_detail.html?id=3" class="popular-item">
+          <span class="popular-item__rank">2</span>
+          <div>
+            <div class="popular-item__title">공연 인증샷 이벤트</div>
+            <div class="popular-item__date">2025.04.05 ~ 2025.05.10</div>
+          </div>
+        </a>
+        <a href="event_detail.html?id=5" class="popular-item">
+          <span class="popular-item__rank">3</span>
+          <div>
+            <div class="popular-item__title">아티스트 사인회 초대 이벤트</div>
+            <div class="popular-item__date">2025.04.15 ~ 2025.05.20</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- 이벤트 페이지 안의 배너라 누르면 이벤트 목록(이 페이지)을 새로 불러와 전체 이벤트 상태로 리셋 -->
+    <div class="gift-banner" onclick="window.location.href='event_list.html'">
+      <div class="gift-banner__text">특별한 이벤트로<br>더 특별한 추억을!
+        <small>LINK TICKET과 함께하세요.</small>
+      </div>
+      <span>🎁</span>
+    </div>
+
+  </aside>
+</div>
+
+<!-- ============ Footer (고정 영역) ============ -->
+<footer>
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-logo">LINKTICKET</div>
+      <div class="footer-sub">MUSIC CONNECTS US</div>
+      <div class="footer-desc">공연을 더 특별하게, 모두의 순간을 연결하는 티켓팅 플랫폼</div>
+    </div>
+
+    <div class="footer-features">
+      <div class="footer-feature">
+        <div class="footer-feature__icon">🎧</div>
+        <div class="footer-feature__title">다양한 공연</div>
+        <div class="footer-feature__desc">콘서트, 뮤지컬, 페스티벌까지</div>
+      </div>
+      <div class="footer-feature">
+        <div class="footer-feature__icon">⚡</div>
+        <div class="footer-feature__title">빠른 예매</div>
+        <div class="footer-feature__desc">안정적이고 빠른 예매 시스템</div>
+      </div>
+      <div class="footer-feature">
+        <div class="footer-feature__icon">🛡️</div>
+        <div class="footer-feature__title">안전한 결제</div>
+        <div class="footer-feature__desc">안심하고 이용하세요</div>
+      </div>
+      <div class="footer-feature">
+        <div class="footer-feature__icon">👥</div>
+        <div class="footer-feature__title">특별한 경험</div>
+        <div class="footer-feature__desc">LINK TICKET만의 이벤트</div>
+      </div>
+    </div>
+
+    <div class="footer-quote">"좋은 공연은 끝나도,<br>특별한 기억은 계속됩니다."</div>
+  </div>
+</footer>
+
+<script>
+  // 상단 검색: 키워드를 실제 검색 결과 페이지(WEB 담당의 공연 탐색 파트)로 넘겨서 이동만 시킴.
+  // 실제로 DB에서 공연/아티스트를 찾아 결과를 보여주는 로직은 WEB/백엔드 담당 몫
+  function doSearch(){
+    var keyword = document.getElementById('searchInput').value.trim();
+    if(!keyword){
+      alert('검색어를 입력해주세요.');
+      return;
+    }
+    window.location.href = 'https://www.linkticket.com/performances/?q=' + encodeURIComponent(keyword);
+  }
+
+  // 이메일 구독: 지금은 화면에 "완료" 메시지만 보여줌 (실제 DB 저장은 백엔드 연결 후)
+  function subscribeEmail(){
+    var email = document.getElementById('subscribeEmail').value;
+    if(!email || email.indexOf('@') === -1){
+      alert('이메일을 올바르게 입력해주세요.');
+      return;
+    }
+    document.getElementById('subscribeInput').style.display = 'none';
+    document.getElementById('subscribeSuccess').classList.add('show');
+
+    // 3초 뒤 다시 입력창으로 복귀
+    setTimeout(function(){
+      document.getElementById('subscribeSuccess').classList.remove('show');
+      document.getElementById('subscribeInput').style.display = 'flex';
+      document.getElementById('subscribeEmail').value = '';
+    }, 1500);
+  }
+
+  // 필터 탭 클릭 -> data-filter 값과 카드의 data-category 값을 비교해서 보이기/숨기기
+  // 실제 서비스에서는 이 부분이 서버에 카테고리를 물어보는 요청(쿼리 파라미터)으로 바뀜
+  var tabs = document.querySelectorAll('.filter-tab');
+  var cards = document.querySelectorAll('.event-card');
+  var countEl = document.querySelector('.section-head .count');
+
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+
+      var filter = tab.getAttribute('data-filter');
+      var visibleCount = 0;
+
+      cards.forEach(function(card){
+        var match = (filter === 'all' || card.getAttribute('data-category') === filter);
+        card.style.display = match ? '' : 'none';
+        if(match) visibleCount++;
+      });
+
+      if(countEl){ countEl.textContent = visibleCount; }
+    });
+  });
+</script>
+</body>
+</html>
