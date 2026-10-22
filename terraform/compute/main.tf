@@ -15,11 +15,12 @@ resource "aws_instance" "web" {
   ami           = var.ami_id
   instance_type = var.instance_type
 
-  subnet_id = var.web_subnet_ids[
-    count.index % length(var.web_subnet_ids)
-  ]
+  subnet_id = [
+    data.aws_subnet.app_a.id,
+    data.aws_subnet.app_c.id
+  ][count.index]
 
-  vpc_security_group_ids = [var.web_sg_id]
+  vpc_security_group_ids = [data.aws_security_group.web.id]
   iam_instance_profile   = var.instance_profile_name
 
   associate_public_ip_address = false
@@ -57,11 +58,12 @@ resource "aws_instance" "was" {
   ami           = var.ami_id
   instance_type = var.instance_type
 
-  subnet_id = var.was_subnet_ids[
-    count.index % length(var.was_subnet_ids)
-  ]
+  subnet_id = [
+    data.aws_subnet.app_c.id,
+    data.aws_subnet.app_a.id
+  ][count.index]
 
-  vpc_security_group_ids = [var.was_sg_id]
+  vpc_security_group_ids = [data.aws_security_group.was.id]
   iam_instance_profile   = var.instance_profile_name
 
   associate_public_ip_address = false
