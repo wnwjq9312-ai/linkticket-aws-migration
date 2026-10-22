@@ -1,0 +1,9 @@
+# Linux scripts must use LF
+*.sh text eol=lf
+
+# Nginx configuration files
+*.conf text eol=lf
+
+# Terraform configuration files
+*.tf text eol=lf
+*.tfvars.example text eol=lf

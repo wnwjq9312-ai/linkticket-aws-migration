@@ -1,0 +1,34 @@
+
+# LINKTICKET AWS Compute Configuration
+# Example values only - do not apply directly.
+
+project_name = "LINKTICKET"
+environment  = "dev"
+
+# Seoul region AMI ID - replace with verified AMI
+ami_id = "ami-REPLACE_WITH_VALID_AMI_ID"
+
+# EC2 instance specification
+instance_type = "t3.micro"
+
+# Private APP subnets (AZ-a / AZ-c)
+web_subnet_ids = [
+  "subnet-REPLACE_WITH_AZ_A",
+  "subnet-REPLACE_WITH_AZ_C"
+]
+
+was_subnet_ids = [
+  "subnet-REPLACE_WITH_AZ_A",
+  "subnet-REPLACE_WITH_AZ_C"
+]
+
+# Security Groups
+web_sg_id = "sg-REPLACE_WITH_WEB_SG"
+was_sg_id = "sg-REPLACE_WITH_WAS_SG"
+
+# EC2 IAM Instance Profile
+instance_profile_name = "REPLACE_WITH_INSTANCE_PROFILE"
+
+# Initial deployment: 1 WEB + 1 WAS
+web_instance_count = 1
+was_instance_count = 1

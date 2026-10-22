@@ -1,0 +1,36 @@
+
+[Unit]
+Description=LINKTICKET AWS Django Gunicorn Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Application service account
+User=linkticket
+Group=linkticket
+
+# Django project directory
+WorkingDirectory=/var/www/ticket_app
+
+# AWS production settings
+Environment=DJANGO_SETTINGS_MODULE=config.settings_aws
+
+# Database, Redis, Django secret key and other variables
+EnvironmentFile=/etc/linkticket/linkticket.env
+
+# Start Django using Gunicorn on port 8082
+ExecStart=/var/www/ticket_app/.venv/bin/gunicorn --config /var/www/ticket_app/scripts/was/gunicorn-aws.conf.py config.wsgi:application
+
+# Restart automatically if the service fails
+Restart=on-failure
+RestartSec=5
+
+# Basic security settings
+UMask=0027
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
