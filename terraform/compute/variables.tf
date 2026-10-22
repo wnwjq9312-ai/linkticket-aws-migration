@@ -7,7 +7,7 @@ variable "project_name" {
 variable "environment" {
   description = "Deployment environment"
   type        = string
-  default     = "dev"
+  default     = "prd"
 }
 
 variable "ami_id" {
@@ -21,25 +21,9 @@ variable "instance_type" {
   default     = "t3.micro"
 }
 
-variable "web_subnet_ids" {
-  description = "Private subnet IDs for WEB instances"
-  type        = list(string)
-}
 
-variable "was_subnet_ids" {
-  description = "Private subnet IDs for WAS instances"
-  type        = list(string)
-}
 
-variable "web_sg_id" {
-  description = "Security Group ID for WEB instances"
-  type        = string
-}
 
-variable "was_sg_id" {
-  description = "Security Group ID for WAS instances"
-  type        = string
-}
 
 variable "instance_profile_name" {
   description = "IAM Instance Profile for EC2 SSM access"

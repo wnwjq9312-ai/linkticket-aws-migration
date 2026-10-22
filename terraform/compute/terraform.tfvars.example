@@ -1,101 +1,23 @@
-
-# ==========================================================
-# LINKTICKET AWS Compute - Terraform Variables Example
-# ==========================================================
-# Region: ap-northeast-2 (Seoul)
-# VPC CIDR: 10.0.0.0/16
+﻿# LINKTICKET AWS Compute Configuration
+# Region: ap-northeast-2
+# VPC: 10.0.0.0/16
 #
-# Network design:
-#   Private APP AZ-a: 10.0.11.0/24
-#   Private APP AZ-c: 10.0.12.0/24
+# Existing VPC, APP subnets and WEB/WAS security groups
+# are automatically discovered in data.tf.
 #
-# Initial deployment:
-#   WEB 1 -> AZ-a
-#   WAS 1 -> AZ-c
+# WEB-1: Private APP AZ-a (10.0.11.0/24)
+# WAS-1: Private APP AZ-c (10.0.12.0/24)
 #
-# Scale-out:
-#   WEB 2 -> AZ-a / AZ-c
-#   WAS 2 -> AZ-c / AZ-a
-#
-# This file contains placeholders only.
-# Replace all placeholder values before terraform plan/apply.
-# ==========================================================
-
-# ----------------------------------------------------------
-# Project Information
-# ----------------------------------------------------------
+# Replace the AMI ID and IAM Instance Profile with real values.
+# Do not commit credentials or sensitive configuration.
 
 project_name = "LINKTICKET"
-environment  = "dev"
+environment  = "prd"
 
-# ----------------------------------------------------------
-# Amazon Linux 2023 AMI
-# ----------------------------------------------------------
-
-# Use a verified Amazon Linux 2023 AMI in ap-northeast-2.
-ami_id = "ami-REPLACE_WITH_VALID_AMI_ID"
-
-# ----------------------------------------------------------
-# EC2 Instance Configuration
-# ----------------------------------------------------------
-
+ami_id        = "ami-REPLACE_WITH_VALID_AMI_ID"
 instance_type = "t3.micro"
-
-# ----------------------------------------------------------
-# Private APP Subnets
-# ----------------------------------------------------------
-
-# WEB placement:
-# 1st instance -> AZ-a (10.0.11.0/24)
-# 2nd instance -> AZ-c (10.0.12.0/24)
-
-web_subnet_ids = [
-  "subnet-REPLACE_WITH_AZ_A",
-  "subnet-REPLACE_WITH_AZ_C"
-]
-
-# WAS placement:
-# 1st instance -> AZ-c (10.0.12.0/24)
-# 2nd instance -> AZ-a (10.0.11.0/24)
-
-was_subnet_ids = [
-  "subnet-REPLACE_WITH_AZ_C",
-  "subnet-REPLACE_WITH_AZ_A"
-]
-
-# ----------------------------------------------------------
-# Security Groups
-# ----------------------------------------------------------
-
-# WEB Security Group:
-# Allow HTTP 80 from ALB Security Group.
-# Allow TCP 8082 outbound to WAS Security Group.
-
-web_sg_id = "sg-REPLACE_WITH_WEB_SG"
-
-# WAS Security Group:
-# Allow TCP 8082 inbound from WEB Security Group.
-# Allow TCP 3306 outbound to RDS Security Group.
-# Allow TCP 6379 outbound to Redis Security Group.
-
-was_sg_id = "sg-REPLACE_WITH_WAS_SG"
-
-# ----------------------------------------------------------
-# IAM Instance Profile
-# ----------------------------------------------------------
-
-# IAM Instance Profile for AWS Systems Manager (SSM).
-# EC2 instances must be able to reach SSM endpoints.
 
 instance_profile_name = "REPLACE_WITH_INSTANCE_PROFILE"
 
-# ----------------------------------------------------------
-# Initial EC2 Instance Counts
-# ----------------------------------------------------------
-
 web_instance_count = 1
 was_instance_count = 1
-
-# To scale out to 2 WEB and 2 WAS instances later:
-# web_instance_count = 2
-# was_instance_count = 2
