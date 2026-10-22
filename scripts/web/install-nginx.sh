@@ -1,32 +1,49 @@
 
-#!/usr/bin/env bash
-set -euo pipefail
+# LINKTICKET AWS WEB Configuration
+# HTTPS is terminated by the AWS ALB.
 
-echo "=================================="
-echo " LINKTICKET WEB - Nginx Install"
-echo "=================================="
+upstream linkticket_was {
+    server ${WAS_HOST}:8082;
+    keepalive 16;
+}
 
-# Check operating system
-if ! grep -q 'Amazon Linux' /etc/os-release; then
-    echo "ERROR: Amazon Linux is required."
-    exit 1
-fi
+server {
+    listen 80;
+    server_name _;
 
-# Check root privileges
-if [[ "$(id -u)" -ne 0 ]]; then
-    echo "ERROR: Run this script as root."
-    exit 1
-fi
+    client_max_body_size 6m;
 
-echo "[1/4] Installing Nginx"
-dnf install -y nginx
+    location = /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok";
+    }
 
-echo "[2/4] Enabling Nginx"
-systemctl enable nginx
+    location /static/ {
+        alias /var/www/linkticket/;
+        autoindex off;
+    }
 
-echo "[3/4] Checking Nginx version"
-nginx -v
+    location /media/ {
+        return 503;
+    }
 
-echo "[4/4] Installation complete"
-echo "Nginx installed successfully."
-echo "Configuration and deployment will be performed separately."
+    location /nft-media/ {
+        return 503;
+    }
+
+    location / {
+        proxy_pass http://linkticket_was;
+
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 60s;
+
+        proxy_next_upstream error timeout;
+    }
+}
