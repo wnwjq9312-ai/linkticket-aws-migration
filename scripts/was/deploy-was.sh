@@ -61,6 +61,78 @@ if [[ ! -r "${ENV_FILE}" ]]; then
     exit 1
 fi
 
+# Verify environment file permissions
+ENV_MODE="$(stat -c '%a' "${ENV_FILE}")"
+
+if [[ "${ENV_MODE}" != "600" && "${ENV_MODE}" != "640" ]]; then
+    echo "ERROR: Insecure environment file permissions."
+    echo "Expected permissions: 600 or 640"
+    echo "Current permissions: ${ENV_MODE}"
+    exit 1
+fi
+
+# Verify environment file owner
+ENV_OWNER="$(stat -c '%U' "${ENV_FILE}")"
+
+if [[ "${ENV_OWNER}" != "root" ]]; then
+    echo "ERROR: Environment file must be owned by root."
+    exit 1
+fi
+
+# Required AWS WAS environment variables
+required_vars=(
+    DJANGO_SECRET_KEY
+    DJANGO_ALLOWED_HOSTS
+    CSRF_TRUSTED_ORIGINS
+    DB_ENGINE
+    DB_HOST
+    DB_PORT
+    DB_NAME
+    DB_USER
+    DB_PASSWORD
+    REDIS_URL
+    STATIC_ROOT
+    MEDIA_ROOT
+    WEB_NFS_MOUNT
+)
+
+# Check required variables without printing secret values
+for var in "${required_vars[@]}"; do
+    line="$(grep -E "^${var}=" "${ENV_FILE}" | tail -n 1 || true)"
+
+    if [[ -z "${line}" ]]; then
+        echo "ERROR: Missing environment variable: ${var}"
+        exit 1
+    fi
+
+    value="${line#*=}"
+
+    if [[ -z "${value}" || "${value}" == *REPLACE_WITH_* ]]; then
+        echo "ERROR: Invalid or placeholder value: ${var}"
+        exit 1
+    fi
+done
+
+# Verify database engine
+DB_ENGINE_LINE="$(grep -E '^DB_ENGINE=' "${ENV_FILE}" | tail -n 1)"
+DB_ENGINE_VALUE="${DB_ENGINE_LINE#*=}"
+
+if [[ "${DB_ENGINE_VALUE}" != "mysql" ]]; then
+    echo "ERROR: DB_ENGINE must be mysql for AWS deployment."
+    exit 1
+fi
+
+# Verify Django secret key length
+SECRET_LINE="$(grep -E '^DJANGO_SECRET_KEY=' "${ENV_FILE}" | tail -n 1)"
+SECRET_VALUE="${SECRET_LINE#*=}"
+
+if [[ ${#SECRET_VALUE} -lt 50 ]]; then
+    echo "ERROR: DJANGO_SECRET_KEY must be at least 50 characters."
+    exit 1
+fi
+
+echo "Environment configuration validation passed."
+
 # 5. Install systemd unit
 echo "[4/6] Installing systemd service"
 
