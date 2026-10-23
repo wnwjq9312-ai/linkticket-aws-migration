@@ -6,9 +6,6 @@ resource "aws_security_group" "alb" {
   name        = "${var.project_name}-${var.environment}-alb-sg"
   description = "Public entry point for HTTPS and HTTP-to-HTTPS redirect"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-alb-sg" }
 }
 
@@ -16,9 +13,6 @@ resource "aws_security_group" "web" {
   name        = "${var.project_name}-${var.environment}-web-sg"
   description = "WEB tier; accepts HTTP only from ALB"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-web-sg" }
 }
 
@@ -26,9 +20,6 @@ resource "aws_security_group" "was" {
   name        = "${var.project_name}-${var.environment}-was-sg"
   description = "WAS tier; accepts application traffic only from WEB"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-was-sg" }
 }
 
@@ -36,9 +27,6 @@ resource "aws_security_group" "redis" {
   name        = "${var.project_name}-${var.environment}-redis-sg"
   description = "Redis tier; accepts cache traffic only from WAS"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-redis-sg" }
 }
 
@@ -46,9 +34,6 @@ resource "aws_security_group" "rds" {
   name        = "${var.project_name}-${var.environment}-rds-sg"
   description = "Database tier; accepts database traffic only from WAS"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-rds-sg" }
 }
 
@@ -56,9 +41,6 @@ resource "aws_security_group" "efs" {
   name        = "${var.project_name}-${var.environment}-efs-sg"
   description = "EFS mount target; accepts NFS only from WEB"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-efs-sg" }
 }
 
@@ -66,9 +48,6 @@ resource "aws_security_group" "monitoring" {
   name        = "${var.project_name}-${var.environment}-monitoring-sg"
   description = "Prometheus/Grafana monitoring host; no inbound ports, use SSM port forwarding"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-monitoring-sg" }
 }
 
@@ -78,9 +57,6 @@ resource "aws_security_group" "eice" {
   name        = "${var.project_name}-${var.environment}-eice-sg"
   description = "EC2 Instance Connect Endpoint; SSH tunnel access to WEB/WAS only"
   vpc_id      = aws_vpc.this.id
-  ingress     = []
-  egress      = []
-
   tags = { Name = "${var.project_name}-${var.environment}-eice-sg" }
 }
 
@@ -279,6 +255,16 @@ resource "aws_vpc_security_group_egress_rule" "web_https_outbound" {
   from_port         = 443
   to_port           = 443
   cidr_ipv4         = "0.0.0.0/0"
+}
+
+# HTTPS access from WEB to the regional S3 prefix list (e.g. package repository assets).
+resource "aws_vpc_security_group_egress_rule" "web_https_to_s3_prefix_list" {
+  security_group_id = aws_security_group.web.id
+  description       = "WEB HTTPS access to S3 through the S3 Gateway Endpoint"
+  ip_protocol       = "tcp"
+  from_port         = 443
+  to_port           = 443
+  prefix_list_id    = "pl-78a54011"
 }
 
 resource "aws_vpc_security_group_egress_rule" "was_to_rds" {
