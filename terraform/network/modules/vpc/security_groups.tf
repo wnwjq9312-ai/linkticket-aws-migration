@@ -72,6 +72,18 @@ resource "aws_security_group" "monitoring" {
   tags = { Name = "${var.project_name}-${var.environment}-monitoring-sg" }
 }
 
+# Dedicated security group attached to the EC2 Instance Connect Endpoint (EICE).
+# The endpoint can open SSH tunnels only to WEB/WAS instances through TCP 22.
+resource "aws_security_group" "eice" {
+  name        = "${var.project_name}-${var.environment}-eice-sg"
+  description = "EC2 Instance Connect Endpoint; SSH tunnel access to WEB/WAS only"
+  vpc_id      = aws_vpc.this.id
+  ingress     = []
+  egress      = []
+
+  tags = { Name = "${var.project_name}-${var.environment}-eice-sg" }
+}
+
 # The VPC default SG is created automatically by AWS. Manage it to remove all rules.
 # Do not attach workloads to this group; use the named groups above instead.
 resource "aws_default_security_group" "this" {
@@ -109,6 +121,25 @@ resource "aws_vpc_security_group_ingress_rule" "web_from_alb" {
   from_port                    = 80
   to_port                      = 80
   referenced_security_group_id = aws_security_group.alb.id
+}
+
+# Permit SSH only from the dedicated EICE security group; do not open TCP 22 to the internet.
+resource "aws_vpc_security_group_ingress_rule" "web_ssh_from_eice" {
+  security_group_id            = aws_security_group.web.id
+  description                  = "SSH access to WEB only through EC2 Instance Connect Endpoint"
+  ip_protocol                  = "tcp"
+  from_port                    = 22
+  to_port                      = 22
+  referenced_security_group_id = aws_security_group.eice.id
+}
+
+resource "aws_vpc_security_group_ingress_rule" "was_ssh_from_eice" {
+  security_group_id            = aws_security_group.was.id
+  description                  = "SSH access to WAS only through EC2 Instance Connect Endpoint"
+  ip_protocol                  = "tcp"
+  from_port                    = 22
+  to_port                      = 22
+  referenced_security_group_id = aws_security_group.eice.id
 }
 
 resource "aws_vpc_security_group_ingress_rule" "was_from_web" {
@@ -193,6 +224,25 @@ resource "aws_vpc_security_group_egress_rule" "alb_to_web" {
   from_port                    = 80
   to_port                      = 80
   referenced_security_group_id = aws_security_group.web.id
+}
+
+# EICE outbound SSH tunnels are restricted to WEB/WAS security groups.
+resource "aws_vpc_security_group_egress_rule" "eice_to_web_ssh" {
+  security_group_id            = aws_security_group.eice.id
+  description                  = "EICE SSH tunnel to WEB instances"
+  ip_protocol                  = "tcp"
+  from_port                    = 22
+  to_port                      = 22
+  referenced_security_group_id = aws_security_group.web.id
+}
+
+resource "aws_vpc_security_group_egress_rule" "eice_to_was_ssh" {
+  security_group_id            = aws_security_group.eice.id
+  description                  = "EICE SSH tunnel to WAS instances"
+  ip_protocol                  = "tcp"
+  from_port                    = 22
+  to_port                      = 22
+  referenced_security_group_id = aws_security_group.was.id
 }
 
 resource "aws_vpc_security_group_egress_rule" "web_to_was" {
