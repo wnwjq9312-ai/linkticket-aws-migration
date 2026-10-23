@@ -89,7 +89,8 @@ resource "aws_db_instance" "this" {
 
   # 비밀번호를 코드와 state에 두지 않고 RDS가 Secrets Manager에서 관리한다
   manage_master_user_password   = true
-  master_user_secret_kms_key_id = aws_kms_key.this["rds"].arn
+  # null이면 AWS 관리형 키(aws/secretsmanager)로 시크릿을 암호화한다(원인 분리용 스위치)
+  master_user_secret_kms_key_id = var.db_secret_use_cmk ? aws_kms_key.this["rds"].arn : null
 
   allocated_storage     = var.db_allocated_storage
   max_allocated_storage = var.db_max_allocated_storage

@@ -73,6 +73,12 @@ variable "db_max_allocated_storage" {
   default     = 100
 }
 
+variable "db_secret_use_cmk" {
+  description = "마스터 비밀번호 시크릿을 직접 만든 RDS 키로 암호화할지. false면 AWS 관리형 키(aws/secretsmanager). RDS 생성 실패 원인을 분리할 때만 false로 두고, 관리 대상이 된 뒤에는 키를 바꿀 수 없음"
+  type        = bool
+  default     = true
+}
+
 variable "db_name" {
   description = "초기 DB 이름. 인수인계 문서는 ticketing_db, 저장소 설정은 linkticket이라 운영 값을 확인해야 함"
   type        = string
