@@ -1,0 +1,13 @@
+# 복사해서 terraform.tfvars로 만들고 필요한 것만 바꾼다. (terraform.tfvars는 Git에 올리지 않는다)
+# VPC, 서브넷, 보안 그룹은 네트워크 담당 state에서 자동으로 읽으므로 ID를 직접 넣을 필요가 없다.
+
+# 기본값이 다른 담당 코드(network, compute)의 이름 규칙과 같다.
+# project     = "linkticket"
+# environment = "prd"
+
+# 아래는 기본값을 바꿔야 할 때만
+# network_state_key = "linkticket/network/terraform.tfstate"
+
+# RDS 사양 등은 확정되면 지정
+# db_instance_class   = "db.t4g.small"
+# db_enable_audit_log = true
